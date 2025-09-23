@@ -1,6 +1,4 @@
-﻿using Mmo_Domain.IUnit;
-
-namespace Mmo_Application.Services;
+﻿namespace Mmo_Application.Services;
 
 public class BaseServices<T> : IBaseServices<T> where T : class
 {
@@ -13,12 +11,9 @@ public class BaseServices<T> : IBaseServices<T> where T : class
 
     public async Task<int> AddAsync(T entity)
     {
-        if (entity != null)
-        {
-            _unitOfWork.GenericRepository<T>().AddAsync(entity);
-            return await _unitOfWork.SaveChangeAsync();
-        }
-        throw new ArgumentNullException();
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        await _unitOfWork.GenericRepository<T>().AddAsync(entity);
+        return await _unitOfWork.SaveChangeAsync();
     }
 
     public bool Delete(int id)
