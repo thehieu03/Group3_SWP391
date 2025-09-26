@@ -1,6 +1,5 @@
 ﻿namespace Mmo_Application.Services.Interface;
 
-public interface IAccountRoleServices:IBaseServices<Accountrole>
+public interface IAccountRoleServices : IBaseServices<Accountrole>
 {
-    
 }

@@ -16,12 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\.dockerignore">
-            <Link>.dockerignore</Link>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Mmo_Application\Mmo_Application.csproj"/>
     </ItemGroup>
     <ItemGroup>
@@ -29,5 +23,10 @@
         <Using Include="Mmo_Domain.Models"/>
         <Using Include="Mmo_Domain.ModelRequest"/>
         <Using Include="AutoMapper"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 </Project>
