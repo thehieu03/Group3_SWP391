@@ -3,7 +3,7 @@ using Mmo_Domain.Models;
 
 namespace Mmo_Api.ApiController;
 
-[Route("api/role")]
+[Route("api/roles")]
 [ApiController]
 [Produces("application/json")]
 public class RoleController : ControllerBase

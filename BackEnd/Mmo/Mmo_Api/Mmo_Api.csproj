@@ -8,7 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="15.0.1"/>
+        <PackageReference Include="AutoMapper" Version="[12.0.1]"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[12.0.1]"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20"/>
         <PackageReference Include="Microsoft.AspNetCore.OData" Version="[8.3.1]"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20"/>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7"/>
@@ -25,8 +27,8 @@
         <Using Include="AutoMapper"/>
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 </Project>

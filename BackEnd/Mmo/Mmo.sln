@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmo_Infrastructure", "Mmo_I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmo_Api", "Mmo_Api\Mmo_Api.csproj", "{E32FBB92-A790-43A3-8B46-CA4BD64A8771}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmo_UnitTest", "Mmo_UnitTest\Mmo_UnitTest.csproj", "{CCD7B4F4-6509-4C2E-8076-534BAE6F3A9F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmo_Test", "Mmo_Test\Mmo_Test.csproj", "{CCD7B4F4-6509-4C2E-8076-534BAE6F3A9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
