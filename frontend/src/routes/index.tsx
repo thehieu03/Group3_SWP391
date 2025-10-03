@@ -1,6 +1,6 @@
 import type {FC, ReactNode} from "react";
 import Home from "../pages/Home/Home.tsx";
-import DefaultLayout from "../Layouts/DefaultLayout/DefaultLayout.tsx";
+import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
 
 type AppRoute={
     path:string,
