@@ -5,7 +5,7 @@ import Footer from "./Footer/Footer.tsx";
 type LoginLayoutProps = {
     children?:ReactNode;
 }
-const LoginLayout:FC<LoginLayoutProps> = ({children}) => {
+const HeaderAndFooter:FC<LoginLayoutProps> = ({children}) => {
     return (
         <div>
             <Header/>
@@ -15,4 +15,4 @@ const LoginLayout:FC<LoginLayoutProps> = ({children}) => {
     );
 };
 
-export default LoginLayout;
+export default HeaderAndFooter;

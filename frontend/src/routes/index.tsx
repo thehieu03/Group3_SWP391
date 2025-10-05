@@ -2,7 +2,8 @@ import type {FC, ReactNode} from "react";
 import Home from "../pages/Home/Home.tsx";
 import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
 import Login from "../pages/Login/Login.tsx";
-import LoginLayout from "../components/Layouts/HeaderAndFooter/LoginLayout.tsx";
+import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
+import ProductDetails from "../pages/ProductDetails/ProductDetails.tsx";
 type AppRoute={
     path:string,
     element:ReactNode,
@@ -16,7 +17,11 @@ const publicRoutes: AppRoute[] = [
     },{
         path:'/login',
         element:<Login/>,
-        layout:LoginLayout
+        layout:HeaderAndFooter
+    },{
+        path:'/productDetails',
+        element:<ProductDetails/>,
+        layout:HeaderAndFooter
     }
 ];
 const privateRoutes: AppRoute[] = [];
