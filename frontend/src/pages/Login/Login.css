@@ -1,0 +1,105 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+}
+
+.form-box {
+    background: #fff;
+    padding: 20px;
+    width: 350px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-box h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.form-box input[type="text"],
+.form-box input[type="email"],
+.form-box input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-box label {
+    font-size: 14px;
+    color: #333;
+}
+
+.form-box a {
+    color: green;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.form-box .remember {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.form-box button {
+    width: 100%;
+    padding: 10px;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.form-box button:hover {
+    background: #0d7a0d;
+}
+
+.google-login {
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+    background: #4285f4;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.note {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.note span {
+    color: red;
+    font-weight: bold;
+}
+
+.note strong {
+    color: green;
+}
+
+.or-text {
+    text-align: center;
+    margin: 10px 0;
+}
