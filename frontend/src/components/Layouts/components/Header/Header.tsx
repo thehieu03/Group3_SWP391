@@ -1,11 +1,10 @@
 import { FaFacebookSquare } from 'react-icons/fa';
 import {MdOutlineEmail} from "react-icons/md";
 import {CiClock1} from "react-icons/ci";
-import imageLogo from "../../../../assets/logoShop.png";
 const Header = () => {
     return (
         <div>
-            <div className="h-[34px] flex justify-between items-center px-20 py-2 bg-[#8c8c8c]">
+            <div className="h-[34px] flex justify-between items-center bg-[#8c8c8c]">
                 <div className="flex items-center gap-2 text-white">
                         <a>Hỗ trợ trực tuyến:</a>
                         <FaFacebookSquare  className="text-[#28a745]"/>
@@ -19,13 +18,18 @@ const Header = () => {
                     <a >Đăng kí bán hàng</a>
                 </div>
             </div>
-            <div>
-                <div>
-                    <img src={imageLogo} alt="Logo" className="w-20 h-20" />
-
-
+            {/*header*/}
+            <div className='h-[54px] bg-[var(--green-color)]'>
+                <div className='flex h-full px-[20px] justify-between items-center '>
+                    {/*header menu*/}
+                    <div>
+                        h ieu
+                    </div>
+                    {/*header login*/}
+                    <div>
+                        l9ogin
+                    </div>
                 </div>
-                <h1>Hieu</h1>
             </div>
         </div>
     );

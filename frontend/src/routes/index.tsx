@@ -4,6 +4,7 @@ import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx
 import Login from "../pages/Login/Login.tsx";
 import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
 import ProductDetails from "../pages/ProductDetails/ProductDetails.tsx";
+import Deposit from "../pages/Deposit/Deposit.tsx";
 type AppRoute={
     path:string,
     element:ReactNode,
@@ -22,6 +23,10 @@ const publicRoutes: AppRoute[] = [
         path:'/productDetails',
         element:<ProductDetails/>,
         layout:HeaderAndFooter
+    },{
+        path:'/deposit',
+        element:<Deposit/>,
+        layout:DefaultLayout
     }
 ];
 const privateRoutes: AppRoute[] = [];
