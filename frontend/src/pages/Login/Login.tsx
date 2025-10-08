@@ -1,123 +1,84 @@
 import React from "react";
+import "./Login.css";
 
 export default function LoginRegisterPage() {
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
+        <div className="login-register-container">
+            <div className="form-wrapper">
+
                 {/* Đăng nhập */}
-                <div className="bg-white rounded-2xl shadow-md p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Đăng nhập</h2>
+                <div className="form-box form-login">
+                    <h2 className="form-title">Đăng nhập</h2>
 
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring focus:ring-green-200"
-                    />
+                    <label>Email</label>
+                    <input type="email" placeholder="Nhập email" />
 
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                        Mật khẩu
-                    </label>
-                    <input
-                        type="password"
-                        className="w-full border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring focus:ring-green-200"
-                    />
+                    <label>Mật khẩu</label>
+                    <input type="password" placeholder="Nhập mật khẩu" />
 
-                    <div className="text-green-600 text-sm mb-3 cursor-pointer">
-                        Quên mật khẩu
+                    <div className="forgot-password">Quên mật khẩu</div>
+
+                    <div className="remember">
+                        <input type="checkbox" defaultChecked />
+                        <span>Ghi nhớ đăng nhập</span>
                     </div>
 
-                    <div className="flex items-center mb-4">
-                        <input type="checkbox" className="mr-2" defaultChecked />
-                        <span className="text-gray-600 text-sm">Ghi nhớ đăng nhập</span>
-                    </div>
+                    <button className="btn-green">Đăng nhập</button>
 
-                    <button className="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded-md font-semibold mb-4">
-                        Đăng nhập
-                    </button>
+                    <div className="or-text">Or</div>
 
-                    <div className="text-center text-gray-600 mb-2">Or</div>
-
-                    <button className="flex items-center justify-center gap-2 border border-gray-300 w-full py-2 rounded-md hover:bg-gray-100">
+                    <button className="btn-google">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"
-                            className="w-5 h-5"
                         />
-                        <span className="font-medium text-gray-700">Login with Google</span>
+                        Login with Google
                     </button>
                 </div>
 
                 {/* Đăng ký */}
-                <div className="bg-white rounded-2xl shadow-md p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Đăng ký</h2>
-
-                    <p className="text-sm mb-6">
-            <span className="text-green-600">
+                <div className="form-box form-register">
+                    <h2 className="form-title">Đăng ký</h2>
+                    <p className="notice">
+            <span className="text-green">
               Chú ý: Nếu bạn sử dụng các chương trình
             </span>{" "}
-                        <span className="text-red-500">Bypass Captcha</span>{" "}
-                        <span className="text-green-600">
+                        <span className="text-red">Bypass Captcha</span>{" "}
+                        <span className="text-green">
               có thể không đăng ký tài khoản được.
             </span>
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid-2">
                         <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Tài khoản
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-green-200"
-                            />
+                            <label>Tài khoản</label>
+                            <input type="text" placeholder="Nhập tài khoản" />
                         </div>
-
                         <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-green-200"
-                            />
+                            <label>Email</label>
+                            <input type="email" placeholder="Nhập email" />
                         </div>
-
                         <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Mật khẩu
-                            </label>
-                            <input
-                                type="password"
-                                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-green-200"
-                            />
+                            <label>Mật khẩu</label>
+                            <input type="password" placeholder="Nhập mật khẩu" />
                         </div>
-
                         <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Nhập lại mật khẩu
-                            </label>
-                            <input
-                                type="password"
-                                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-green-200"
-                            />
+                            <label>Nhập lại mật khẩu</label>
+                            <input type="password" placeholder="Nhập lại mật khẩu" />
                         </div>
                     </div>
 
-                    <div className="flex items-center mt-4 mb-6">
-                        <input type="checkbox" className="mr-2" defaultChecked />
-                        <span className="text-sm text-gray-600">
+                    <div className="agree">
+                        <input type="checkbox" defaultChecked />
+                        <span>
               Tôi đã đọc và đồng ý với{" "}
-                            <span className="text-green-600 font-medium">
+                            <span className="text-green-bold">
                 Điều khoản sử dụng Tạp Hóa MMO
               </span>
             </span>
                     </div>
 
-                    <button className="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded-md font-semibold">
-                        Đăng ký
-                    </button>
+                    <button className="btn-green">Đăng ký</button>
                 </div>
             </div>
         </div>
