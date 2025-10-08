@@ -43,7 +43,7 @@ const Button:FC<ButtonProps> = ({to,href,children,disabled,target,leftIcon,right
         Comp='a';
     }
     const baseClasses =
-        "inline-flex items-center px-4 py-2 rounded-md font-semibold transition";
+        "inline-flex items-center rounded-md font-semibold transition";
     const linkClasses =
         Comp === "a" ? "border-0 no-underline text-blue-500 hover:underline" : "";
 

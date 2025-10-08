@@ -1,6 +1,9 @@
 import { FaFacebookSquare } from 'react-icons/fa';
 import {MdOutlineEmail} from "react-icons/md";
 import {CiClock1} from "react-icons/ci";
+import Button from "../../../Button/Button.tsx";
+import {ImageLogo as Logo} from "../../../../assets/ImageLogo.tsx";
+import Tippy from "@tippyjs/react";
 const Header = () => {
     return (
         <div>
@@ -19,11 +22,20 @@ const Header = () => {
                 </div>
             </div>
             {/*header*/}
-            <div className='h-[54px] bg-[var(--green-color)]'>
-                <div className='flex h-full px-[20px] justify-between items-center '>
+            <div className='h-[54px] w-full bg-[var(--green-color)]'>
+                <div className='flex h-full pl-[20px] pr-[15px] justify-between items-center '>
                     {/*header menu*/}
-                    <div>
-                        h ieu
+                    <div className='flex w-full h-full'>
+                        <div className='h-full flex items-center'>
+                            <Button to="/" >
+                                <Logo/>
+                            </Button>
+                        </div>
+                        <div>
+                            <Tippy>
+
+                            </Tippy>
+                        </div>
                     </div>
                     {/*header login*/}
                     <div>
