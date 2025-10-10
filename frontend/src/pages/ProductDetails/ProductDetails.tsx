@@ -10,7 +10,7 @@ const ProductDetails = () => {
     return (
 
         <><div className="body flex items-center justify-center min-h-screen bg-white">
-            <div className="container mx-auto p-4 font-sans text-gray-800">
+            <div className="container mx-auto max-w-[1024px] p-4 font-sans text-gray-800">
 
                 <div className="flex flex-col md:flex-row bg-white p-4 rounded shadow">
 
