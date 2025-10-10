@@ -1,4 +1,4 @@
-import { FaFacebookSquare } from 'react-icons/fa';
+import {FaArrowDown, FaFacebookSquare} from 'react-icons/fa';
 import {MdOutlineEmail} from "react-icons/md";
 import {CiClock1} from "react-icons/ci";
 import Button from "../../../Button/Button.tsx";
@@ -32,8 +32,8 @@ const Header = () => {
                             </Button>
                         </div>
                         <div>
-                            <Tippy>
-
+                            <Tippy content="Menu" visible={true}>
+                                <FaArrowDown />
                             </Tippy>
                         </div>
                     </div>
