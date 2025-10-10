@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.OData;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Mmo_Application.Services;
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.IUnit;
@@ -29,6 +32,22 @@ public static class RegisterMiddleware
                 mySqlOptions => mySqlOptions.EnableRetryOnFailure()
             );
         });
+        builder.Services.AddAutoMapper(typeof(Program).Assembly);
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(jwtOptions =>
+            {
+                jwtOptions.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new Exception("Jwt Key not found")))
+                };
+            });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
         builder.Services.AddScoped<IAccountServices, AccountServices>();
@@ -48,7 +67,6 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ISystemsconfigServices, SystemsconfigServices>();
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
-
 
         return builder;
     }

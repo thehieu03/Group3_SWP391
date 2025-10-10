@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj" />
+        <ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <Using Include="Mmo_Application.Services.Interface"/>

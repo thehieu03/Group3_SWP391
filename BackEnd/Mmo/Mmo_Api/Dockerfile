@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Mmo_Api/Mmo_Api.csproj", "Mmo_Api/"]
+COPY ["Mmo_Application/Mmo_Application.csproj", "Mmo_Application/"]
+COPY ["Mmo_Infrastructure/Mmo_Infrastructure.csproj", "Mmo_Infrastructure/"]
+COPY ["Mmo_Domain/Mmo_Domain.csproj", "Mmo_Domain/"]
 RUN dotnet restore "Mmo_Api/Mmo_Api.csproj"
 COPY . .
 WORKDIR "/src/Mmo_Api"
