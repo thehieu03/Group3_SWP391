@@ -3,8 +3,14 @@ import {MdOutlineEmail} from "react-icons/md";
 import {CiClock1} from "react-icons/ci";
 import Button from "../../../Button/Button.tsx";
 import {ImageLogo as Logo} from "../../../../assets/ImageLogo.tsx";
-import Tippy from "@tippyjs/react";
+import TippyHeadless from "@tippyjs/react/headless";
 const Header = () => {
+    const menuItems = [
+        { title: "Email" },
+        { title: "Tài khoản" },
+        { title: "Phần mềm" },
+        { title: "Khác" },
+    ];
     return (
         <div>
             <div className="h-[34px] flex justify-between items-center bg-[#8c8c8c]">
@@ -25,16 +31,19 @@ const Header = () => {
             <div className='h-[54px] w-full bg-[var(--green-color)]'>
                 <div className='flex h-full pl-[20px] pr-[15px] justify-between items-center '>
                     {/*header menu*/}
-                    <div className='flex w-full h-full'>
+                    <div className='flex w-full h-full items-center'>
                         <div className='h-full flex items-center'>
                             <Button to="/" >
                                 <Logo/>
                             </Button>
                         </div>
-                        <div>
-                            <Tippy content="Menu" visible={true}>
-                                <FaArrowDown />
-                            </Tippy>
+                        <div className='h-full flex items-center'>
+                            <TippyHeadless content="Menu" visible={true}>
+                                <div className='flex items-center gap-2 cursor-pointer text-inherit'>
+                                    <div className='text-xl'>Sản Phẩm</div>
+                                    <FaArrowDown />
+                                </div>
+                            </TippyHeadless>
                         </div>
                     </div>
                     {/*header login*/}
