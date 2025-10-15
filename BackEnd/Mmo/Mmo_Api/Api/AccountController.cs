@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.OData.Query;
 using Mmo_Application.Services.Interface;
+using Mmo_Domain.ModelResponse;
 
 namespace Mmo_Api.ApiController;
 
@@ -15,13 +16,6 @@ public class AccountController : ControllerBase
         _accountServices = accountServices;
         _mapper = mapper;
     }
-    [HttpGet]
-    [EnableQuery]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllAccounts()
-    {
-        var accounts = await _accountServices.GetAllAsync();
-        return Ok(accounts);
-    }
+    
+
 }

@@ -19,9 +19,9 @@ public class RoleController : ControllerBase
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(IEnumerable<Role>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<ActionResult<Role>> Get()
+    public async Task<ActionResult<List<Role>>> Get()
     {
         var result = await _roleServices.GetAllAsync();
         return result == null ? BadRequest() : Ok(result);
