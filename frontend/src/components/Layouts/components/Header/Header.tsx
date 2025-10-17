@@ -5,17 +5,35 @@ import Button from "../../../Button/Button.tsx";
 import {ImageLogo as Logo} from "../../../../assets/ImageLogo.tsx";
 import CategoryMenuHeader from "../../menu/CategoryMenuHeader.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faMessage, faUser} from "@fortawesome/free-solid-svg-icons";
+import {faBars, faMessage, faUser, faXmark} from "@fortawesome/free-solid-svg-icons";
 import TippyHeadless from "@tippyjs/react/headless";
+import UserMenu from "../../menu/UserMenu.tsx";
+import LoginMenu from "../../menu/LoginMenu.tsx";
+import {useEffect, useState} from "react";
 
 const headerStyle = {
     notification: 'absolute -top-3 -right-1 bg-gray-500 text-white text-[15px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1'
 }
 const Header = () => {
-    const isLogin = false;
+    const isLogin = true;
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
+
+  // Track viewport width and react to changes
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (viewportWidth > 991 && isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  }, [viewportWidth, isMobileMenuOpen]);
     return (
         <div>
-            <div className="h-[34px] flex justify-between items-center bg-[#8c8c8c]">
+            <div className="h-[34px] flex justify-between items-center bg-[#8c8c8c] max-[991px]:hidden">
                 <div className="flex items-center gap-2 text-white">
                     <a>Hỗ trợ trực tuyến:</a>
                     <FaFacebookSquare className="text-[#28a745]"/>
@@ -30,19 +48,22 @@ const Header = () => {
                 </div>
             </div>
             {/*header*/}
-            <div className="h-[54px] w-full bg-[var(--green-color)]">
-                <div className="flex h-full pl-[20px] pr-[15px] justify-between items-center ">
+      <div className="h-[54px] w-full bg-[var(--green-color)]">
+        <div className="flex h-full pl-[20px] pr-[15px] justify-between items-center ">
                     {/*header menu*/}
-                    <div className="flex w-full h-full items-center">
+          <div className="flex w-full h-full items-center">
                         <div className="h-full flex items-center">
                             <Button to="/">
                                 <Logo/>
                             </Button>
                         </div>
-                        <CategoryMenuHeader isLogin={isLogin}/>
+            {/* desktop navigation */}
+            <div className="max-[991px]:hidden">
+              <CategoryMenuHeader isLogin={isLogin}/>
+            </div>
                     </div>
                     {/*header login*/}
-                    <div className="flex items-center gap-3 font-medium whitespace-nowrap text-white h-full">
+          <div className="flex items-center gap-3 font-medium whitespace-nowrap text-white h-full">
                         {isLogin && <>
                             <div className='font-semibold cursor-pointer '>11,049 VPN</div>
                             <div className='relative cursor-pointer '>
@@ -51,16 +72,64 @@ const Header = () => {
                             </div>
                         </>
                         }
-                        <TippyHeadless interactive={true} offset={[0, 8]} placement="bottom-start" delay={[0, 100]}
-                                       appendTo={() => document.body}>
+                        <TippyHeadless interactive
+                                       offset={[0, 8]}
+                                       placement="bottom-start"
+                                       delay={[0, 100]}
+                                       trigger="click"
+                                       appendTo={() => document.body}
+                                       render={() => (
+                                           <div>
+                                               {isLogin ? <UserMenu /> : <LoginMenu />}
+                                           </div>
+                                       )}>
                             <div className='relative cursor-pointer'>
                                 <FontAwesomeIcon icon={faUser} className='text-xl'/>
                                 <span className={headerStyle.notification}>0</span>
                             </div>
                         </TippyHeadless>
-                    </div>
+            {/* mobile hamburger */}
+            <button
+              className="hidden max-[991px]:flex items-center justify-center text-white ml-2"
+              aria-label="Open menu"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <FontAwesomeIcon icon={faBars} className="text-2xl" />
+            </button>
+          </div>
                 </div>
             </div>
+
+      {/* Mobile side drawer */}
+      {isMobileMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="fixed z-50 top-0 left-0 h-screen w-[300px] bg-white shadow-2xl">
+            <div className="flex items-center justify-between px-4 h-[54px] border-b">
+              <span className="font-semibold">Menu</span>
+              <button
+                aria-label="Close menu"
+                className="p-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <FontAwesomeIcon icon={faXmark} className="text-xl" />
+              </button>
+            </div>
+
+            <nav className="py-2">
+              <Button className="block px-4 py-3 hover:bg-gray-100">Trang chủ</Button>
+              <div className="border-t" />
+              <Button className="block px-4 py-3 hover:bg-gray-100">Hỗ trợ</Button>
+              <Button className="block px-4 py-3 hover:bg-gray-100">Công cụ</Button>
+              <Button className="block px-4 py-3 hover:bg-gray-100">Nạp tiền</Button>
+              <Button className="block px-4 py-3 hover:bg-gray-100">Thông tin tài khoản</Button>
+            </nav>
+          </div>
+        </>
+      )}
         </div>
     );
 };
