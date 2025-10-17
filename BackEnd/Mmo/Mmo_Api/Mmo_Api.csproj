@@ -25,6 +25,8 @@
         <Using Include="Mmo_Domain.Models"/>
         <Using Include="Mmo_Domain.ModelRequest"/>
         <Using Include="AutoMapper"/>
+        <Using Include="Microsoft.AspNetCore.OData.Query"/>
+        <Using Include="Mmo_Domain.ModelResponse"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="..\.dockerignore">
