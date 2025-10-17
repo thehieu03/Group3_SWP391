@@ -32,7 +32,7 @@ public static class RegisterMiddleware
                 mySqlOptions => mySqlOptions.EnableRetryOnFailure()
             );
         });
-        builder.Services.AddAutoMapper(typeof(Program).Assembly);
+        builder.Services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtOptions =>
             {

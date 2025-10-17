@@ -1,15 +1,26 @@
-using Mmo_Api.Boostraping;
+﻿using System;
+using MySql.Data.MySqlClient;
 
-namespace Mmo_Api;
-
-public class Program
+namespace Mmo_Application
 {
-    public static void Main(string[] args)
+    public class DbTest
     {
-        var builder = WebApplication.CreateBuilder(args);
-        builder.RegisterAppMiddleware(builder.Configuration);
+        public static void Main()
+        {
+            string connectionString = "server=localhost;port=3306;database=mmo;user=root;password=vanh;";
 
-        var app = builder.Build();
-        app.UseAppMiddleware(builder.Configuration);
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    Console.WriteLine("ket noi thanh cong !");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Loi ket noi : " + ex.Message);
+                }
+            }
+        }
     }
 }
