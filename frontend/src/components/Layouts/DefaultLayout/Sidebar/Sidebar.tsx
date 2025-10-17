@@ -1,9 +1,12 @@
+import type {FC} from "react";
 
-
-const Sidebar = () => {
+type SidebarProps = {
+    types:boolean;
+};
+const Sidebar:FC<SidebarProps> = ({types}) => {
     return (
         <div>
-            <h1>Sidebar</h1>
+            {types&&<h1>Sidebar</h1>}
         </div>
     );
 };
