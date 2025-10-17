@@ -1,10 +1,10 @@
-import type {CategoriesResponse} from "../models/modelResponse/CategoriesResponse.tsx";
-import {httpGet} from "../utils/http.tsx";
+import type { CategoriesResponse } from "../models/modelResponse/CategoriesResponse.tsx";
+import { httpGet } from "../utils/http.tsx";
 
 class CategoryServices {
-    async getAllCategory():Promise<CategoriesResponse[]>{
-        const data=await httpGet<CategoriesResponse[]>('categories');
-        return data;
-    }
+  async getAllCategoryAsync(): Promise<CategoriesResponse[]> {
+    const data = await httpGet<CategoriesResponse[]>("categories");
+    return data;
+  }
 }
-export  const categoryServices=new CategoryServices();
+export const categoryServices = new CategoryServices();
