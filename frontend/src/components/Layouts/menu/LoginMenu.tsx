@@ -15,7 +15,7 @@ const LoginMenu = () => (
         <input type="password" placeholder="Mật khẩu" className="border w-full p-1 rounded mb-2"/>
         <div className="flex justify-between text-sm mb-2">
             <label><input type="checkbox" /> Ghi nhớ</label>
-            <a className="text-blue-500 cursor-pointer">Quên mật khẩu</a>
+            <Button to={routesConfig.forgotPassword} className="text-blue-500 cursor-pointer">Quên mật khẩu</Button>
         </div>
         <Button className="w-full bg-green-600 text-white py-1 rounded text-center" onClick={handleLogin}>Đăng nhập</Button>
         <Button className="w-full bg-blue-500 text-white py-1 mt-2 rounded text-center" leftIcon={<FontAwesomeIcon icon={faGoogle}/>} onClick={handleGoogleLogin}>Google Login</Button>

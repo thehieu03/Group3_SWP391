@@ -10,6 +10,7 @@ import TippyHeadless from "@tippyjs/react/headless";
 import UserMenu from "../../menu/UserMenu.tsx";
 import LoginMenu from "../../menu/LoginMenu.tsx";
 import {useEffect, useState} from "react";
+import routesConfig from "../../../../config/routesConfig.tsx";
 
 const headerStyle = {
     notification: 'absolute -top-3 -right-1 bg-gray-500 text-white text-[15px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1'
@@ -120,10 +121,10 @@ const Header = () => {
             </div>
 
             <nav className="py-2">
-              <Button className="block px-4 py-3 hover:bg-gray-100">Trang chủ</Button>
+              <Button to={routesConfig.home} className="block px-4 py-3 hover:bg-gray-100">Trang chủ</Button>
               <div className="border-t" />
-              <Button className="block px-4 py-3 hover:bg-gray-100">Hỗ trợ</Button>
-              <Button className="block px-4 py-3 hover:bg-gray-100">Công cụ</Button>
+              <Button to={routesConfig.support} className="block px-4 py-3 hover:bg-gray-100">Hỗ trợ</Button>
+              <Button  className="block px-4 py-3 hover:bg-gray-100">Công cụ</Button>
               <Button className="block px-4 py-3 hover:bg-gray-100">Nạp tiền</Button>
               <Button className="block px-4 py-3 hover:bg-gray-100">Thông tin tài khoản</Button>
             </nav>
