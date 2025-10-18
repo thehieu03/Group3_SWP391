@@ -16,13 +16,13 @@ public class BaseServices<T> : IBaseServices<T> where T : class
         return await _unitOfWork.SaveChangeAsync();
     }
 
-    public bool Delete(int id)
+    public bool Delete(uint id)
     {
         _unitOfWork.GenericRepository<T>().Delete(id);
         return _unitOfWork.SaveChanges() > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(uint id)
     {
         _unitOfWork.GenericRepository<T>().Delete(id);
         return await _unitOfWork.SaveChangeAsync() > 0;
@@ -39,7 +39,7 @@ public class BaseServices<T> : IBaseServices<T> where T : class
         return await _unitOfWork.GenericRepository<T>().GetAllAsync();
     }
 
-    public async Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(uint id)
     {
         return await _unitOfWork.GenericRepository<T>().GetByIdAsync(id);
     }

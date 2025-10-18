@@ -20,7 +20,6 @@ const MENU_ITEM_CLASS = 'h-full px-4 flex items-center text-white font-medium cu
 const DROPDOWN_ITEM_CLASS = 'block py-2 text-[15px] text-gray-700 hover:text-emerald-600 cursor-pointer transition-colors';
 const DROPDOWN_CONTAINER_CLASS = 'z-50 w-[300px] bg-white rounded-md shadow-xl ring-1 ring-black ring-black/5 p-6';
 
-// Component cho chevron icon
 const ChevronIcon = () => (
     <svg className="ml-1 h-4 w-4 opacity-80" viewBox="0 0 20 20" fill="currentColor">
         <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08z"/>

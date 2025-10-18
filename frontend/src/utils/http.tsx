@@ -22,14 +22,12 @@ http.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
-
-        // Nếu lỗi 401 (Unauthorized) và chưa retry
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = Cookies.get('refreshToken');
-                const response = await axios.post('/api/auth/refresh', {
+                const response = await axios.post('/auth/refresh', {
                     refreshToken
                 });
 

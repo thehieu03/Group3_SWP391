@@ -32,7 +32,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(Role), StatusCodes.Status200OK)]
-    public async Task<ActionResult<Role>> GetById(int id)
+    public async Task<ActionResult<Role>> GetById(uint id)
     {
         if (id <= 0) return BadRequest("Invalid ID");
 

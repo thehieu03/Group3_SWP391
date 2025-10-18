@@ -28,6 +28,7 @@ public class ProductsController : ControllerBase
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(resultProduct);
         return Ok(resultResponse);
     }
+
     [HttpGet("{id}")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -43,6 +44,19 @@ public class ProductsController : ControllerBase
         }
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(filteredProducts);
         return Ok(resultResponse);
+    }
+    [HttpGet("getProductById")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery]uint id) {
+        var productResult=await _productServices.GetByIdAsync(id);
+        if (productResult == null)
+        {
+            return NotFound();
+        }
+        var productResponse=_mapper.Map<ProductResponse>(productResult);
+        return Ok(productResponse);
     }
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
