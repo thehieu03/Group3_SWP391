@@ -15,13 +15,14 @@ public partial class AppDbContext : DbContext
         : base(options)
     {
     }
-   
 
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<Accountrole> Accountroles { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
+
+    public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; }
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
@@ -53,6 +54,9 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Token> Tokens { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,10 +90,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("email");
             entity.Property(e => e.GoogleId).HasColumnName("googleId");
             entity.Property(e => e.IdentificationB)
-                .HasColumnType("mediumint")
+                .HasColumnType("mediumblob")
                 .HasColumnName("identificationB");
             entity.Property(e => e.IdentificationF)
-                .HasColumnType("mediumint")
+                .HasColumnType("mediumblob")
                 .HasColumnName("identificationF");
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
@@ -158,6 +162,16 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp")
                 .HasColumnName("updatedAt");
+        });
+
+        modelBuilder.Entity<Efmigrationshistory>(entity =>
+        {
+            entity.HasKey(e => e.MigrationId).HasName("PRIMARY");
+
+            entity.ToTable("__efmigrationshistory");
+
+            entity.Property(e => e.MigrationId).HasMaxLength(150);
+            entity.Property(e => e.ProductVersion).HasMaxLength(32);
         });
 
         modelBuilder.Entity<Feedback>(entity =>
@@ -249,7 +263,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("orders");
 
-            entity.HasIndex(e => e.AccountId, "accountId");
+            entity.HasIndex(e => e.AccountId, "accountId1");
 
             entity.HasIndex(e => e.ProductVariantId, "productVariantId");
 
@@ -366,7 +380,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("productstorages");
 
-            entity.HasIndex(e => e.ProductVariantId, "productVariantId");
+            entity.HasIndex(e => e.ProductVariantId, "productVariantId1");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ProductVariantId).HasColumnName("productVariantId");
@@ -385,7 +399,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("productvariants");
 
-            entity.HasIndex(e => e.ProductId, "productId");
+            entity.HasIndex(e => e.ProductId, "productId1");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
@@ -422,7 +436,7 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.FeedbackId, "feedbackId");
 
-            entity.HasIndex(e => e.ShopId, "shopId");
+            entity.HasIndex(e => e.ShopId, "shopId1");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Comment)
@@ -467,7 +481,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("shops");
 
-            entity.HasIndex(e => e.AccountId, "accountId");
+            entity.HasIndex(e => e.AccountId, "accountId2");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
@@ -506,7 +520,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("supporttickets");
 
-            entity.HasIndex(e => e.AccountId, "accountId");
+            entity.HasIndex(e => e.AccountId, "accountId3");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
@@ -575,7 +589,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("tokens");
 
-            entity.HasIndex(e => e.AccountId, "accountId");
+            entity.HasIndex(e => e.AccountId, "accountId4");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccessToken)

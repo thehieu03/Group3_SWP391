@@ -19,9 +19,9 @@ public partial class Account
 
     public string? GoogleId { get; set; }
 
-    public int? IdentificationF { get; set; }
+    public byte[]? IdentificationF { get; set; }
 
-    public int? IdentificationB { get; set; }
+    public byte[]? IdentificationB { get; set; }
 
     public bool? IsActive { get; set; }
 
