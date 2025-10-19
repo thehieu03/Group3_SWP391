@@ -1,8 +1,13 @@
 import type { FC } from "react";
+import {useEffect, useState} from "react";
 // import Image from "../../components/Image";
 import Button from "../../components/Button/Button";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import type { ProductCardData } from "../../components/ProductCard/ProductCard";
+import type {CategoriesResponse} from "../../models/modelResponse/CategoriesResponse.tsx";
+import type {ProductResponse} from "../../models/modelResponse/ProductResponse.tsx";
+import {categoryServices} from "../../services/CategoryServices.tsx";
+import {productServices} from "../../services/ProductServices.tsx";
 
 type Product = ProductCardData;
 
@@ -88,6 +93,44 @@ const mockProducts: Product[] = [
 ];
 
 const Products: FC = () => {
+    const [categories, setCategories] = useState<CategoriesResponse[]>([]);
+    const [products, setProducts] = useState<ProductResponse[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const [cats, prods] = await Promise.all([
+                    categoryServices.getAllCategory(),
+                    productServices.getAllProducts(),
+                ]);
+                if (mounted) {
+                    setCategories(cats);
+                    setProducts(prods);
+                }
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+        return () => { mounted = false; };
+    }, []);
+
+    const mappedProducts: ProductCardData[] = products.map((p) => ({
+        id: String(p.id),
+        name: p.name,
+        seller: "unknown",
+        category: "",
+        rating: 0,
+        reviews: 0,
+        sold: 0,
+        complaintRate: 0,
+        stock: 0,
+        minPrice: 0,
+        maxPrice: 0,
+        descriptionItems: [],
+    }));
+
     return (
         <div className="mx-auto max-w-6xl px-4 py-5">
             <div className="mb-4 rounded-lg bg-white p-4 shadow">
@@ -121,19 +164,10 @@ const Products: FC = () => {
                         <h3 className="mb-1 text-lg font-semibold text-gray-800">Bộ lọc</h3>
                         <p className="mb-3 text-sm text-gray-500">Chọn 1 hoặc nhiều danh mục</p>
                         <div className="flex flex-col gap-2 text-sm">
-                            {[
-                                ["gmail", "Gmail"],
-                                ["hotmail", "HotMail"],
-                                ["outlook", "OutlookMail"],
-                                ["rumail", "RuMail"],
-                                ["domain", "DomainMail"],
-                                ["yahoo", "YahooMail"],
-                                ["proton", "ProtonMail"],
-                                ["other", "Loại Mail Khác"],
-                            ].map(([id, label]) => (
-                                <label key={id} htmlFor={id} className="flex cursor-pointer items-center gap-2">
-                                    <input id={id} type="checkbox" className="h-4 w-4" defaultChecked={id === "gmail"} />
-                                    <span className="text-gray-700">{label}</span>
+                            {categories.map((c) => (
+                                <label key={c.id} htmlFor={`cat-${c.id}`} className="flex cursor-pointer items-center gap-2">
+                                    <input id={`cat-${c.id}`} type="checkbox" className="h-4 w-4" defaultChecked={false} />
+                                    <span className="text-gray-700">{c.name}</span>
                                 </label>
                             ))}
                         </div>
@@ -145,7 +179,7 @@ const Products: FC = () => {
 
                 <section className="min-w-0 flex-1">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {mockProducts.map((p) => (
+                        {(loading ? [] : (mappedProducts.length ? mappedProducts : mockProducts)).map((p) => (
                             <ProductCard key={p.id} product={p} />
                         ))}
                     </div>
