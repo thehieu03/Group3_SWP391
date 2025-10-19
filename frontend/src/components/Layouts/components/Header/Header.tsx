@@ -11,12 +11,13 @@ import UserMenu from "../../menu/UserMenu.tsx";
 import LoginMenu from "../../menu/LoginMenu.tsx";
 import {useEffect, useState} from "react";
 import routesConfig from "../../../../config/routesConfig.tsx";
+import { useAuth } from "../../../../hooks/useAuth";
 
 const headerStyle = {
     notification: 'absolute -top-3 -right-1 bg-gray-500 text-white text-[15px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1'
 }
 const Header = () => {
-    const isLogin = true;
+    const { isLoggedIn, user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
 
@@ -60,13 +61,13 @@ const Header = () => {
                         </div>
             {/* desktop navigation */}
             <div className="max-[991px]:hidden">
-              <CategoryMenuHeader isLogin={isLogin}/>
+              <CategoryMenuHeader isLogin={isLoggedIn}/>
             </div>
                     </div>
                     {/*header login*/}
           <div className="flex items-center gap-3 font-medium whitespace-nowrap text-white h-full">
-                        {isLogin && <>
-                            <div className='font-semibold cursor-pointer '>11,049 VPN</div>
+                        {isLoggedIn && <>
+                            <div className='font-semibold cursor-pointer '>{user?.balance?.toLocaleString()} VND</div>
                             <div className='relative cursor-pointer '>
                                 <FontAwesomeIcon icon={faMessage} className='text-xl'/>
                                 <span className={headerStyle.notification}>0</span>
@@ -81,7 +82,7 @@ const Header = () => {
                                        appendTo={() => document.body}
                                        render={() => (
                                            <div>
-                                               {isLogin ? <UserMenu /> : <LoginMenu />}
+                                               {isLoggedIn ? <UserMenu /> : <LoginMenu />}
                                            </div>
                                        )}>
                             <div className='relative cursor-pointer'>
