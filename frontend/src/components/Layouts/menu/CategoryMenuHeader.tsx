@@ -7,6 +7,13 @@ import type { Tools } from "../../../models/Tools.tsx";
 import Button from "../../Button/Button.tsx";
 import routesConfig from "../../../config/routesConfig.tsx";
 
+const categoryNameToSlug: Record<string, string> = {
+  "Gmail": "gmail",
+  "Phần mềm": "software",
+  "Tài khoản": "account",
+  "Khác": "other",
+};
+
 const tools: Tools[] = [
   {
     id: 1,
@@ -19,8 +26,10 @@ const tools: Tools[] = [
 ];
 const MENU_ITEM_CLASS =
   "h-full px-4 flex items-center text-white font-medium cursor-pointer hover:bg-emerald-600/90 transition-colors";
-const DROPDOWN_ITEM_CLASS =
-  "block py-2 text-[15px] text-gray-700 hover:text-emerald-600 cursor-pointer transition-colors";
+
+  const DROPDOWN_ITEM_CLASS =
+  "block w-full text-left py-2 text-[15px] text-gray-700 hover:text-emerald-600 cursor-pointer transition-colors";
+
 const DROPDOWN_CONTAINER_CLASS =
   "z-50 w-[300px] bg-white rounded-md shadow-xl ring-1 ring-black ring-black/5 p-6";
 
@@ -60,16 +69,17 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
       <div className="grid grid-cols-2 gap-x-12 gap-y-3">
         <div>
           {firstCol.map((item) => (
-            <div key={item.id} className={DROPDOWN_ITEM_CLASS}>
+            // route fallback to /products 
+            <Button key={item.id} to={`/${categoryNameToSlug[item.name] ?? "products"}`} className={DROPDOWN_ITEM_CLASS}>
               {item.name}
-            </div>
+            </Button>
           ))}
         </div>
         <div>
           {secondCol.map((item) => (
-            <div key={item.id} className={DROPDOWN_ITEM_CLASS}>
+            <Button key={item.id} to={`/${categoryNameToSlug[item.name] ?? "products"}`} className={DROPDOWN_ITEM_CLASS}>
               {item.name}
-            </div>
+            </Button>
           ))}
         </div>
       </div>
