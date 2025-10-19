@@ -12,9 +12,3 @@ public class LoginRequest
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
     public string Password { get; set; } = null!;
 }
-
-public class RefreshTokenRequest
-{
-    [Required(ErrorMessage = "Refresh token is required")]
-    public string RefreshToken { get; set; } = null!;
-}

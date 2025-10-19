@@ -2,5 +2,5 @@
 
 public interface IProductServices :IBaseServices<Product>
 {
-    
+    Task<IEnumerable<Product>> GetAllWithRelatedAsync();
 }

@@ -14,6 +14,8 @@ public class ProductResponse
 
     public uint? CategoryId { get; set; }
 
+    public uint? SubcategoryId { get; set; }
+
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -23,4 +25,23 @@ public class ProductResponse
     public bool? IsActive { get; set; }
 
     public string? Details { get; set; }
+
+    public decimal? Fee { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public string? ShopName { get; set; }
+    public string? CategoryName { get; set; }
+    public string? SubcategoryName { get; set; }
+    
+    //  data for product card
+    public decimal? MinPrice { get; set; }
+    public decimal? MaxPrice { get; set; }
+    public int TotalStock { get; set; }
+    public int TotalSold { get; set; }
+    public double AverageRating { get; set; }
+    public int ReviewCount { get; set; }
+    public double ComplaintRate { get; set; }
 }

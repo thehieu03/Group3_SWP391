@@ -71,7 +71,10 @@ const ProductCard: FC<{ product: ProductCardData; className?: string }> = ({ pro
                     <div className="flex items-center justify-between">
                         <div className="text-xs text-gray-500">Tồn kho: <span className="font-semibold text-gray-700">{product.stock}</span></div>
                         <div className="text-right text-sm font-bold text-gray-900">
-                            {product.minPrice.toLocaleString()} đ - {product.maxPrice.toLocaleString()} đ
+                            {product.minPrice === product.maxPrice 
+                                ? `${product.minPrice.toLocaleString()} đ`
+                                : `${product.minPrice.toLocaleString()} đ - ${product.maxPrice.toLocaleString()} đ`
+                            }
                         </div>
                     </div>
                 </div>
