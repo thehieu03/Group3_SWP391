@@ -5,9 +5,9 @@ namespace Mmo_Domain.Models;
 
 public partial class Productstorage
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? ProductVariantId { get; set; }
+    public int? ProductVariantId { get; set; }
 
     public string Result { get; set; } = null!;
 

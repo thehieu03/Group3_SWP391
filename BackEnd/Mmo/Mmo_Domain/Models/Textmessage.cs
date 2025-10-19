@@ -5,7 +5,7 @@ namespace Mmo_Domain.Models;
 
 public partial class Textmessage
 {
-    public uint MessageId { get; set; }
+    public int MessageId { get; set; }
 
     public string Content { get; set; } = null!;
 

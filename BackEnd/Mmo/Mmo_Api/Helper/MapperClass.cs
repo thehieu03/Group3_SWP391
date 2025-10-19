@@ -9,7 +9,7 @@ public class MapperClass : Profile
         CreateMap<RoleRequest, Role>().ReverseMap();
         CreateMap<Category,CategoryResponse>().ReverseMap();
         CreateMap<Category, CategoryRequest>().ReverseMap();
-            CreateMap<Product, ProductResponse>().ReverseMap();
-
+        CreateMap<Product, ProductResponse>().ReverseMap();
+        CreateMap<Product, ProductRequest>().ReverseMap();
     }
 }

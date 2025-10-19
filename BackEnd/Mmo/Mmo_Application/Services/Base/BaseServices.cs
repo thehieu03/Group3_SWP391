@@ -2,7 +2,7 @@
 
 public class BaseServices<T> : IBaseServices<T> where T : class
 {
-    private readonly IUnitOfWork _unitOfWork;
+    protected readonly IUnitOfWork _unitOfWork;
 
     public BaseServices(IUnitOfWork unitOfWork)
     {
@@ -42,6 +42,11 @@ public class BaseServices<T> : IBaseServices<T> where T : class
     public async Task<T?> GetByIdAsync(int id)
     {
         return await _unitOfWork.GenericRepository<T>().GetByIdAsync(id);
+    }
+
+    public Task<T?> GetByIdAsync(int? id)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<bool> UpdateAsync(T entity)

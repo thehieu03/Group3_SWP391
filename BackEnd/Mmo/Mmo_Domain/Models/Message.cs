@@ -5,11 +5,11 @@ namespace Mmo_Domain.Models;
 
 public partial class Message
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint SenderId { get; set; }
+    public int SenderId { get; set; }
 
-    public uint ReceiverId { get; set; }
+    public int ReceiverId { get; set; }
 
     public string Type { get; set; } = null!;
 
