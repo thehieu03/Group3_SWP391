@@ -44,9 +44,12 @@ public class BaseServices<T> : IBaseServices<T> where T : class
         return await _unitOfWork.GenericRepository<T>().GetByIdAsync(id);
     }
 
-    public Task<T?> GetByIdAsync(int? id)
+    public async Task<T?> GetByIdAsync(int? id)
     {
-        throw new NotImplementedException();
+        if (id == null || id <= 0)
+            return null;
+        
+        return await _unitOfWork.GenericRepository<T>().GetByIdAsync(id.Value);
     }
 
     public async Task<bool> UpdateAsync(T entity)
