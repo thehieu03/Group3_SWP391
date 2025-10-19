@@ -13,6 +13,7 @@ const routesConfig  =  {
     share:'/share',
     faqs:'/faqs',
     forgotPassword:'/forgotPassword',
+    infoAccount:'/infoAccount'
 };
 
 export default routesConfig ;

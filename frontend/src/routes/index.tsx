@@ -1,10 +1,10 @@
 import type { FC, ReactNode } from "react";
-import Home from "../pages/Home/Home.tsx";
+import Home from "../pages/UserAndSeller/Home/Home.tsx";
 import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
-import Login from "../pages/Login/Login.tsx";
+import Login from "../pages/UserAndSeller/Login/Login.tsx";
 import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
-import ProductDetails from "../pages/ProductDetails/ProductDetails.tsx";
-import Deposit from "../pages/Deposit/Deposit.tsx";
+import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
+import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
 import routesConfig from "../config/routesConfig.tsx";
 type AppRoute = {
   path: string;

@@ -1,55 +1,73 @@
-import { useState, useEffect, type ReactNode } from 'react';
-import type { User } from '../models/modelResponse/LoginResponse';
-import { AuthContext } from './AuthContextDefinition';
+import { createContext, useState, useEffect, type ReactNode } from "react";
+import type { User } from "../models/modelResponse/LoginResponse";
+import Cookies from "js-cookie";
+import { authServices } from "../services/AuthServices";
+
+interface AuthContextType {
+  isLoggedIn: boolean;
+  user: User | null;
+  login: (user: User) => void;
+  logout: () => void;
+  loading: boolean; // Thêm loading state
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    // Check for existing user data on mount
-    useEffect(() => {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            try {
-                const userData = JSON.parse(savedUser);
-                setUser(userData);
-                setIsLoggedIn(true);
-            } catch (error) {
-                console.error('Error parsing saved user data:', error);
-                localStorage.removeItem('user');
-            }
+  // Auto-load user data from server when app starts
+  useEffect(() => {
+    const loadUserFromServer = async () => {
+      const accessToken = Cookies.get("accessToken");
+      const refreshToken = Cookies.get("refreshToken");
+
+      // Nếu có tokens, gọi API để lấy user info
+      if (accessToken || refreshToken) {
+        try {
+          const userData = await authServices.getCurrentUserAsync();
+          setUser(userData);
+          setIsLoggedIn(true);
+          console.log("User loaded from server");
+        } catch (error) {
+          console.error("Error loading user from server:", error);
+          logout();
         }
-    }, []);
+      }
 
-    const login = (userData: User) => {
-        setUser(userData);
-        setIsLoggedIn(true);
-        localStorage.setItem('user', JSON.stringify(userData));
+      setLoading(false);
     };
 
-    const logout = () => {
-        setUser(null);
-        setIsLoggedIn(false);
-        localStorage.removeItem('user');
-        // Clear cookies
-        document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    };
+     void loadUserFromServer();
+  }, []);
 
-    const value = {
-        isLoggedIn,
-        user,
-        login,
-        logout
-    };
+  const login = (userData: User) => {
+    setUser(userData);
+    setIsLoggedIn(true);
+  };
 
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const logout = () => {
+    setUser(null);
+    setIsLoggedIn(false);
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+  };
+
+  const value = {
+    isLoggedIn,
+    user,
+    login,
+    logout,
+    loading,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+export default AuthContext;
