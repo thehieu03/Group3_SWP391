@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "@tippyjs/react": "^4.2.6",
+    "axios": "^1.12.2",
     "clsx": "^2.1.1",
     "normalize.css": "^8.0.1",
     "react": "^19.1.1",
