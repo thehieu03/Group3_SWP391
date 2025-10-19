@@ -173,6 +173,15 @@ input[type="password"]:focus {
     align-item:  center;
 }
 
+.alert-message {
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-left: 4px solid #00c853;
+    color: #333;
+    font-weight: 500;
+}
+
 @media (max-width: 900px) {
     .form-wrapper {
         flex-direction: column;
