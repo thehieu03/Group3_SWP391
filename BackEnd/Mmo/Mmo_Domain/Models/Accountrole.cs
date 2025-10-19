@@ -5,9 +5,9 @@ namespace Mmo_Domain.Models;
 
 public partial class Accountrole
 {
-    public uint? AccountId { get; set; }
+    public int? AccountId { get; set; }
 
-    public uint? RoleId { get; set; }
+    public int? RoleId { get; set; }
 
     public virtual Account? Account { get; set; }
 

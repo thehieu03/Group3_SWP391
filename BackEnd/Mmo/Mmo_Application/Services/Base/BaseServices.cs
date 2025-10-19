@@ -2,7 +2,7 @@
 
 public class BaseServices<T> : IBaseServices<T> where T : class
 {
-    private readonly IUnitOfWork _unitOfWork;
+    protected readonly IUnitOfWork _unitOfWork;
 
     public BaseServices(IUnitOfWork unitOfWork)
     {
@@ -16,13 +16,13 @@ public class BaseServices<T> : IBaseServices<T> where T : class
         return await _unitOfWork.SaveChangeAsync();
     }
 
-    public bool Delete(uint id)
+    public bool Delete(int id)
     {
         _unitOfWork.GenericRepository<T>().Delete(id);
         return _unitOfWork.SaveChanges() > 0;
     }
 
-    public async Task<bool> DeleteAsync(uint id)
+    public async Task<bool> DeleteAsync(int id)
     {
         _unitOfWork.GenericRepository<T>().Delete(id);
         return await _unitOfWork.SaveChangeAsync() > 0;
@@ -39,9 +39,14 @@ public class BaseServices<T> : IBaseServices<T> where T : class
         return await _unitOfWork.GenericRepository<T>().GetAllAsync();
     }
 
-    public async Task<T?> GetByIdAsync(uint id)
+    public async Task<T?> GetByIdAsync(int id)
     {
         return await _unitOfWork.GenericRepository<T>().GetByIdAsync(id);
+    }
+
+    public Task<T?> GetByIdAsync(int? id)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<bool> UpdateAsync(T entity)

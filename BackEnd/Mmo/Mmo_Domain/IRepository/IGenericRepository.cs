@@ -4,11 +4,11 @@ public interface IGenericRepository<T> where T : class
 {
     IEnumerable<T> GetAll();
     Task<IEnumerable<T>> GetAllAsync();
-    T? GetById(uint id);
-    Task<T?> GetByIdAsync(uint id);
+    T? GetById(int id);
+    Task<T?> GetByIdAsync(int id);
     Task AddAsync(T entity);
     void Update(T entity);
-    void Delete(uint id);
+    void Delete(int id);
     void Delete(T entity);
     IQueryable<T> GetQuery();
     Task<IQueryable<T>> GetQuery(Expression<Func<T, bool>> predicate);

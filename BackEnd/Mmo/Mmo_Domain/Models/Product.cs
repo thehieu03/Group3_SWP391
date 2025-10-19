@@ -5,11 +5,13 @@ namespace Mmo_Domain.Models;
 
 public partial class Product
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? ShopId { get; set; }
+    public int? ShopId { get; set; }
 
-    public uint? CategoryId { get; set; }
+    public int? CategoryId { get; set; }
+
+    public int? SubcategoryId { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -34,4 +36,6 @@ public partial class Product
     public virtual ICollection<Productvariant> Productvariants { get; set; } = new List<Productvariant>();
 
     public virtual Shop? Shop { get; set; }
+
+    public virtual Subcategory? Subcategory { get; set; }
 }

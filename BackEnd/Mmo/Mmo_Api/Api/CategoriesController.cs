@@ -55,7 +55,7 @@ namespace Mmo_Api.Api
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteCategory([FromQuery] uint id)
+        public async Task<IActionResult> DeleteCategory([FromQuery] int id)
         {
             var category = await _categoryServices.GetByIdAsync(id);
             if(category == null) return BadRequest("Category not found.");

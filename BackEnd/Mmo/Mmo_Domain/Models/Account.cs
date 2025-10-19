@@ -5,7 +5,7 @@ namespace Mmo_Domain.Models;
 
 public partial class Account
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
     public string Username { get; set; } = null!;
 

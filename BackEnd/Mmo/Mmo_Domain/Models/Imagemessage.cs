@@ -5,7 +5,7 @@ namespace Mmo_Domain.Models;
 
 public partial class Imagemessage
 {
-    public uint MessageId { get; set; }
+    public int MessageId { get; set; }
 
     public byte[] Image { get; set; } = null!;
 

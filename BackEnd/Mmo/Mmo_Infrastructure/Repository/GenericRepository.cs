@@ -21,7 +21,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         await _dbSet.AddAsync(entity);
     }
 
-    public void Delete(uint id)
+    public void Delete(int id)
     {
         var entity = _dbSet.Find(id);
 
@@ -60,12 +60,13 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await _dbSet.ToListAsync();
     }
 
-    public T? GetById(uint id)
+    public T? GetById(int id)
     {
         return _dbSet.Find(id);
     }
 
-    public async Task<T?> GetByIdAsync(uint id)
+
+    public async Task<T?> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);
     }

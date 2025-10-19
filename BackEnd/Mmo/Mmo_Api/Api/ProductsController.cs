@@ -49,7 +49,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery]uint id) {
+    public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery]int id) {
         var productResult=await _productServices.GetByIdAsync(id);
         if (productResult == null)
         {

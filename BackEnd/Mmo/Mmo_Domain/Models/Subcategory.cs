@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace Mmo_Domain.Models;
 
-public partial class Category
+public partial class Subcategory
 {
     public int Id { get; set; }
+
+    public int CategoryId { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -15,7 +17,7 @@ public partial class Category
 
     public bool? IsActive { get; set; }
 
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+    public virtual Category Category { get; set; } = null!;
 
-    public virtual ICollection<Subcategory> Subcategories { get; set; } = new List<Subcategory>();
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

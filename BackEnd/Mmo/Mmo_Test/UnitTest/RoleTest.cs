@@ -81,7 +81,7 @@ public class RoleTest
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public async Task GetById_ShouldReturnBadRequest_ForInvalidId(uint id)
+    public async Task GetById_ShouldReturnBadRequest_ForInvalidId(int id)
     {
         // Arrange
         var controller = CreateController();
@@ -101,7 +101,7 @@ public class RoleTest
         // Arrange
         var roleServicesMock = new Mock<IRoleServices>(MockBehavior.Strict);
         roleServicesMock
-            .Setup(s => s.GetByIdAsync(It.IsAny<uint>()))
+            .Setup(s => s.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((Role?)null);
 
         var controller = CreateController(roleServicesMock);

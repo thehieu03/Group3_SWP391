@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace Mmo_Domain.Models;
 
@@ -18,8 +21,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Accountrole> Accountroles { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
-
-    public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; }
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
@@ -43,6 +44,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Shop> Shops { get; set; }
 
+    public virtual DbSet<Subcategory> Subcategories { get; set; }
+
     public virtual DbSet<Supportticket> Supporttickets { get; set; }
 
     public virtual DbSet<Systemsconfig> Systemsconfigs { get; set; }
@@ -50,6 +53,10 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Textmessage> Textmessages { get; set; }
 
     public virtual DbSet<Token> Tokens { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -157,16 +164,6 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("updatedAt");
         });
 
-        modelBuilder.Entity<Efmigrationshistory>(entity =>
-        {
-            entity.HasKey(e => e.MigrationId).HasName("PRIMARY");
-
-            entity.ToTable("__efmigrationshistory");
-
-            entity.Property(e => e.MigrationId).HasMaxLength(150);
-            entity.Property(e => e.ProductVersion).HasMaxLength(32);
-        });
-
         modelBuilder.Entity<Feedback>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -256,7 +253,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("orders");
 
-            entity.HasIndex(e => e.AccountId, "accountId1");
+            entity.HasIndex(e => e.AccountId, "accountId");
 
             entity.HasIndex(e => e.ProductVariantId, "productVariantId");
 
@@ -302,6 +299,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("paymentDescription")
                 .UseCollation("utf8mb3_general_ci")
                 .HasCharSet("utf8mb3");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'PENDING'")
+                .HasColumnType("enum('PENDING','SUCCESS','FAILED','CANCELLED')")
+                .HasColumnName("status");
             entity.Property(e => e.Type)
                 .HasColumnType("enum('Mua Hàng','Nạp tiền','Chia sẻ')")
                 .HasColumnName("type");
@@ -321,6 +322,8 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.CategoryId, "categoryId");
 
             entity.HasIndex(e => e.ShopId, "shopId");
+
+            entity.HasIndex(e => e.SubcategoryId, "subcategoryId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CategoryId).HasColumnName("categoryId");
@@ -352,6 +355,7 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("name");
             entity.Property(e => e.ShopId).HasColumnName("shopId");
+            entity.Property(e => e.SubcategoryId).HasColumnName("subcategoryId");
             entity.Property(e => e.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -365,6 +369,11 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Shop).WithMany(p => p.Products)
                 .HasForeignKey(d => d.ShopId)
                 .HasConstraintName("products_ibfk_1");
+
+            entity.HasOne(d => d.Subcategory).WithMany(p => p.Products)
+                .HasForeignKey(d => d.SubcategoryId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("products_ibfk_3");
         });
 
         modelBuilder.Entity<Productstorage>(entity =>
@@ -373,7 +382,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("productstorages");
 
-            entity.HasIndex(e => e.ProductVariantId, "productVariantId1");
+            entity.HasIndex(e => e.ProductVariantId, "productVariantId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ProductVariantId).HasColumnName("productVariantId");
@@ -392,7 +401,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("productvariants");
 
-            entity.HasIndex(e => e.ProductId, "productId1");
+            entity.HasIndex(e => e.ProductId, "productId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
@@ -429,7 +438,7 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.FeedbackId, "feedbackId");
 
-            entity.HasIndex(e => e.ShopId, "shopId1");
+            entity.HasIndex(e => e.ShopId, "shopId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Comment)
@@ -474,7 +483,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("shops");
 
-            entity.HasIndex(e => e.AccountId, "accountId2");
+            entity.HasIndex(e => e.AccountId, "accountId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
@@ -507,13 +516,44 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("shops_ibfk_1");
         });
 
+        modelBuilder.Entity<Subcategory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("subcategories");
+
+            entity.HasIndex(e => e.CategoryId, "categoryId");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CategoryId).HasColumnName("categoryId");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("createdAt");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("isActive");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.UpdatedAt)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("updatedAt");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.Subcategories)
+                .HasForeignKey(d => d.CategoryId)
+                .HasConstraintName("subcategories_ibfk_1");
+        });
+
         modelBuilder.Entity<Supportticket>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("supporttickets");
 
-            entity.HasIndex(e => e.AccountId, "accountId3");
+            entity.HasIndex(e => e.AccountId, "accountId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
@@ -582,7 +622,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("tokens");
 
-            entity.HasIndex(e => e.AccountId, "accountId4");
+            entity.HasIndex(e => e.AccountId, "accountId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccessToken)

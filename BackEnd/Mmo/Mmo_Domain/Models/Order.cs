@@ -5,11 +5,11 @@ namespace Mmo_Domain.Models;
 
 public partial class Order
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? AccountId { get; set; }
+    public int? AccountId { get; set; }
 
-    public uint? ProductVariantId { get; set; }
+    public int? ProductVariantId { get; set; }
 
     public decimal TotalPrice { get; set; }
 
