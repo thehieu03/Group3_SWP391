@@ -3,148 +3,55 @@
   "WorkspaceRootPath": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\api\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_infrastructure\\repository\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|solutionrelative:mmo_infrastructure\\repository\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_infrastructure\\repository\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|solutionrelative:mmo_infrastructure\\repository\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\tokenservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\tokenservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\irepository\\iaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\irepository\\iaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\irepository\\igenericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\irepository\\igenericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\accountroleservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\accountroleservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\accountservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\accountservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelresponse\\accountresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\accountresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelresponse\\accountregisterresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\accountregisterresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelresponse\\accountloginresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\accountloginresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelresponse\\categoryresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\categoryresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelrequest\\categoryrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelrequest\\categoryrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\iunit\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\iunit\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\models\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\models\\accountrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\accountrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\mmo_api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\mmo_api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\mmo_application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\mmo_application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CCD7B4F4-6509-4C2E-8076-534BAE6F3A9F}|Mmo_Test\\Mmo_Test.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_test\\integrationtests\\apiroleintergationtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CCD7B4F4-6509-4C2E-8076-534BAE6F3A9F}|Mmo_Test\\Mmo_Test.csproj|solutionrelative:mmo_test\\integrationtests\\apiroleintergationtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\mmo_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\mmo_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\interface\\iaccountroleservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\interface\\iaccountroleservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\mmo_domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\mmo_domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_infrastructure\\unit\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|solutionrelative:mmo_infrastructure\\unit\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CCD7B4F4-6509-4C2E-8076-534BAE6F3A9F}|Mmo_Test\\Mmo_Test.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_test\\unittest\\roletest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CCD7B4F4-6509-4C2E-8076-534BAE6F3A9F}|Mmo_Test\\Mmo_Test.csproj|solutionrelative:mmo_test\\unittest\\roletest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\iunit\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\iunit\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\mmo_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\mmo_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\helper\\mapperclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\helper\\mapperclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\accountservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\accountservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\api\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\api\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\api\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\interface\\iaccountservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\interface\\iaccountservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\base\\baseservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\base\\baseservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_infrastructure\\repository\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|solutionrelative:mmo_infrastructure\\repository\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\Downloads\\Group3_SWP391-hieu\\Group3_SWP391-hieu\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\irepository\\iaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\irepository\\iaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelresponse\\accountloginresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\accountloginresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelresponse\\accountregisterresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\accountregisterresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -154,461 +61,174 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AccountRepository.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\AccountRepository.cs",
-              "RelativeDocumentMoniker": "Mmo_Infrastructure\\Repository\\AccountRepository.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\AccountRepository.cs*",
-              "RelativeToolTip": "Mmo_Infrastructure\\Repository\\AccountRepository.cs*",
-              "ViewState": "AgIAABAAAAAAAAAAAAAQwBwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T07:05:34.433Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "IAccountRepository.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IRepository\\IAccountRepository.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\IRepository\\IAccountRepository.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IRepository\\IAccountRepository.cs*",
-              "RelativeToolTip": "Mmo_Domain\\IRepository\\IAccountRepository.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T04:24:34.889Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "IGenericRepository.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IRepository\\IGenericRepository.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\IRepository\\IGenericRepository.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IRepository\\IGenericRepository.cs",
-              "RelativeToolTip": "Mmo_Domain\\IRepository\\IGenericRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T06:59:40.657Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "AccountRoleServices.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountRoleServices.cs",
-              "RelativeDocumentMoniker": "Mmo_Application\\Services\\AccountRoleServices.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountRoleServices.cs",
-              "RelativeToolTip": "Mmo_Application\\Services\\AccountRoleServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABSAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T07:03:24.721Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "TokenServices.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\TokenServices.cs",
-              "RelativeDocumentMoniker": "Mmo_Application\\Services\\TokenServices.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\TokenServices.cs",
-              "RelativeToolTip": "Mmo_Application\\Services\\TokenServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T04:15:06.089Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "GenericRepository.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\GenericRepository.cs",
-              "RelativeDocumentMoniker": "Mmo_Infrastructure\\Repository\\GenericRepository.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\GenericRepository.cs",
-              "RelativeToolTip": "Mmo_Infrastructure\\Repository\\GenericRepository.cs",
-              "ViewState": "AgIAAEkAAAAAAAAAAAAgwFYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T07:00:19.751Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "AccountController.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AccountController.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\AccountController.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAYwCQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-14T13:59:34.897Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "AccountServices.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountServices.cs",
-              "RelativeDocumentMoniker": "Mmo_Application\\Services\\AccountServices.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountServices.cs*",
-              "RelativeToolTip": "Mmo_Application\\Services\\AccountServices.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T04:18:31.154Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "AccountResponse.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountResponse.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AccountResponse.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountResponse.cs",
-              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\AccountResponse.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-14T14:01:11.262Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "AccountRegisterResponse.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs*",
-              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs*",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAgwBQAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T04:27:07.493Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "AccountLoginResponse.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs*",
-              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T04:27:40.583Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "CategoryResponse.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\CategoryResponse.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\CategoryResponse.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\CategoryResponse.cs",
-              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\CategoryResponse.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAtAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T15:52:06.967Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "CategoryRequest.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\CategoryRequest.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\CategoryRequest.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\CategoryRequest.cs",
-              "RelativeToolTip": "Mmo_Domain\\ModelRequest\\CategoryRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T15:56:45.374Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "IUnitOfWork.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\IUnit\\IUnitOfWork.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs",
-              "RelativeToolTip": "Mmo_Domain\\IUnit\\IUnitOfWork.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAsAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T07:01:01.624Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Account.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Account.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Account.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Account.cs",
-              "RelativeToolTip": "Mmo_Domain\\Models\\Account.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAA8wC8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-14T14:00:57.02Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Program.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Program.cs",
               "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Program.cs",
               "RelativeToolTip": "Mmo_Api\\Program.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABEAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAAADAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-17T06:09:25.757Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "Mmo_Application.csproj",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Mmo_Application.csproj",
-              "RelativeDocumentMoniker": "Mmo_Application\\Mmo_Application.csproj",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Mmo_Application.csproj",
-              "RelativeToolTip": "Mmo_Application\\Mmo_Application.csproj",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-10-16T07:02:08.129Z",
+              "WhenOpened": "2025-10-19T15:43:33.885Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Accountrole.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Accountrole.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Accountrole.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Accountrole.cs",
-              "RelativeToolTip": "Mmo_Domain\\Models\\Accountrole.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "AccountRepository.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\AccountRepository.cs",
+              "RelativeDocumentMoniker": "Mmo_Infrastructure\\Repository\\AccountRepository.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\AccountRepository.cs",
+              "RelativeToolTip": "Mmo_Infrastructure\\Repository\\AccountRepository.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAA3wB0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-18T18:19:30.029Z"
+              "WhenOpened": "2025-10-19T09:09:44.874Z",
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 4,
+              "Title": "AccountServices.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\AccountServices.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\AccountServices.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T22:11:19.915Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Mmo_Api.csproj",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Mmo_Api.csproj",
               "RelativeDocumentMoniker": "Mmo_Api\\Mmo_Api.csproj",
               "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Mmo_Api.csproj",
               "RelativeToolTip": "Mmo_Api\\Mmo_Api.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-10-17T06:05:31.842Z",
+              "WhenOpened": "2025-10-19T17:21:49.351Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "Mmo_Api\\appsettings.Development.json",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\appsettings.Development.json",
-              "RelativeToolTip": "Mmo_Api\\appsettings.Development.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-17T06:08:21.146Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "Mmo_Api.http",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Mmo_Api.http",
-              "RelativeDocumentMoniker": "Mmo_Api\\Mmo_Api.http",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Mmo_Api.http",
-              "RelativeToolTip": "Mmo_Api\\Mmo_Api.http",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-10-17T06:41:30.51Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "ApiRoleIntergationTest.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Test\\IntegrationTests\\ApiRoleIntergationTest.cs",
-              "RelativeDocumentMoniker": "Mmo_Test\\IntegrationTests\\ApiRoleIntergationTest.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Test\\IntegrationTests\\ApiRoleIntergationTest.cs",
-              "RelativeToolTip": "Mmo_Test\\IntegrationTests\\ApiRoleIntergationTest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-17T06:20:36.868Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "RegisterMiddleware.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
-              "RelativeToolTip": "Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAgwCIAAABaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T01:51:31.932Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\appsettings.json",
-              "RelativeDocumentMoniker": "Mmo_Api\\appsettings.json",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\appsettings.json",
-              "RelativeToolTip": "Mmo_Api\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-15T16:07:39.388Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "IAccountRoleServices.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IAccountRoleServices.cs",
-              "RelativeDocumentMoniker": "Mmo_Application\\Services\\Interface\\IAccountRoleServices.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IAccountRoleServices.cs",
-              "RelativeToolTip": "Mmo_Application\\Services\\Interface\\IAccountRoleServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T07:03:08.522Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 1,
               "Title": "UnitOfWork.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
               "RelativeDocumentMoniker": "Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
               "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
               "RelativeToolTip": "Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T07:01:41.794Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "Dockerfile",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Dockerfile",
-              "RelativeDocumentMoniker": "Mmo_Api\\Dockerfile",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Dockerfile",
-              "RelativeToolTip": "Mmo_Api\\Dockerfile",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-10-16T06:55:09.055Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "Mmo_Domain.csproj",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Mmo_Domain.csproj",
-              "RelativeDocumentMoniker": "Mmo_Domain\\Mmo_Domain.csproj",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Mmo_Domain.csproj",
-              "RelativeToolTip": "Mmo_Domain\\Mmo_Domain.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-10-15T16:11:48.607Z",
+              "WhenOpened": "2025-10-19T21:55:41.097Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "MapperClass.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Helper\\MapperClass.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Helper\\MapperClass.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Helper\\MapperClass.cs",
-              "RelativeToolTip": "Mmo_Api\\Helper\\MapperClass.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAQwA0AAAABAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "IUnitOfWork.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\IUnit\\IUnitOfWork.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs",
+              "RelativeToolTip": "Mmo_Domain\\IUnit\\IUnitOfWork.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAuwBQAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T15:52:32.8Z"
+              "WhenOpened": "2025-10-19T22:05:44.466Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "RoleTest.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Test\\UnitTest\\RoleTest.cs",
-              "RelativeDocumentMoniker": "Mmo_Test\\UnitTest\\RoleTest.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Test\\UnitTest\\RoleTest.cs",
-              "RelativeToolTip": "Mmo_Test\\UnitTest\\RoleTest.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAIBJwHcAAAAKAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "IAccountServices.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IAccountServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\Interface\\IAccountServices.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IAccountServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\Interface\\IAccountServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-14T14:05:34.296Z"
+              "WhenOpened": "2025-10-19T22:17:18.127Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
-              "Title": "AppDbContext.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\AppDbContext.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\AppDbContext.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\AppDbContext.cs",
-              "RelativeToolTip": "Mmo_Domain\\Models\\AppDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAIBJwBEAAAADAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T16:11:35.947Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 30,
-              "Title": "ProductsController.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\ProductsController.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\ProductsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T17:10:04.635Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 32,
-              "Title": "CategoriesController.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\CategoriesController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\CategoriesController.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\CategoriesController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\CategoriesController.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAIBJwC8AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T15:51:03.637Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 35,
-              "Title": "Category.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Category.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Category.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Category.cs",
-              "RelativeToolTip": "Mmo_Domain\\Models\\Category.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAtAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-15T15:50:21.15Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 6,
               "Title": "launchSettings.json",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "Mmo_Api\\Properties\\launchSettings.json",
               "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Properties\\launchSettings.json",
               "RelativeToolTip": "Mmo_Api\\Properties\\launchSettings.json",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAYwB0AAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-15T15:45:55.295Z"
+              "WhenOpened": "2025-10-19T22:15:31.94Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "RoleController.cs",
-              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\RoleController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\RoleController.cs",
-              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\RoleController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\RoleController.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAIBQwBgAAAAFAAAAAAAAAA==",
+              "DocumentIndex": 9,
+              "Title": "IUnitOfWork.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\Downloads\\Group3_SWP391-hieu\\Group3_SWP391-hieu\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\Downloads\\Group3_SWP391-hieu\\Group3_SWP391-hieu\\BackEnd\\Mmo\\Mmo_Domain\\IUnit\\IUnitOfWork.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-14T14:00:13.375Z"
+              "WhenOpened": "2025-10-19T22:07:45.193Z",
+              "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{56df62a4-05a3-4e5b-aa1a-99371ccfb997}"
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "BaseServices.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Base\\BaseServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\Base\\BaseServices.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Base\\BaseServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\Base\\BaseServices.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAswBcAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T22:11:53.145Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "IAccountRepository.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IRepository\\IAccountRepository.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\IRepository\\IAccountRepository.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\IRepository\\IAccountRepository.cs",
+              "RelativeToolTip": "Mmo_Domain\\IRepository\\IAccountRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T18:34:13.132Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AccountLoginResponse.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs",
+              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\AccountLoginResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T15:18:02.454Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AccountRegisterResponse.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs",
+              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\AccountRegisterResponse.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T15:17:50.574Z"
             }
           ]
         }

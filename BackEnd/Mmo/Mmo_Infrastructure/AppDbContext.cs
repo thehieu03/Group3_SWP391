@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Mmo_Domain.Models;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
-namespace Mmo_Domain.Models;
+namespace Mmo_Infrastructure;
 
 public partial class AppDbContext : DbContext
 {
@@ -11,11 +12,12 @@ public partial class AppDbContext : DbContext
     {
     }
 
+
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
     }
-   
+
 
     public virtual DbSet<Account> Accounts { get; set; }
 

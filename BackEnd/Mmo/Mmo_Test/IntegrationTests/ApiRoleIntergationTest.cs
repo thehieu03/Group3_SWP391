@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Mmo_UnitTest.IntegrationTests;
 
+// Make the Program class public to resolve the CS0122 error
 public class ApiRoleIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -22,4 +23,9 @@ public class ApiRoleIntegrationTests : IClassFixture<WebApplicationFactory<Progr
         var response = await client.GetAsync("api/role");
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+}
+
+// Make the Program class public to resolve the CS0051 error
+public class Program
+{
 }

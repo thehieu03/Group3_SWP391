@@ -1,34 +1,43 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="[12.0.1]"/>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[12.0.1]"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20"/>
-        <PackageReference Include="Microsoft.AspNetCore.OData" Version="[8.3.1]"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20"/>
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
-    </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Mmo_Test" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Mmo_Application\Mmo_Application.csproj"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Using Include="Microsoft.AspNetCore.Mvc"/>
-        <Using Include="Mmo_Domain.Models"/>
-        <Using Include="Mmo_Domain.ModelRequest"/>
-        <Using Include="AutoMapper"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="..\.dockerignore">
-            <Link>.dockerignore</Link>
-        </Content>
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="[12.0.1]" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[12.0.1]" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="[8.3.1]" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Mmo_Application\Mmo_Application.csproj" />
+
+		<ProjectReference Include="..\Mmo_Domain\Mmo_Domain.csproj" />
+		<ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Microsoft.AspNetCore.Mvc" />
+		<Using Include="Mmo_Domain.Models" />
+		<Using Include="Mmo_Domain.ModelRequest" />
+		<Using Include="AutoMapper" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\.dockerignore">
+			<Link>.dockerignore</Link>
+		</Content>
+	</ItemGroup>
+
 </Project>

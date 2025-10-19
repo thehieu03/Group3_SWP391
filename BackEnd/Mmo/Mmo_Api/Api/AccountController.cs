@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.ModelRequest;
+using System.Threading.Tasks;
 
 namespace Mmo_Api.Controllers
 {
@@ -16,23 +17,30 @@ namespace Mmo_Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] AccountRequest request)
+        public async Task<IActionResult> Register([FromBody] AccountRegisterRequest request)
         {
-            if (request == null)
-                return BadRequest("Dữ liệu không hợp lệ!");
-
             var result = await _accountServices.RegisterAsync(request);
-            return result.Success ? Ok(result) : BadRequest(result);
+
+            if (result.Success)
+            {
+                return Ok(result); // Trả về 200 OK
+            }
+
+            // Trả về 400 Bad Request kèm thông báo lỗi (vd: "Email đã tồn tại")
+            return BadRequest(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AccountRequest request)
+        public async Task<IActionResult> Login([FromBody] AccountLoginRequest request)
         {
-            if (request == null)
-                return BadRequest("Dữ liệu không hợp lệ!");
-
             var result = await _accountServices.LoginAsync(request);
-            return result.Success ? Ok(result) : BadRequest(result);
+
+            if (result.Success)
+            {
+                return Ok(result); 
+            }
+
+            return BadRequest(result);
         }
     }
 }

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./Login.css";
 
+const API_BASE_URL = "https://localhost:5134";
+
 export default function LoginRegisterPage() {
     const [registerData, setRegisterData] = useState({
         username: "",
@@ -15,7 +17,8 @@ export default function LoginRegisterPage() {
     });
 
     const isValidPassword = (password) => {
-        const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        // 🔹 Code này của bạn đã ĐÚNG (khớp với backend)
+        const regex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
         return regex.test(password);
     };
 
@@ -30,7 +33,8 @@ export default function LoginRegisterPage() {
             return;
         }
 
-        const response = await fetch("https://localhost:5001/api/Account/register", {
+        // 🔹 Dùng API_BASE_URL (đã sửa)
+        const response = await fetch(`${API_BASE_URL}/api/Account/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(registerData),
@@ -45,7 +49,8 @@ export default function LoginRegisterPage() {
     };
 
     const handleLogin = async () => {
-        const response = await fetch("https://localhost:5001/api/Account/login", {
+        // 🔹 Dùng API_BASE_URL (đã sửa)
+        const response = await fetch(`${API_BASE_URL}/api/Account/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(loginData),
@@ -54,6 +59,8 @@ export default function LoginRegisterPage() {
         const result = await response.json();
         if (result.success) {
             alert(" " + result.message);
+
+            // 🔹 Code này của bạn đã ĐÚNG (lấy token từ data)
             localStorage.setItem("token", result.data.token);
         } else {
             alert(" " + result.message);
@@ -63,6 +70,11 @@ export default function LoginRegisterPage() {
     return (
         <div className="login-register-container">
             <div className="form-wrapper">
+                {/* ====================================================
+                PHẦN FORM GIỮ NGUYÊN - BẠN KHÔNG CẦN THAY ĐỔI GÌ Ở DƯỚI
+                ====================================================
+                */}
+
                 {/* ---------------- Đăng nhập ---------------- */}
                 <div className="form-box form-login">
                     <h2 className="form-title">Đăng nhập</h2>

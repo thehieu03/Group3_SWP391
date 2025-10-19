@@ -1,53 +1,51 @@
-﻿using Mmo_Domain.IRepository;
-using Mmo_Domain.IUnit;
-using Mmo_Domain.Models;
+﻿using Mmo_Domain.IUnit; // 🔹 1. Using "Hợp đồng"
+using Mmo_Domain.IRepository;
 using Mmo_Infrastructure.Repository;
+using System.Threading.Tasks;
 
-namespace Mmo_Infrastructure.Unit;
-
-public class UnitOfWork:IUnitOfWork
+namespace Mmo_Infrastructure.Unit
 {
-    private readonly AppDbContext _context;
-    private readonly Dictionary<Type, object> _repository = new();
-
-    public UnitOfWork(AppDbContext context)
+    // 🔹 PHẢI LÀ "public class" và kế thừa IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        _context = context;
-    }
+        // 🔹 2. Phụ thuộc vào AppDbContext (chi tiết của Infrastructure)
+        private readonly AppDbContext _context;
 
-    public AppDbContext ContextDb => _context;
+        // 🔹 3. Triển khai các Repository (giống hệt Interface)
+        public IAccountRepository Accounts { get; private set; }
+        // public ICategoryRepository Categories { get; private set; }
 
-    public async Task BeginTransactionAsync()
-    {
-        await ContextDb.Database.BeginTransactionAsync();
-    }
-
-    public async Task CommitTransactionAsync()
-    {
-        await ContextDb.Database.CommitTransactionAsync();
-    }
-
-    public IGenericRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
-    {
-        if (!_repository.ContainsKey(typeof(TEntity)))
+        public UnitOfWork(AppDbContext context)
         {
-            _repository[typeof(TEntity)] = new GenericRepository<TEntity>(ContextDb);
+            _context = context;
+
+            // 🔹 4. Khởi tạo các Repository cụ thể
+            Accounts = new AccountRepository(_context);
+            // Categories = new CategoryRepository(_context);
         }
-        return (GenericRepository<TEntity>)_repository[typeof(TEntity)];
-    }
 
-    public async Task RollbackTransactionAsync()
-    {
-        await ContextDb.Database.RollbackTransactionAsync();
-    }
+        // 🔹 5. Triển khai hàm Generic
+        public IGenericRepository<T> GenericRepository<T>() where T : class
+        {
+            return new GenericRepository<T>(_context);
+        }
 
-    public async Task<int> SaveChangeAsync(CancellationToken cancellationToken = default)
-    {
-        return await ContextDb.SaveChangesAsync();
-    }
+        // 🔹 6. Triển khai hàm Save (cụ thể)
+        public int SaveChanges()
+        {
+            return _context.SaveChanges();
+        }
 
-    public int SaveChanges()
-    {
-        return ContextDb.SaveChanges();
+        // 🔹 7. Triển khai hàm SaveAsync (cụ thể)
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        // 🔹 8. Triển khai hàm Dispose
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }

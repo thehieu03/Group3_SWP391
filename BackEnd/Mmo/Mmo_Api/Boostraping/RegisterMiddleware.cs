@@ -8,6 +8,8 @@ using Mmo_Application.Services.Interface;
 using Mmo_Domain.IUnit;
 using Mmo_Domain.Models;
 using Mmo_Infrastructure.Unit;
+using Mmo_Infrastructure;
+using IUnitOfWork = Mmo_Domain.IUnit.IUnitOfWork;
 
 namespace Mmo_Api.Boostraping;
 
@@ -48,7 +50,8 @@ public static class RegisterMiddleware
                         Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new Exception("Jwt Key not found")))
                 };
             });
-        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
         builder.Services.AddScoped<IAccountServices, AccountServices>();
         builder.Services.AddScoped<ICategoryServices, CategoryServices>();

@@ -1,26 +1,54 @@
-﻿using System;
-using MySql.Data.MySqlClient;
+﻿using Microsoft.EntityFrameworkCore;
+using Mmo_Application.Services;
+using Mmo_Application.Services.Interface;
+using Mmo_Domain.IRepository;
+using Mmo_Domain.IUnit; // 🔹 Đảm bảo namespace là "IUnit"
+using Mmo_Infrastructure;
+using Mmo_Infrastructure.Repository;
+using Mmo_Infrastructure.Unit;
 
-namespace Mmo_Application
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+builder.Services.AddControllers();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IAccountServices, AccountServices>();
+
+builder.Services.AddCors(options =>
 {
-    public class DbTest
-    {
-        public static void Main()
+    options.AddPolicy("AllowReactApp",
+        builder =>
         {
-            string connectionString = "server=localhost;port=3306;database=mmo;user=root;password=vanh;";
+            builder.WithOrigins("http://localhost:5173") // Địa chỉ của app React
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    Console.WriteLine("ket noi thanh cong !");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Loi ket noi : " + ex.Message);
-                }
-            }
-        }
-    }
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+//app.UseHttpsRedirection();
+app.UseCors("AllowReactApp");
+app.UseAuthorization();
+app.MapControllers();
+app.Run();
