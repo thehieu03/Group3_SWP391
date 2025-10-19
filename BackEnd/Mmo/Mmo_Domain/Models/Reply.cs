@@ -5,11 +5,11 @@ namespace Mmo_Domain.Models;
 
 public partial class Reply
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? FeedbackId { get; set; }
+    public int? FeedbackId { get; set; }
 
-    public uint? ShopId { get; set; }
+    public int? ShopId { get; set; }
 
     public string Comment { get; set; } = null!;
 

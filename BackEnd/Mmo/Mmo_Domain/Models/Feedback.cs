@@ -5,11 +5,11 @@ namespace Mmo_Domain.Models;
 
 public partial class Feedback
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? AccountId { get; set; }
+    public int? AccountId { get; set; }
 
-    public uint? ProductId { get; set; }
+    public int? ProductId { get; set; }
 
     public int? Rating { get; set; }
 

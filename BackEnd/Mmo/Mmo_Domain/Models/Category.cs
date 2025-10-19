@@ -5,7 +5,7 @@ namespace Mmo_Domain.Models;
 
 public partial class Category
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -16,4 +16,6 @@ public partial class Category
     public bool? IsActive { get; set; }
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+
+    public virtual ICollection<Subcategory> Subcategories { get; set; } = new List<Subcategory>();
 }

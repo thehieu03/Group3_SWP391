@@ -5,9 +5,9 @@ namespace Mmo_Domain.Models;
 
 public partial class Productvariant
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? ProductId { get; set; }
+    public int? ProductId { get; set; }
 
     public string Name { get; set; } = null!;
 
