@@ -5,13 +5,19 @@ import Login from "../pages/Login/Login.tsx";
 import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
 import ProductDetails from "../pages/ProductDetails/ProductDetails.tsx";
 import Deposit from "../pages/Deposit/Deposit.tsx";
+import ChangePassword from "../pages/ChangePassword/ChangePassword.tsx";
 import routesConfig from "../config/routesConfig.tsx";
+<<<<<<< Updated upstream
 import Products from "../pages/Products/Products.tsx";
+=======
+
+>>>>>>> Stashed changes
 type AppRoute = {
   path: string;
   element: ReactNode;
   layout: FC<{ children?: ReactNode }>;
 };
+
 const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.home,
@@ -43,6 +49,13 @@ const publicRoutes: AppRoute[] = [
     element: <Deposit />,
     layout: DefaultLayout,
   },
+  {
+    path: routesConfig.changePassword,
+    element: <ChangePassword />,
+    layout: HeaderAndFooter,
+  },
 ];
+
 const privateRoutes: AppRoute[] = [];
+
 export { publicRoutes, privateRoutes };

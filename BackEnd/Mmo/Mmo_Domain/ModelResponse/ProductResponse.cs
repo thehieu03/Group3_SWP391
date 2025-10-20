@@ -26,6 +26,7 @@ public class ProductResponse
 
     public string? Details { get; set; }
 
+<<<<<<< Updated upstream
     public decimal? Fee { get; set; }
 
     public DateTime? CreatedAt { get; set; }
@@ -44,4 +45,19 @@ public class ProductResponse
     public double AverageRating { get; set; }
     public int ReviewCount { get; set; }
     public double ComplaintRate { get; set; }
+=======
+    public CategoryResponse? Category { get; set; }
+    public ShopResponse? Shop { get; set; }
+
+    public List<ProductVariantResponse>? ProductVariants { get; set; }
+}
+
+public class ProductVariantResponse
+{
+    public int Id { get; set; }
+    public int ProductId { get; set; }
+    public string? Name { get; set; }
+    public decimal? Price { get; set; }
+    public bool IsActive { get; set; }
+>>>>>>> Stashed changes
 }

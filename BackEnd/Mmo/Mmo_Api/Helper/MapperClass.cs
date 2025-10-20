@@ -26,6 +26,11 @@ public class MapperClass : Profile
             .ForMember(dest => dest.ComplaintRate, opt => opt.MapFrom(src => 0))
             .ReverseMap();
         CreateMap<Product, ProductRequest>().ReverseMap();
+<<<<<<< Updated upstream
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
+=======
+        CreateMap<Productvariant, ProductVariantResponse>().ReverseMap();
+        CreateMap<Shop, ShopResponse>().ReverseMap();
+>>>>>>> Stashed changes
     }
 }

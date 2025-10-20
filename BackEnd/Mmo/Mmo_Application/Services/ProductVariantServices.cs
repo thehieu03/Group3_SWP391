@@ -1,8 +1,16 @@
-﻿namespace Mmo_Application.Services;
+﻿using Mmo_Application.Services.Interface;
+using Mmo_Domain.Models;
+using Mmo_Infrastructure.Unit;
 
-public class ProductVariantServices :BaseServices<Productvariant>,IProductVariantServices
+namespace Mmo_Application.Services
 {
-    public ProductVariantServices(IUnitOfWork unitOfWork) : base(unitOfWork)
+    public class ProductVariantServices : BaseServices<Productvariant>, IProductVariantServices
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ProductVariantServices(IUnitOfWork unitOfWork) : base(unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
     }
 }
