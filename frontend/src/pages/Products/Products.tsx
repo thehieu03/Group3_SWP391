@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-// import Image from "../../components/Image";
 import Button from "../../components/Button/Button";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import type { ProductCardData } from "../../components/ProductCard/ProductCard";
@@ -198,12 +197,6 @@ const Products: FC = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full rounded-md border-2 border-gray-200 px-4 py-2.5 outline-none focus:border-emerald-500"
                     />
-                    {/* <Button 
-                        onClick={applyFilters}
-                        className="w-full rounded-md bg-emerald-600 px-4 py-2.5 font-semibold text-white hover:bg-emerald-700 md:w-auto"
-                    >
-                        Tìm kiếm
-                    </Button> */}
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2 border-b border-gray-200 pb-2 text-sm">

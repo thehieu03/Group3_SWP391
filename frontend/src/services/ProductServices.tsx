@@ -1,5 +1,6 @@
 import type {ProductResponse} from "../models/modelResponse/ProductResponse.tsx";
 import {httpGet} from "../utils/http.tsx";
+import type { AxiosError } from "axios";
 
 class ProductServices {
     async getProductsByCategory(params: { 
@@ -16,11 +17,24 @@ class ProductServices {
         const path = `products?${q.toString()}`;
         try {
             return await httpGet<ProductResponse[]>(path);
-        } catch (err: any) {
-            if (err?.response?.status === 404) return [];
-            throw err;
+        } catch (err: unknown) {
+            const error = err as AxiosError;
+            if (error.response?.status === 404) return [];
+            throw error;
         }
     }
+
+    async getAllProductAsync():Promise<ProductResponse[]> {
+        const response=await httpGet<ProductResponse[]>("products");
+        return response;
+    }
+
+    async searchProductsAsync(searchTerm: string): Promise<ProductResponse[]> {
+        const encodedSearchTerm = encodeURIComponent(searchTerm);
+        const response = await httpGet<ProductResponse[]>(`products?$filter=contains(name,'${encodedSearchTerm}') or contains(description,'${encodedSearchTerm}')&$top=5`);
+        return response;
+    }
+    
 }
 export const productServices = new ProductServices();
 
