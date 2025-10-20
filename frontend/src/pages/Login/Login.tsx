@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./Login.css";
 
+
 const API_BASE_URL = "https://localhost:5134";
 
 export default function LoginRegisterPage() {
+    // State cho form Đăng ký
     const [registerData, setRegisterData] = useState({
         username: "",
         email: "",
@@ -11,16 +13,20 @@ export default function LoginRegisterPage() {
         confirmPassword: "",
     });
 
+
     const [loginData, setLoginData] = useState({
         email: "",
         password: "",
     });
 
+    const [isAgreed, setIsAgreed] = useState(false);
+
+
     const isValidPassword = (password) => {
-        // 🔹 Code này của bạn đã ĐÚNG (khớp với backend)
         const regex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
         return regex.test(password);
     };
+
 
     const handleRegister = async () => {
         if (registerData.password !== registerData.confirmPassword) {
@@ -33,7 +39,6 @@ export default function LoginRegisterPage() {
             return;
         }
 
-        // 🔹 Dùng API_BASE_URL (đã sửa)
         const response = await fetch(`${API_BASE_URL}/api/Account/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -48,8 +53,8 @@ export default function LoginRegisterPage() {
         }
     };
 
+    // Hàm xử lý Đăng nhập (Đã đúng)
     const handleLogin = async () => {
-        // 🔹 Dùng API_BASE_URL (đã sửa)
         const response = await fetch(`${API_BASE_URL}/api/Account/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -59,8 +64,6 @@ export default function LoginRegisterPage() {
         const result = await response.json();
         if (result.success) {
             alert(" " + result.message);
-
-            // 🔹 Code này của bạn đã ĐÚNG (lấy token từ data)
             localStorage.setItem("token", result.data.token);
         } else {
             alert(" " + result.message);
@@ -70,12 +73,7 @@ export default function LoginRegisterPage() {
     return (
         <div className="login-register-container">
             <div className="form-wrapper">
-                {/* ====================================================
-                PHẦN FORM GIỮ NGUYÊN - BẠN KHÔNG CẦN THAY ĐỔI GÌ Ở DƯỚI
-                ====================================================
-                */}
 
-                {/* ---------------- Đăng nhập ---------------- */}
                 <div className="form-box form-login">
                     <h2 className="form-title">Đăng nhập</h2>
 
@@ -117,7 +115,7 @@ export default function LoginRegisterPage() {
                     </button>
                 </div>
 
-                {/* ---------------- Đăng ký ---------------- */}
+
                 <div className="form-box form-register">
                     <h2 className="form-title">Đăng ký</h2>
                     <p className="notice">
@@ -180,8 +178,13 @@ export default function LoginRegisterPage() {
                         </div>
                     </div>
 
+
                     <div className="agree">
-                        <input type="checkbox" defaultChecked />
+                        <input
+                            type="checkbox"
+                            checked={isAgreed} // 1. Dùng state
+                            onChange={(e) => setIsAgreed(e.target.checked)}
+                        />
                         <span>
                             Tôi đã đọc và đồng ý với{" "}
                             <span className="text-green-bold">
@@ -190,7 +193,11 @@ export default function LoginRegisterPage() {
                         </span>
                     </div>
 
-                    <button className="btn-green" onClick={handleRegister}>
+                    <button
+                        className="btn-green"
+                        onClick={handleRegister}
+                        disabled={!isAgreed}
+                    >
                         Đăng ký
                     </button>
                 </div>

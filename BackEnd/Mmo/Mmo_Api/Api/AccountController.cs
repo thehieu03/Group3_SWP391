@@ -19,14 +19,17 @@ namespace Mmo_Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] AccountRegisterRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
             var result = await _accountServices.RegisterAsync(request);
 
             if (result.Success)
             {
-                return Ok(result); // Trả về 200 OK
+                return Ok(result); 
             }
 
-            // Trả về 400 Bad Request kèm thông báo lỗi (vd: "Email đã tồn tại")
             return BadRequest(result);
         }
 

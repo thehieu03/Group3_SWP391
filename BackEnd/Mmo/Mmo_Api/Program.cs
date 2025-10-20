@@ -2,7 +2,7 @@
 using Mmo_Application.Services;
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.IRepository;
-using Mmo_Domain.IUnit; // 🔹 Đảm bảo namespace là "IUnit"
+using Mmo_Domain.IUnit; 
 using Mmo_Infrastructure;
 using Mmo_Infrastructure.Repository;
 using Mmo_Infrastructure.Unit;
@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5173") // Địa chỉ của app React
+            builder.WithOrigins("http://localhost:5173") 
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });
