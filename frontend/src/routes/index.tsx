@@ -6,9 +6,10 @@ import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails
 import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
 import AdminPanel from "../pages/Admin/AdminPanel.tsx";
+import PaymentHistory from "../pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
 import routesConfig from "../config/routesConfig.tsx";
 import type { User } from "../models/modelResponse/LoginResponse";
-import Products from "../pages/Products/Products";
+import Products from "../pages/Products/Products.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -43,6 +44,12 @@ const privateRoutes: AppRoute[] = [
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
+    layout: DefaultLayout,
+    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'],
+  },
+  {
+    path: routesConfig.paymentHistory,
+    element: <PaymentHistory />,
     layout: DefaultLayout,
     requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'],
   },
