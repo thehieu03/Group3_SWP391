@@ -2,6 +2,7 @@ const routesConfig  =  {
     home:'/',
     login:'/login',
     productDetails:'/productDetails',
+    categoryProducts:'/category',
     deposit:'/deposit',
     register:'/register',
     account:'/account',
@@ -13,7 +14,13 @@ const routesConfig  =  {
     share:'/share',
     faqs:'/faqs',
     forgotPassword:'/forgotPassword',
-    infoAccount:'/infoAccount'
+    infoAccount:'/infoAccount',
+    userProfile:'/userProfile',
+    // Helper functions for dynamic routes
+    getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
+    getProductUrl: (id: number) => `/product/${id}`,
+    getCategoryProductsUrl: (id: number) => `/category/${id}`
 };
+
 
 export default routesConfig ;

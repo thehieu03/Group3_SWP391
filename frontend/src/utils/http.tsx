@@ -68,4 +68,13 @@ export async function httpPost<T, D = unknown>(
     return res.data;
 }
 
+export async function httpPut<T, D = unknown>(
+    path: string,
+    data?: D,
+    options?: AxiosRequestConfig
+): Promise<T> {
+    const res = await http.put<T>(path, data, options);
+    return res.data;
+}
+
 export default http;

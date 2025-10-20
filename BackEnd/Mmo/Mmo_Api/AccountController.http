@@ -1,0 +1,71 @@
+### Test API cập nhật profile - thành công
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "username": "seller1",
+  "email": "seller1@example.com", 
+  "phone": "0902345678"
+}
+
+### Test API cập nhật profile - chỉ cập nhật email
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "email": "newemail@example.com"
+}
+
+### Test API cập nhật profile - chỉ cập nhật phone
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "phone": "0987654321"
+}
+
+### Test API cập nhật profile - request body rỗng (lỗi 400)
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+}
+
+### Test API cập nhật profile - không có token (lỗi 401)
+PUT https://localhost:7134/api/accounts/profile
+Content-Type: application/json
+
+{
+  "username": "testuser"
+}
+
+### Test API cập nhật profile - token không hợp lệ (lỗi 401)
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer invalid_token
+Content-Type: application/json
+
+{
+  "username": "testuser"
+}
+
+### Test API cập nhật profile - email không hợp lệ (lỗi 400)
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "email": "invalid-email-format"
+}
+
+### Test API cập nhật profile - username quá dài (lỗi 400)
+PUT https://localhost:7134/api/accounts/profile
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "username": "this_username_is_way_too_long_and_exceeds_the_maximum_length_of_fifty_characters"
+}

@@ -33,6 +33,7 @@ public static class RegisterMiddleware
             );
         });
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
+        builder.Services.AddAutoMapper(typeof(Helper.MapperClass));
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtOptions =>
             {

@@ -6,6 +6,7 @@ import Tippy from "@tippyjs/react";
 import type { Tools } from "../../../models/Tools.tsx";
 import Button from "../../Button/Button.tsx";
 import routesConfig from "../../../config/routesConfig.tsx";
+import { useNavigate } from "react-router-dom";
 
 const tools: Tools[] = [
   {
@@ -39,6 +40,7 @@ type CategoryMenuHeaderProps = {
 };
 
 const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
+  const navigate = useNavigate();
   const [categoriesItems, setCategoriesItems] = useState<CategoriesResponse[]>(
     []
   );
@@ -51,6 +53,10 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
     void fetchData();
   }, []);
 
+  const handleCategoryClick = (categoryId: number) => {
+    navigate(routesConfig.getCategoryProductsUrl(categoryId));
+  };
+
   const mid = Math.ceil(categoriesItems.length / 2);
   const firstCol = categoriesItems.slice(0, mid);
   const secondCol = categoriesItems.slice(mid);
@@ -60,14 +66,22 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
       <div className="grid grid-cols-2 gap-x-12 gap-y-3">
         <div>
           {firstCol.map((item) => (
-            <div key={item.id} className={DROPDOWN_ITEM_CLASS}>
+            <div 
+              key={item.id} 
+              className={DROPDOWN_ITEM_CLASS}
+              onClick={() => handleCategoryClick(item.id)}
+            >
               {item.name}
             </div>
           ))}
         </div>
         <div>
           {secondCol.map((item) => (
-            <div key={item.id} className={DROPDOWN_ITEM_CLASS}>
+            <div 
+              key={item.id} 
+              className={DROPDOWN_ITEM_CLASS}
+              onClick={() => handleCategoryClick(item.id)}
+            >
               {item.name}
             </div>
           ))}
