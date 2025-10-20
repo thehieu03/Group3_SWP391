@@ -7,12 +7,6 @@ import type { Tools } from "../../../models/Tools.tsx";
 import Button from "../../Button/Button.tsx";
 import routesConfig from "../../../config/routesConfig.tsx";
 
-const categoryNameToSlug: Record<string, string> = {
-  "Gmail": "gmail",
-  "Phần mềm": "software",
-  "Tài khoản": "account",
-  "Khác": "other",
-};
 
 const tools: Tools[] = [
   {
@@ -69,15 +63,14 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
       <div className="grid grid-cols-2 gap-x-12 gap-y-3">
         <div>
           {firstCol.map((item) => (
-            // route fallback to /products 
-            <Button key={item.id} to={`/${categoryNameToSlug[item.name] ?? "products"}`} className={DROPDOWN_ITEM_CLASS}>
+            <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
               {item.name}
             </Button>
           ))}
         </div>
         <div>
           {secondCol.map((item) => (
-            <Button key={item.id} to={`/${categoryNameToSlug[item.name] ?? "products"}`} className={DROPDOWN_ITEM_CLASS}>
+            <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
               {item.name}
             </Button>
           ))}

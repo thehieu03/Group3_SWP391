@@ -20,20 +20,23 @@ public class ProductsController : ControllerBase
     [HttpGet]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProduct([FromQuery] int? categoryId,
+    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProductsByCategory([FromQuery] int categoryId,
         [FromQuery] int? subcategoryId, [FromQuery] string? searchTerm, [FromQuery] string? sortBy)
     {
-        var products = await _productServices.GetAllWithRelatedAsync();
-
-        //category filter
-        if (categoryId.HasValue)
+        if (categoryId <= 0)
         {
-            products = products.Where(p => p.CategoryId == (uint?)categoryId.Value);
+            return BadRequest("CategoryId is required and must be greater than 0");
         }
 
-        //subcategory filter
+        var products = await _productServices.GetAllWithRelatedAsync();
+
+        // Filter by category (required)
+        products = products.Where(p => p.CategoryId == (uint)categoryId);
+
+        // Filter by subcategory (optional)
         if (subcategoryId.HasValue)
         {
             products = products.Where(p => p.SubcategoryId == (uint?)subcategoryId.Value);
@@ -52,6 +55,7 @@ public class ProductsController : ControllerBase
 
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(products);
 
+        // Apply sorting
         if (!string.IsNullOrEmpty(sortBy))
         {
             switch (sortBy.ToLower())
@@ -83,23 +87,6 @@ public class ProductsController : ControllerBase
         return Ok(resultResponse);
     }
 
-    [HttpGet("{id}")]
-    [EnableQuery]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProductByCategoryId(int id)
-    {
-        var products = await _productServices.GetAllAsync();
-        var filteredProducts = products.Where(p => p.CategoryId == (uint)id);
-        if (!filteredProducts.Any())
-        {
-            return NotFound();
-        }
-
-        var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(filteredProducts);
-        return Ok(resultResponse);
-    }
 
     [HttpGet("getProductById")]
     [ProducesResponseType(StatusCodes.Status200OK)]

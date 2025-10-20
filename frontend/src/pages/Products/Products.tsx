@@ -1,20 +1,18 @@
 import type { FC } from "react";
-import {useEffect, useMemo, useState} from "react";
-import {useLocation} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
 // import Image from "../../components/Image";
 import Button from "../../components/Button/Button";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import type { ProductCardData } from "../../components/ProductCard/ProductCard";
-import type {CategoriesResponse} from "../../models/modelResponse/CategoriesResponse.tsx";
 import type {ProductResponse} from "../../models/modelResponse/ProductResponse.tsx";
 import type {SubcategoryResponse} from "../../models/modelResponse/SubcategoryResponse.tsx";
-import {categoryServices} from "../../services/CategoryServices.tsx";
 import {productServices} from "../../services/ProductServices.tsx";
 import {subcategoryServices} from "../../services/SubcategoryServices.tsx";
 
 
 const Products: FC = () => {
-    const [categories, setCategories] = useState<CategoriesResponse[]>([]);
+    const { id } = useParams<{ id: string }>();
     const [products, setProducts] = useState<ProductResponse[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -22,59 +20,54 @@ const Products: FC = () => {
     const [selectedSubcats, setSelectedSubcats] = useState<Record<number, boolean>>({});
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [sortBy, setSortBy] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
 
-    const location = useLocation();
-    // Read categoryId from URL (coming from header menu navigation)
-    const urlCategoryId = useMemo(() => {
-        const path = location.pathname.toLowerCase();
-        const params = new URLSearchParams(location.search);
-        const cidFromQuery = params.get("categoryId");
-        if (cidFromQuery) return Number(cidFromQuery);
+    // Get category ID from URL params
+    const categoryId = id ? parseInt(id) : null;
 
-        // map to category IDs when categories are loaded
-        const slugToMatch = path.startsWith("/") ? path.slice(1) : path;
-        const slugToName: Record<string, string> = {
-            "gmail": "Gmail",
-            "software": "Phần mềm",
-            "account": "Tài khoản",
-            "other": "Khác",
-        };
-        const wantedName = slugToName[slugToMatch];
-        if (!wantedName) return null;
-        const matched = categories.find(c => c.name.toLowerCase() === wantedName.toLowerCase());
-        return matched ? matched.id : null;
-    }, [location.pathname, location.search, categories]);
+    // Redirect if no category is selected
+    useEffect(() => {
+        if (categoryId === null) {
+            window.location.href = '/';
+        }
+    }, [categoryId]);
 
-    // Initial load of categories and products
+    // Load categories and products when component mounts or categoryId changes
     useEffect(() => {
         let mounted = true;
         (async () => {
+            if (!categoryId) return;
+            
             try {
                 setLoading(true);
-                const [cats, prods] = await Promise.all([
-                    categoryServices.getAllCategoryAsync(),
-                    urlCategoryId != null 
-                        ? productServices.getAllProducts({ 
-                            categoryId: urlCategoryId, 
-                            searchTerm: searchTerm || undefined,
-                            sortBy: sortBy || undefined 
-                        }) 
-                        : productServices.getAllProducts({
-                            searchTerm: searchTerm || undefined,
-                            sortBy: sortBy || undefined
-                        }),
-                ]);
+                setError(null);
+                
+                // Set selected category
                 if (mounted) {
-                    setCategories(cats);
+                    setSelectedCategory(categoryId);
+                }
+                
+                // Fetch products by category
+                const prods = await productServices.getProductsByCategory({ 
+                    categoryId: categoryId, 
+                    searchTerm: searchTerm || undefined,
+                    sortBy: sortBy || undefined 
+                });
+                
+                if (mounted) {
                     setProducts(prods);
-                    setSelectedCategory(urlCategoryId);
+                }
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                if (mounted) {
+                    setError('Không thể tải dữ liệu sản phẩm');
                 }
             } finally {
                 if (mounted) setLoading(false);
             }
         })();
         return () => { mounted = false; };
-    }, [urlCategoryId, searchTerm, sortBy]);
+    }, [categoryId, searchTerm, sortBy]);
 
     // fetch subcategories based on category 
     useEffect(() => {
@@ -105,33 +98,31 @@ const Products: FC = () => {
         return () => clearTimeout(timeoutId);
     }, [searchTerm]);
 
-    // Apply filters: prefer subcategory filters; otherwise filter by selected category; fallback to all
+    // Apply filters: prefer subcategory filters; otherwise filter by selected category
     async function applyFilters() {
+        if (categoryId == null) return;
+        
         const subcatIds = Object.entries(selectedSubcats)
             .filter(([, v]) => v)
             .map(([k]) => Number(k));
 
         let res: ProductResponse[] = [];
         const searchParams = {
+            categoryId: categoryId,
             searchTerm: searchTerm || undefined,
             sortBy: sortBy || undefined
         };
 
         if (subcatIds.length > 0) {
-            const results = await Promise.all(subcatIds.map(id => productServices.getAllProducts({ 
+            const results = await Promise.all(subcatIds.map(id => productServices.getProductsByCategory({ 
                 subcategoryId: id, 
                 ...searchParams 
             })));
             const flat = results.flat();
             const seen = new Set<number>();
             res = flat.filter(p => (seen.has(p.id) ? false : (seen.add(p.id), true)));
-        } else if (selectedCategory != null) {
-            res = await productServices.getAllProducts({ 
-                categoryId: selectedCategory, 
-                ...searchParams 
-            });
         } else {
-            res = await productServices.getAllProducts(searchParams);
+            res = await productServices.getProductsByCategory(searchParams);
         }
         setProducts(res);
     }
@@ -167,6 +158,33 @@ const Products: FC = () => {
             default:
                 return 'bg-gradient-to-br from-emerald-500 to-teal-600';
         }
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Đang tải sản phẩm...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                    >
+                        Thử lại
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -221,9 +239,6 @@ const Products: FC = () => {
                     <div className="rounded-lg bg-white p-4 shadow">
                         <h3 className="mb-1 text-lg font-semibold text-gray-800">Bộ lọc</h3>
                         <p className="mb-3 text-sm text-gray-500">Chọn loại sản phẩm</p>
-                        {selectedCategory == null && (
-                            <div className="text-xs text-amber-600 mb-2">Chọn danh mục từ menu trên cùng để lọc theo phân loại.</div>
-                        )}
                         {selectedCategory != null && (
                             <div className="mt-3">
                                 <h4 className="mb-1 text-sm font-semibold text-gray-700">Phân loại</h4>

@@ -6,7 +6,7 @@ import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFoot
 import ProductDetails from "../pages/ProductDetails/ProductDetails.tsx";
 import Deposit from "../pages/Deposit/Deposit.tsx";
 import routesConfig from "../config/routesConfig.tsx";
-import Products from "../pages/Products/Products.tsx";
+import Products from "../pages/Products/Products";
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -18,16 +18,7 @@ const publicRoutes: AppRoute[] = [
     element: <Home />,
     layout: DefaultLayout,
   },
-  {
-    path: routesConfig.products,
-    element: <Products />,
-    layout: HeaderAndFooter,
-  },
-
-  { path: "/gmail", element: <Products />, layout: HeaderAndFooter },
-  { path: "/software", element: <Products />, layout: HeaderAndFooter },
-  { path: "/account", element: <Products />, layout: HeaderAndFooter },
-  { path: "/other", element: <Products />, layout: HeaderAndFooter },
+  { path: "/category/:id", element: <Products />, layout: HeaderAndFooter },
   {
     path: routesConfig.login,
     element: <Login />,

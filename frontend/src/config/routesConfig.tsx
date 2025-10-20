@@ -1,7 +1,6 @@
 const routesConfig  =  {
     home:'/',
     login:'/login',
-    products:'/products',
     productDetails:'/productDetails',
     deposit:'/deposit',
     register:'/register',
