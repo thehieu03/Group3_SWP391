@@ -1,4 +1,4 @@
-import { httpPut, httpGet, httpPost } from "../utils/http";
+import { httpPut, httpGet, httpPost, httpDelete } from "../utils/http";
 
 export interface UpdateProfileRequest {
   username?: string;
@@ -23,6 +23,17 @@ export interface UpdateProfileResponse {
 }
 
 export interface UserForAdmin {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+  balance: number;
+  isActive: boolean;
+  createdAt: string;
+  roles: string[];
+}
+
+export interface UpdateAccountRequest {
   id: number;
   username: string;
   email: string;
@@ -117,13 +128,26 @@ class UserServices {
     const query = params.toString() ? `?${params.toString()}` : '';
 
     // Backend may return OData { value: [], @odata.count: n } or plain array
-    const res = await httpGet<any>(`accounts${query}`);
-    if (res && Array.isArray(res.value)) {
-      return { items: res.value as UserForAdmin[], total: res['@odata.count'] ?? res.value.length };
+    const res = await httpGet<{ value: UserForAdmin[]; '@odata.count': number } | UserForAdmin[]>(`accounts${query}`);
+    if (res && typeof res === 'object' && 'value' in res && Array.isArray(res.value)) {
+      return { items: res.value, total: res['@odata.count'] ?? res.value.length };
     }
     // Fallback for non-odata list
-    const list = (res ?? []) as UserForAdmin[];
+    const list = Array.isArray(res) ? res : [];
     return { items: list, total: list.length };
+  }
+
+  async updateAccountAsync(accountId: number, accountData: UpdateAccountRequest): Promise<UserForAdmin> {
+    console.log('Sending update request to:', `accounts/${accountId}`);
+    console.log('Request payload:', accountData);
+    
+    const response = await httpPut<UserForAdmin>(`accounts/${accountId}`, accountData);
+    console.log('Update response:', response);
+    return response;
+  }
+
+  async deleteAccountAsync(accountId: number): Promise<void> {
+    await httpDelete<void>(`accounts/${accountId}`);
   }
 }
 

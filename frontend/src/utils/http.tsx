@@ -76,4 +76,12 @@ export async function httpPut<T, D = unknown>(
     return res.data;
 }
 
+export async function httpDelete<T>(
+    path: string,
+    options?: AxiosRequestConfig
+): Promise<T> {
+    const res = await http.delete<T>(path, options);
+    return res.data;
+}
+
 export default http;

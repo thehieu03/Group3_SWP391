@@ -25,14 +25,12 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
     public async Task<AuthResponse> GenerateTokensAsync(Account account)
     {
-        // Lấy roles trước khi tạo token
         var roles = await GetUserRolesAsync(account.Id);
         
         var accessToken = GenerateAccessToken(account, roles);
         var refreshToken = GenerateRefreshToken();
         var expiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
 
-        // Lưu token vào database
         var token = new Token
         {
             AccountId = account.Id,
@@ -65,7 +63,6 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
     public async Task<RefreshTokenResponse?> RefreshTokenAsync(string refreshToken)
     {
-        // Tìm token trong database
         var tokenQuery = await _unitOfWork.GenericRepository<Token>()
             .GetQuery(t => t.RefreshToken == refreshToken);
         var token = tokenQuery.FirstOrDefault();
@@ -75,20 +72,17 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             return null;
         }
 
-        // Lấy account
         var account = await _accountServices.GetByIdAsync(token.AccountId);
         if (account == null)
         {
             return null;
         }
 
-        // Lấy roles và tạo token mới
         var roles = await GetUserRolesAsync(account.Id);
         var newAccessToken = GenerateAccessToken(account, roles);
         var newRefreshToken = GenerateRefreshToken();
         var newExpiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
 
-        // Cập nhật token trong database
         token.AccessToken = newAccessToken;
         token.RefreshToken = newRefreshToken;
         token.ExpiresAt = newExpiresAt;
@@ -169,7 +163,6 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
     private async Task<List<string>> GetUserRolesAsync(int accountId)
     {
-        // Lấy roles của user từ AccountRole
         var accountRolesQuery = await _unitOfWork.GenericRepository<Accountrole>()
             .GetQuery(ar => ar.AccountId == accountId);
         var accountRoles = accountRolesQuery.ToList();

@@ -19,7 +19,7 @@ public class AccountController : ControllerBase
         _mapper = mapper;
     }
     [HttpGet]
-    [Authorize(Policy = "AdminOnly")] // Chỉ ADMIN mới được xem
+    [Authorize(Policy = "AdminOnly")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -34,10 +34,8 @@ public class AccountController : ControllerBase
 
             foreach (var account in accounts)
             {
-                // Sử dụng AutoMapper để map Account sang UserResponse
                 var userResponse = _mapper.Map<UserResponse>(account);
                 
-                // Lấy roles của user này
                 var roles = await _accountServices.GetUserRolesAsync(account.Id);
                 userResponse.Roles = roles;
                 
@@ -52,13 +50,8 @@ public class AccountController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Cập nhật thông tin profile của user hiện tại
-    /// </summary>
-    /// <param name="request">Thông tin cần cập nhật</param>
-    /// <returns>Kết quả cập nhật</returns>
     [HttpPut("profile")]
-    [Authorize] // Yêu cầu authentication
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -68,19 +61,16 @@ public class AccountController : ControllerBase
     {
         try
         {
-            // Kiểm tra model validation
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Kiểm tra request body
             if (request == null)
             {
                 return BadRequest("Request body cannot be null");
             }
 
-            // Kiểm tra ít nhất một field được cập nhật
             if (string.IsNullOrEmpty(request.Username) && 
                 string.IsNullOrEmpty(request.Email) && 
                 string.IsNullOrEmpty(request.Phone))
@@ -88,30 +78,123 @@ public class AccountController : ControllerBase
                 return BadRequest("At least one field must be provided for update");
             }
 
-            // Lấy user ID từ JWT token
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Invalid token");
             }
 
-            // Cập nhật profile
             var result = await _accountServices.UpdateProfileAsync(userId, request);
 
             if (!result)
             {
-                // Kiểm tra xem user có tồn tại không
                 var account = await _accountServices.GetByIdAsync(userId);
                 if (account == null)
                 {
                     return NotFound("User not found");
                 }
 
-                // Nếu user tồn tại nhưng update thất bại, có thể do username/email đã tồn tại
                 return BadRequest("Update failed. Username or email may already exist");
             }
 
             return Ok(new { message = "Profile updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpPut("{id}")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> UpdateAccount(int id, [FromBody] UserResponse request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (request == null)
+            {
+                return BadRequest("Request body cannot be null");
+            }
+
+            if (id <= 0)
+            {
+                return BadRequest("Invalid account ID");
+            }
+
+            var result = await _accountServices.UpdateAccountAsync(id, request);
+
+            if (!result)
+            {
+                var account = await _accountServices.GetByIdAsync(id);
+                if (account == null)
+                {
+                    return NotFound("Account not found");
+                }
+
+                return BadRequest("Update failed. Username or email may already exist");
+            }
+
+            return Ok(new { message = "Account updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> DeleteAccount(int id)
+    {
+        try
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid account ID");
+            }
+
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(currentUserIdClaim) || !int.TryParse(currentUserIdClaim, out int currentUserId))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            var result = await _accountServices.DeleteAccountAsync(id, currentUserId);
+
+            if (!result)
+            {
+                if (id == currentUserId)
+                {
+                    return BadRequest("Admin cannot delete their own account");
+                }
+
+                var account = await _accountServices.GetByIdAsync(id);
+                if (account == null)
+                {
+                    return NotFound("Account not found");
+                }
+
+                return BadRequest("Failed to delete account");
+            }
+
+            return Ok(new { message = "Account deleted successfully" });
         }
         catch (Exception ex)
         {

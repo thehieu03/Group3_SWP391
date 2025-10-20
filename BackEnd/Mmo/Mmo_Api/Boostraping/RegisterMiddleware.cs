@@ -50,7 +50,6 @@ public static class RegisterMiddleware
                 };
             });
 
-        // Cấu hình Authorization với policies
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly", policy =>
