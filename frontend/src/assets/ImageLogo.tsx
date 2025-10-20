@@ -1,5 +1,7 @@
 import logo from './logoShop.png'
+import Image from '../components/Image'
+
 const ImageLogo=()=>{
-    return <img className='h-[40px] w-auto object-contain' src={logo} alt="Logo shop"/>
+    return <Image className='h-[40px] w-auto object-contain' src={logo} alt="Logo shop"/>
 }
 export  {ImageLogo};

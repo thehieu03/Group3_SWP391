@@ -31,6 +31,12 @@ const UserMenu = () => {
         <li>
           <Button to={routesConfig.paymentHistory}>Lịch sử thanh toán</Button>
         </li>
+        {/* Hiển thị "Quản lý shop" chỉ cho SELLER */}
+        {user?.roles.includes('SELLER') && (
+          <li>
+            <Button to="/seller/dashboard">Quản lý shop</Button>
+          </li>
+        )}
         <li>
           <Button to={routesConfig.contentManager}>Quản lý nội dung</Button>
         </li>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from "../../../components/Image";
 
 const ProductDetails = () => {
     const [tab, setTab] = useState("mota");
@@ -15,7 +16,7 @@ const ProductDetails = () => {
                 <div className="flex flex-col md:flex-row bg-white p-4 rounded shadow">
 
                     <div className="md:w-1/2 flex justify-center mb-4 md:mb-0 relative">
-                        <img
+                        <Image
                             src="src\assets\gmail-us-co-chua-qua-dich-vu-co-lich-su-hoat-ong-lau-oi_675443.png"
                             alt="Gmail US"
                             className="rounded w-96 h-auto border"
@@ -193,11 +194,11 @@ const ProductDetails = () => {
                                     HƯỚNG DẪN SỬ DỤNG MAIL LOGIN GOOGLE
                                 </h4>
                                 <p>ĐỂ LOGIN SAU KHI NHẬP PASS THÌ NÓ SẼ BẮT NHẬP 2FA.</p>
-                                <img
+                                <Image
                                     src="src/assets/hd1.jpeg"
                                     alt="Hướng dẫn"
                                     className="w-full mt-3 rounded" />
-                                <img
+                                <Image
                                     src="src/assets/hd2.jpeg"
                                     alt="Hướng dẫn"
                                     className="w-full mt-3 rounded" />
@@ -306,7 +307,7 @@ const ProductDetails = () => {
                                 key={i}
                                 className="bg-white border rounded shadow-sm hover:shadow-lg p-2 text-center transform transition-all duration-300 hover:-translate-y-2 hover:scale-105"
                             >
-                                <img
+                                <Image
                                     src={p.img}
                                     alt={p.name}
                                     className="h-40 w-full object-contain mb-2 transition-transform duration-300 hover:scale-110"
