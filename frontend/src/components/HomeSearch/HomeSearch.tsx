@@ -61,6 +61,15 @@ const HomeSearch = () => {
         navigate(routesConfig.getProductUrl(productId));
         setShowResults(false);
     };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const trimmedValue = value.trimStart();
+        if (trimmedValue.length === 0 && value.length > 0) {
+            return;
+        }
+        setSearchQuery(trimmedValue);
+    };
     useEffect(() => {
         const updateInputWidth = () => {
             if (inputRef.current) {
@@ -78,7 +87,6 @@ const HomeSearch = () => {
 
     return (
         <div>
-            {/*search*/}
             <div className="relative w-full">
                 <Image
                     src={logoMenu}
@@ -87,7 +95,6 @@ const HomeSearch = () => {
                 />
                 <div className="absolute inset-0 flex items-center justify-center px-4">
                     <div className="w-full max-w-5xl">
-                        {/* Search form */}
                         <form
                             onSubmit={handleSearchSubmit}
                             className="mx-auto w-full max-w-3xl"
@@ -125,7 +132,7 @@ const HomeSearch = () => {
                                         ref={inputRef}
                                         type="text"
                                         value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onChange={handleInputChange}
                                         onFocus={() => {
                                             if (searchResults.length > 0) {
                                                 setShowResults(true);
@@ -147,7 +154,6 @@ const HomeSearch = () => {
                     </div>
                 </div>
             </div>
-            {/* Search from end */}
         </div>
     );
 };

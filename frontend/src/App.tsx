@@ -3,7 +3,6 @@ import {publicRoutes, privateRoutes, sellerRoutes, adminRoutes, hasRequiredRole}
 import { useAuth } from "./hooks/useAuth";
 import { Navigate } from "react-router-dom";
 
-// Protected Route Component
 const ProtectedRoute = ({ children, requiredRoles }: { children: React.ReactNode, requiredRoles?: string[] }) => {
   const { user, isLoggedIn, loading } = useAuth();
   
@@ -16,7 +15,7 @@ const ProtectedRoute = ({ children, requiredRoles }: { children: React.ReactNode
   }
   
   if (requiredRoles && !hasRequiredRole(user, requiredRoles)) {
-    return <Navigate to="/" replace />; // Redirect to home if no permission
+    return <Navigate to="/" replace />;
   }
   
   return <>{children}</>;
@@ -27,7 +26,6 @@ function App() {
     <BrowserRouter>
         <div className="App">
             <Routes>
-                {/* Public Routes */}
                 {publicRoutes.map((route,index)=>{
                     const Layout=route.layout;
                     const Page=route.element;
@@ -36,7 +34,6 @@ function App() {
                     </Layout>}/>
                 })}
                 
-                {/* Private Routes */}
                 {privateRoutes.map((route,index)=>{
                     const Layout=route.layout;
                     const Page=route.element;
@@ -49,7 +46,6 @@ function App() {
                     }/>
                 })}
                 
-                {/* Seller Routes */}
                 {sellerRoutes.map((route,index)=>{
                     const Layout=route.layout;
                     const Page=route.element;
@@ -62,7 +58,6 @@ function App() {
                     }/>
                 })}
                 
-                {/* Admin Routes */}
                 {adminRoutes.map((route,index)=>{
                     const Layout=route.layout;
                     const Page=route.element;

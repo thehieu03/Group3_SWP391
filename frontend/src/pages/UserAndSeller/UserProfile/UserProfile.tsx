@@ -39,7 +39,6 @@ const UserProfile: React.FC = () => {
     }
   }, [user]);
 
-  // Fetch user orders
   useEffect(() => {
     const fetchOrders = async () => {
       if (isLoggedIn) {
@@ -70,7 +69,6 @@ const UserProfile: React.FC = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         setSaveMessage({
           type: 'error',
@@ -79,7 +77,6 @@ const UserProfile: React.FC = () => {
         return;
       }
 
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setSaveMessage({
           type: 'error',
@@ -90,7 +87,6 @@ const UserProfile: React.FC = () => {
 
       setAvatarFile(file);
       
-      // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
         setAvatar(e.target?.result as string);
@@ -104,11 +100,9 @@ const UserProfile: React.FC = () => {
       setIsSaving(true);
       setSaveMessage(null);
       
-      // Upload avatar first if there's a new one
       if (avatarFile) {
         try {
           const avatarResponse = await userServices.uploadAvatarAsync(avatarFile);
-          // Avatar uploaded successfully, you can store the URL if needed
           console.log('Avatar uploaded:', avatarResponse.avatarUrl);
         } catch (error) {
           console.error('Error uploading avatar:', error);
@@ -128,7 +122,6 @@ const UserProfile: React.FC = () => {
 
       await userServices.updateProfileAsync(updateData);
       
-      // Update formData to reflect the new values
       setFormData({
         username: updateData.username || formData.username,
         email: updateData.email || formData.email,
@@ -140,11 +133,9 @@ const UserProfile: React.FC = () => {
         text: 'Cập nhật thông tin thành công!'
       });
 
-      // Reset avatar file after successful save
       setAvatarFile(null);
       setIsEditing(false);
       
-      // Clear message after 3 seconds
       setTimeout(() => {
         setSaveMessage(null);
       }, 3000);
@@ -168,13 +159,11 @@ const UserProfile: React.FC = () => {
         phone: user.phone || ''
       });
     }
-    // Reset avatar changes
     setAvatar(null);
     setAvatarFile(null);
     setIsEditing(false);
   };
 
-  // Calculate statistics from orders
   const calculateStats = () => {
     const totalOrders = orders.length;
     const successfulOrders = orders.filter(order => order.status === 'completed' || order.status === 'success').length;
@@ -208,7 +197,6 @@ const UserProfile: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800">Thông tin cá nhân</h1>
             {!isEditing && (
@@ -221,9 +209,7 @@ const UserProfile: React.FC = () => {
             )}
           </div>
 
-          {/* Profile Form */}
           <div className="space-y-6">
-            {/* Avatar Section */}
             <div className="flex items-center space-x-6">
               <div className="relative">
                 <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
@@ -262,9 +248,7 @@ const UserProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Username */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tên đăng nhập
@@ -283,7 +267,6 @@ const UserProfile: React.FC = () => {
                 )}
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email
@@ -302,7 +285,6 @@ const UserProfile: React.FC = () => {
                 )}
               </div>
 
-              {/* Phone */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Số điện thoại
@@ -323,7 +305,6 @@ const UserProfile: React.FC = () => {
 
             </div>
 
-            {/* Save Message */}
             {saveMessage && (
               <div className={`p-4 rounded-md ${
                 saveMessage.type === 'success' 
@@ -334,7 +315,6 @@ const UserProfile: React.FC = () => {
               </div>
             )}
 
-            {/* Action Buttons */}
             {isEditing && (
               <div className="flex space-x-4 pt-6 border-t">
                 <button
@@ -359,7 +339,6 @@ const UserProfile: React.FC = () => {
             )}
           </div>
 
-          {/* Account Stats */}
           <div className="mt-8 pt-8 border-t">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Thống kê tài khoản</h3>
             {ordersLoading ? (

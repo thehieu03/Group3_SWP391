@@ -12,8 +12,6 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    // TODO: Fetch stats from API
-    // Simulate loading stats
     setStats({
       totalUsers: 1250,
       totalShops: 45,
@@ -60,7 +58,6 @@ const AdminDashboard = () => {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
       
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {statCards.map((stat, index) => (
           <div key={index} className="bg-white rounded-lg shadow p-6">
@@ -77,7 +74,6 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">

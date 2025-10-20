@@ -1,58 +1,35 @@
 import { useState, useEffect } from 'react';
-import type { User } from '../../models/modelResponse/LoginResponse';
+import { userServices, type UserForAdmin } from '../../services/UserServices';
+import useDebounce from "../../hooks/useDebounce.tsx";
 
 const UserManagement = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserForAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('ALL');
+  const [error, setError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    // TODO: Fetch users from API
-    // Simulate loading users
-    setTimeout(() => {
-      setUsers([
-        {
-          id: 1,
-          username: 'admin',
-          email: 'admin@example.com',
-          phone: '0123456789',
-          balance: 1000000,
-          isActive: true,
-          createdAt: '2024-01-01',
-          roles: ['ADMIN']
-        },
-        {
-          id: 2,
-          username: 'seller1',
-          email: 'seller1@example.com',
-          phone: '0987654321',
-          balance: 500000,
-          isActive: true,
-          createdAt: '2024-01-02',
-          roles: ['SELLER']
-        },
-        {
-          id: 3,
-          username: 'user1',
-          email: 'user1@example.com',
-          phone: '0555666777',
-          balance: 100000,
-          isActive: true,
-          createdAt: '2024-01-03',
-          roles: ['USER']
-        },
-      ]);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const fetchUsers = async () => {
+      try {
+        setIsSearching(true);
+        setError(null);
+        const usersData = await userServices.getAllUsersForAdminAsync(debouncedSearchTerm, filterRole);
+        setUsers(usersData);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError('Không thể tải danh sách người dùng');
+      } finally {
+        setIsSearching(false);
+        setLoading(false);
+      }
+    };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'ALL' || user.roles.includes(filterRole);
-    return matchesSearch && matchesRole;
-  });
+    void fetchUsers();
+  }, [debouncedSearchTerm, filterRole]);
+
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -60,7 +37,7 @@ const UserManagement = () => {
         return 'bg-red-100 text-red-800';
       case 'SELLER':
         return 'bg-blue-100 text-blue-800';
-      case 'USER':
+      case 'CUSTOMER':
         return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -73,8 +50,8 @@ const UserManagement = () => {
         return 'Quản trị viên';
       case 'SELLER':
         return 'Người bán';
-      case 'USER':
-        return 'Người dùng';
+      case 'CUSTOMER':
+        return 'Khách hàng';
       default:
         return role;
     }
@@ -88,6 +65,22 @@ const UserManagement = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          >
+            Thử lại
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -97,20 +90,26 @@ const UserManagement = () => {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Tìm kiếm
             </label>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm theo tên hoặc email..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tìm theo tên hoặc email..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
+                </div>
+              )}
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -124,13 +123,12 @@ const UserManagement = () => {
               <option value="ALL">Tất cả</option>
               <option value="ADMIN">Quản trị viên</option>
               <option value="SELLER">Người bán</option>
-              <option value="USER">Người dùng</option>
+              <option value="CUSTOMER">Khách hàng</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* Users Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -157,7 +155,7 @@ const UserManagement = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -179,7 +177,7 @@ const UserManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {user.balance?.toLocaleString('vi-VN')} VNĐ
+                    {user.balance.toLocaleString('vi-VN')} VNĐ
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -189,7 +187,7 @@ const UserManagement = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : '-'}
+                    {new Date(user.createdAt).toLocaleDateString('vi-VN')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">

@@ -29,7 +29,6 @@ const Header = () => {
     typeof window !== "undefined" ? window.innerWidth : 0
   );
 
-  // Track viewport width and react to changes
   useEffect(() => {
     const handleResize = () => setViewportWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -57,22 +56,18 @@ const Header = () => {
           <Button to="/registerShop">Đăng kí bán hàng</Button>
         </div>
       </div>
-      {/*header*/}
       <div className="h-[54px] w-full bg-[var(--green-color)]">
         <div className="flex h-full pl-[20px] pr-[15px] justify-between items-center ">
-          {/*header menu*/}
           <div className="flex w-full h-full items-center">
             <div className="h-full flex items-center">
               <Button to="/">
                 <Logo />
               </Button>
             </div>
-            {/* desktop navigation */}
             <div className="max-[991px]:hidden">
               <CategoryMenuHeader isLogin={isLoggedIn} />
             </div>
           </div>
-          {/*header login*/}
           <div className="flex items-center gap-3 font-medium whitespace-nowrap text-white h-full">
             {isLoggedIn && (
               <>
@@ -101,7 +96,6 @@ const Header = () => {
                 <span className={headerStyle.notification}>0</span>
               </div>
             </TippyHeadless>
-            {/* mobile hamburger */}
             <button
               className="hidden max-[991px]:flex items-center justify-center text-white ml-2"
               aria-label="Open menu"
@@ -113,7 +107,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile side drawer */}
       {isMobileMenuOpen && (
         <>
           <div

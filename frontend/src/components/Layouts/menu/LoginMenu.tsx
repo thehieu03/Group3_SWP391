@@ -57,7 +57,6 @@ const LoginMenu = () => {
       login(response.user);
       console.log("login success");
       
-      // Redirect dựa trên role
       if (response.user.roles.includes('ADMIN')) {
         navigate('/admin/dashboard');
       } else if (response.user.roles.includes('SELLER')) {

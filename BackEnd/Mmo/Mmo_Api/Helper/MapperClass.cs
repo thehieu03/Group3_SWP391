@@ -15,5 +15,6 @@ public class MapperClass : Profile
         CreateMap<Product, ProductRequest>().ReverseMap();
         CreateMap<Order, OrderResponse>().ReverseMap();
         CreateMap<ProfileUpdateRequest, Account>().ReverseMap();
+        CreateMap<Account, UserResponse>().ReverseMap();
     }
 }

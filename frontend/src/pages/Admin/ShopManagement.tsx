@@ -19,8 +19,6 @@ const ShopManagement = () => {
   const [filterStatus, setFilterStatus] = useState('ALL');
 
   useEffect(() => {
-    // TODO: Fetch shops from API
-    // Simulate loading shops
     setTimeout(() => {
       setShops([
         {
@@ -111,7 +109,6 @@ const ShopManagement = () => {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -144,7 +141,6 @@ const ShopManagement = () => {
         </div>
       </div>
 
-      {/* Shops Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">

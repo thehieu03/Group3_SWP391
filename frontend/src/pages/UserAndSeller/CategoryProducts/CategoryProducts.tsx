@@ -22,12 +22,10 @@ const CategoryProducts: React.FC = () => {
                 setLoading(true);
                 setError(null);
                 
-                // Fetch category info
                 const categories = await categoryServices.getAllCategoryAsync();
                 const foundCategory = categories.find(cat => cat.id === parseInt(id));
                 setCategory(foundCategory || null);
                 
-                // Fetch products by category
                 const categoryProducts = await productServices.getProductsByCategoryAsync(parseInt(id));
                 setProducts(categoryProducts);
             } catch (err) {
@@ -74,7 +72,6 @@ const CategoryProducts: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
             <div className="bg-white shadow-sm border-b">
                 <div className="max-w-7xl mx-auto px-4 py-6">
                     <h1 className="text-3xl font-bold text-green-600 mb-2">
@@ -86,7 +83,6 @@ const CategoryProducts: React.FC = () => {
                 </div>
             </div>
 
-            {/* Products Grid */}
             <div className="max-w-7xl mx-auto px-4 py-8">
                 {products.length === 0 ? (
                     <div className="text-center py-12">
@@ -106,7 +102,6 @@ const CategoryProducts: React.FC = () => {
                                 className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer border border-gray-200"
                                 onClick={() => handleProductClick(product.id)}
                             >
-                                {/* Product Image */}
                                 <div className="aspect-square rounded-t-lg overflow-hidden">
                                     <Image
                                         src={product.image}
@@ -115,7 +110,6 @@ const CategoryProducts: React.FC = () => {
                                     />
                                 </div>
 
-                                {/* Product Info */}
                                 <div className="p-4">
                                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
                                         {product.name}
@@ -124,7 +118,6 @@ const CategoryProducts: React.FC = () => {
                                         {product.description}
                                     </p>
                                     
-                                    {/* Product Status */}
                                     <div className="flex items-center justify-between">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                             product.isActive 

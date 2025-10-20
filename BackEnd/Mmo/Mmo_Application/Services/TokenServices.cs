@@ -25,7 +25,10 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
     public async Task<AuthResponse> GenerateTokensAsync(Account account)
     {
-        var accessToken = GenerateAccessToken(account);
+        // Lấy roles trước khi tạo token
+        var roles = await GetUserRolesAsync(account.Id);
+        
+        var accessToken = GenerateAccessToken(account, roles);
         var refreshToken = GenerateRefreshToken();
         var expiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
 
@@ -40,8 +43,6 @@ public class TokenServices : BaseServices<Token>, ITokenServices
         };
 
         await AddAsync(token);
-
-        var roles = await GetUserRolesAsync(account.Id);
 
         return new AuthResponse
         {
@@ -81,8 +82,9 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             return null;
         }
 
-        // Tạo token mới
-        var newAccessToken = GenerateAccessToken(account);
+        // Lấy roles và tạo token mới
+        var roles = await GetUserRolesAsync(account.Id);
+        var newAccessToken = GenerateAccessToken(account, roles);
         var newRefreshToken = GenerateRefreshToken();
         var newExpiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
 
@@ -123,7 +125,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
         return dbToken != null && dbToken.ExpiresAt > DateTime.UtcNow;
     }
 
-    private string GenerateAccessToken(Account account)
+    private string GenerateAccessToken(Account account, List<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -136,6 +138,10 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],

@@ -14,8 +14,6 @@ const CategoryManagement = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   useEffect(() => {
-    // TODO: Fetch categories and subcategories from API
-    // Simulate loading data
     setTimeout(() => {
       setCategories([
         {
@@ -58,7 +56,6 @@ const CategoryManagement = () => {
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
     
-    // TODO: Call API to add category
     const newCategory: CategoriesResponse = {
       id: categories.length + 1,
       name: newCategoryName,
@@ -75,7 +72,6 @@ const CategoryManagement = () => {
   const handleAddSubcategory = async () => {
     if (!newSubcategoryName.trim() || !selectedCategoryId) return;
     
-    // TODO: Call API to add subcategory
     const newSubcategory: SubcategoryResponse = {
       id: subcategories.length + 1,
       categoryId: selectedCategoryId,
@@ -91,14 +87,12 @@ const CategoryManagement = () => {
   };
 
   const toggleCategoryStatus = async (categoryId: number) => {
-    // TODO: Call API to toggle category status
     setCategories(categories.map(cat => 
       cat.id === categoryId ? { ...cat, isActive: !cat.isActive } : cat
     ));
   };
 
   const toggleSubcategoryStatus = async (subcategoryId: number) => {
-    // TODO: Call API to toggle subcategory status
     setSubcategories(subcategories.map(sub => 
       sub.id === subcategoryId ? { ...sub, isActive: !sub.isActive } : sub
     ));
@@ -124,7 +118,6 @@ const CategoryManagement = () => {
         </button>
       </div>
 
-      {/* Add Category Modal */}
       {isAddingCategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
@@ -157,7 +150,6 @@ const CategoryManagement = () => {
         </div>
       )}
 
-      {/* Categories List */}
       <div className="space-y-4">
         {categories.map((category) => (
           <div key={category.id} className="bg-white rounded-lg shadow">
@@ -200,7 +192,6 @@ const CategoryManagement = () => {
                 </div>
               </div>
 
-              {/* Subcategories */}
               {showSubcategories === category.id && (
                 <div className="mt-4 pl-4 border-l-2 border-gray-200">
                   <div className="space-y-2">
@@ -235,7 +226,6 @@ const CategoryManagement = () => {
         ))}
       </div>
 
-      {/* Add Subcategory Modal */}
       {isAddingSubcategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">

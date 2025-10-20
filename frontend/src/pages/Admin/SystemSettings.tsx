@@ -12,8 +12,6 @@ const SystemSettings = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   useEffect(() => {
-    // TODO: Fetch system config from API
-    // Simulate loading config
     setTimeout(() => {
       setConfig({
         email: 'admin@taphoammo.com',
@@ -37,10 +35,8 @@ const SystemSettings = () => {
     setMessage(null);
 
     try {
-      // TODO: Call API to update system config
       console.log('Saving config:', config);
       
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       setMessage({
@@ -73,7 +69,6 @@ const SystemSettings = () => {
         <h2 className="text-lg font-medium text-gray-900 mb-4">Thông tin cấu hình</h2>
         
         <div className="space-y-6">
-          {/* Email Configuration */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email hệ thống
@@ -91,7 +86,6 @@ const SystemSettings = () => {
             </p>
           </div>
 
-          {/* Fee Configuration */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Phí giao dịch (%)
@@ -112,7 +106,6 @@ const SystemSettings = () => {
             </p>
           </div>
 
-          {/* Google App Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Google App Password
@@ -131,7 +124,6 @@ const SystemSettings = () => {
           </div>
         </div>
 
-        {/* Save Message */}
         {message && (
           <div className={`mt-4 p-4 rounded-md ${
             message.type === 'success'
@@ -142,7 +134,6 @@ const SystemSettings = () => {
           </div>
         )}
 
-        {/* Save Button */}
         <div className="mt-6 flex justify-end">
           <button
             onClick={handleSave}
@@ -158,7 +149,6 @@ const SystemSettings = () => {
         </div>
       </div>
 
-      {/* Additional Settings */}
       <div className="mt-8 bg-white rounded-lg shadow p-6">
         <h2 className="text-lg font-medium text-gray-900 mb-4">Cài đặt bổ sung</h2>
         

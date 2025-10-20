@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null;
   login: (user: User) => void;
   logout: () => void;
-  loading: boolean; // Thêm loading state
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,13 +22,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Auto-load user data from server when app starts
   useEffect(() => {
     const loadUserFromServer = async () => {
       const accessToken = Cookies.get("accessToken");
       const refreshToken = Cookies.get("refreshToken");
 
-      // Nếu có tokens, gọi API để lấy user info
       if (accessToken || refreshToken) {
         try {
           const userData = await authServices.getCurrentUserAsync();

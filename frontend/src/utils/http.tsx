@@ -2,7 +2,6 @@ import axios, {type AxiosRequestConfig} from "axios";
 import Cookies from 'js-cookie';
 
 const http = axios.create({baseURL: "/api/"});
-// gán token vào header
 http.interceptors.request.use(
     (config) => {
         const token = Cookies.get('accessToken');

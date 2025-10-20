@@ -49,6 +49,16 @@ public static class RegisterMiddleware
                         Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new Exception("Jwt Key not found")))
                 };
             });
+
+        // Cấu hình Authorization với policies
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("ADMIN"));
+            
+            options.AddPolicy("UserOrAdmin", policy =>
+                policy.RequireRole("USER", "ADMIN"));
+        });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
         builder.Services.AddScoped<IAccountServices, AccountServices>();

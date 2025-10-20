@@ -1,5 +1,6 @@
 ﻿using Mmo_Application.Services.Interface;
 using Mmo_Domain.ModelRequest;
+using Mmo_Domain.ModelResponse;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -18,14 +19,32 @@ public class AccountController : ControllerBase
         _mapper = mapper;
     }
     [HttpGet]
+    [Authorize(Policy = "AdminOnly")] // Chỉ ADMIN mới được xem
+    [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccounts()
+    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAllAccounts()
     {
         try
         {
             var accounts = await _accountServices.GetAllAsync();
-            return Ok(accounts);
+            var userResponses = new List<UserResponse>();
+
+            foreach (var account in accounts)
+            {
+                // Sử dụng AutoMapper để map Account sang UserResponse
+                var userResponse = _mapper.Map<UserResponse>(account);
+                
+                // Lấy roles của user này
+                var roles = await _accountServices.GetUserRolesAsync(account.Id);
+                userResponse.Roles = roles;
+                
+                userResponses.Add(userResponse);
+            }
+            
+            return Ok(userResponses);
         }
         catch (Exception ex)
         {
