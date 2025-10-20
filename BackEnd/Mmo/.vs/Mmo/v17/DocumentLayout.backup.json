@@ -3,14 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\",
   "Documents": [
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+=======
+>>>>>>> Stashed changes
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_api\\api\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -21,12 +25,17 @@
     {
       "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_api\\helper\\mapperclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\helper\\mapperclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> Stashed changes
     },
     {
       "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\modelresponse\\productresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\productresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\productstorage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\productstorage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -45,10 +54,41 @@
     {
       "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\modelrequest\\categoryrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelrequest\\categoryrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\modelresponse\\shopresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\shopresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\shop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\shop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_application\\services\\interface\\ishopservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\interface\\ishopservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> Stashed changes
     },
     {
       "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+<<<<<<< Updated upstream
+=======
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_application\\services\\productvariantservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\productvariantservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\productvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\productvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_application\\services\\productservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\productservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|c:\\users\\m34ni\\desktop\\swp\\group3_swp391\\backend\\mmo\\mmo_domain\\modelrequest\\productrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelrequest\\productrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> Stashed changes
     }
   ],
   "DocumentGroupContainers": [
@@ -58,10 +98,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Document",
+<<<<<<< Updated upstream
               "DocumentIndex": 0,
               "Title": "RegisterMiddleware.cs",
               "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
@@ -84,10 +125,36 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-17T18:05:33.576Z"
+=======
+              "DocumentIndex": 3,
+              "Title": "ShopResponse.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\ShopResponse.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\ShopResponse.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\ShopResponse.cs",
+              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\ShopResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T03:16:32.168Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Shop.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Shop.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Shop.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Shop.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Shop.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T03:14:46.211Z",
+              "EditorCaption": ""
+>>>>>>> Stashed changes
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
+<<<<<<< Updated upstream
               "Title": "ProductResponse.cs",
               "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\ProductResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\ProductResponse.cs",
@@ -96,10 +163,22 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-17T17:49:48.854Z"
+=======
+              "Title": "IShopServices.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IShopServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\Interface\\IShopServices.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IShopServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\Interface\\IShopServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T03:14:30.464Z",
+              "EditorCaption": ""
+>>>>>>> Stashed changes
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
+<<<<<<< Updated upstream
               "Title": "Productstorage.cs",
               "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Productstorage.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Productstorage.cs",
@@ -132,10 +211,83 @@
               "ViewState": "AgIAABgAAAAAAAAAAAAuwCsAAABZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-15T17:10:04.635Z"
+=======
+              "Title": "Category.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Category.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Category.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Category.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Category.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T17:02:46.003Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Productvariant.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Productvariant.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Productvariant.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Productvariant.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Productvariant.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T16:15:45.691Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ProductVariantServices.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductVariantServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\ProductVariantServices.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductVariantServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\ProductVariantServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T16:14:06.966Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MapperClass.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Helper\\MapperClass.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Helper\\MapperClass.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Helper\\MapperClass.cs*",
+              "RelativeToolTip": "Mmo_Api\\Helper\\MapperClass.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T15:42:52.986Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProductResponse.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\ProductResponse.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\ProductResponse.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\ProductResponse.cs",
+              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\ProductResponse.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAIwBoAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T11:19:59.761Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ProductRequest.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\ProductRequest.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\ProductRequest.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\ProductRequest.cs",
+              "RelativeToolTip": "Mmo_Domain\\ModelRequest\\ProductRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T11:19:53.892Z"
+>>>>>>> Stashed changes
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+<<<<<<< Updated upstream
               "Title": "Mmo_Domain.csproj",
               "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Mmo_Domain.csproj",
               "RelativeDocumentMoniker": "Mmo_Domain\\Mmo_Domain.csproj",
@@ -204,6 +356,29 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-15T15:50:21.15Z"
+=======
+              "Title": "ProductServices.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\ProductServices.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\ProductServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T11:19:45.664Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\ProductsController.cs",
+              "ToolTip": "C:\\Users\\m34ni\\Desktop\\swp\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\ProductsController.cs",
+              "ViewState": "AgIAAHYAAAAAAAAAAADwv4kAAABVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T10:44:28.55Z",
+              "EditorCaption": ""
+>>>>>>> Stashed changes
             }
           ]
         }

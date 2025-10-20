@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 
+=======
+import React from "react";
+>>>>>>> Stashed changes
 
 const ChangePassword = () => {
   return (
@@ -11,6 +15,10 @@ const ChangePassword = () => {
           </h5>
         </div>
 
+<<<<<<< Updated upstream
+=======
+        {/* Body */}
+>>>>>>> Stashed changes
         <div className="p-8">
           <form className="space-y-6">
             {/* Mật khẩu cũ */}
@@ -29,6 +37,10 @@ const ChangePassword = () => {
               />
             </div>
 
+<<<<<<< Updated upstream
+=======
+            {/* Mật khẩu mới + Nhập lại */}
+>>>>>>> Stashed changes
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col">
                 <label
@@ -61,6 +73,10 @@ const ChangePassword = () => {
               </div>
             </div>
 
+<<<<<<< Updated upstream
+=======
+            {/* Nút cập nhật */}
+>>>>>>> Stashed changes
             <div className="pt-2">
               <button
                 type="button"
