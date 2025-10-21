@@ -8,8 +8,6 @@ using Mmo_Application.Services.Interface;
 using Mmo_Domain.IUnit;
 using Mmo_Domain.Models;
 using Mmo_Infrastructure.Unit;
-using Mmo_Infrastructure;
-using IUnitOfWork = Mmo_Domain.IUnit.IUnitOfWork;
 
 namespace Mmo_Api.Boostraping;
 
@@ -34,7 +32,8 @@ public static class RegisterMiddleware
                 mySqlOptions => mySqlOptions.EnableRetryOnFailure()
             );
         });
-        builder.Services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
+        builder.Services.AddAutoMapper(typeof(Program).Assembly);
+        builder.Services.AddAutoMapper(typeof(Helper.MapperClass));
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtOptions =>
             {
@@ -51,7 +50,15 @@ public static class RegisterMiddleware
                 };
             });
 
-
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("ADMIN"));
+            
+            options.AddPolicy("UserOrAdmin", policy =>
+                policy.RequireRole("USER", "ADMIN"));
+        });
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
         builder.Services.AddScoped<IAccountServices, AccountServices>();
         builder.Services.AddScoped<ICategoryServices, CategoryServices>();

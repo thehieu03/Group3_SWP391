@@ -1,12 +1,12 @@
 ﻿using System.Net;
 using FluentAssertions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Mmo_Api;
 using Xunit;
 
 namespace Mmo_UnitTest.IntegrationTests;
 
-// Make the Program class public to resolve the CS0122 error
 public class ApiRoleIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -20,12 +20,8 @@ public class ApiRoleIntegrationTests : IClassFixture<WebApplicationFactory<Progr
     public async Task Test1()
     {
         var client = _factory.CreateClient();
+        var id = 1000;
         var response = await client.GetAsync("api/role");
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-}
-
-// Make the Program class public to resolve the CS0051 error
-public class Program
-{
 }

@@ -1,50 +1,53 @@
-﻿using Mmo_Domain.IUnit; 
-using Mmo_Domain.IRepository;
+﻿using Mmo_Domain.IRepository;
+using Mmo_Domain.IUnit;
+using Mmo_Domain.Models;
 using Mmo_Infrastructure.Repository;
-using System.Threading.Tasks;
 
-namespace Mmo_Infrastructure.Unit
+namespace Mmo_Infrastructure.Unit;
+
+public class UnitOfWork:IUnitOfWork
 {
-   
-    public class UnitOfWork : IUnitOfWork
+    private readonly AppDbContext _context;
+    private readonly Dictionary<Type, object> _repository = new();
+
+    public UnitOfWork(AppDbContext context)
     {
+        _context = context;
+    }
 
-        private readonly AppDbContext _context;
+    public AppDbContext ContextDb => _context;
 
-  
-        public IAccountRepository Accounts { get; private set; }
-        
+    public async Task BeginTransactionAsync()
+    {
+        await ContextDb.Database.BeginTransactionAsync();
+    }
 
-        public UnitOfWork(AppDbContext context)
+    public async Task CommitTransactionAsync()
+    {
+        await ContextDb.Database.CommitTransactionAsync();
+    }
+
+    public IGenericRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
+    {
+        if (!_repository.ContainsKey(typeof(TEntity)))
         {
-            _context = context;
-
-          
-            Accounts = new AccountRepository(_context);
-          
+            _repository[typeof(TEntity)] = new GenericRepository<TEntity>(ContextDb);
         }
+        return (GenericRepository<TEntity>)_repository[typeof(TEntity)];
+    }
 
-     
-        public IGenericRepository<T> GenericRepository<T>() where T : class
-        {
-            return new GenericRepository<T>(_context);
-        }
+    public async Task RollbackTransactionAsync()
+    {
+        await ContextDb.Database.RollbackTransactionAsync();
+    }
 
-       
-        public int SaveChanges()
-        {
-            return _context.SaveChanges();
-        }
+    public async Task<int> SaveChangeAsync(CancellationToken cancellationToken = default)
+    {
+        return await ContextDb.SaveChangesAsync();
+    }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
-         
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
+    public int SaveChanges()
+    {
+        return ContextDb.SaveChanges();
     }
 }

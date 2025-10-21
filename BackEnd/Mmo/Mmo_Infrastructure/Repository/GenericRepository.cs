@@ -65,6 +65,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return _dbSet.Find(id);
     }
 
+
     public async Task<T?> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);

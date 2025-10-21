@@ -52,5 +52,15 @@ namespace Mmo_Api.Api
             var result= await _categoryServices.AddAsync(categoryAdd);
             return result > 0 ? Ok(result) : BadRequest("Failed to create category.");
         }
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteCategory([FromQuery] int id)
+        {
+            var category = await _categoryServices.GetByIdAsync(id);
+            if(category == null) return BadRequest("Category not found.");
+            var result = await _categoryServices.DeleteAsync(category);
+            return result  ? Ok(result) : BadRequest("Failed to delete category.");
+        }
     }
 }

@@ -1,79 +1,225 @@
 ﻿using BCrypt.Net;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.IUnit;
+using Mmo_Domain.Models;
 using Mmo_Domain.ModelRequest;
 using Mmo_Domain.ModelResponse;
-using Mmo_Domain.ModelResponse.Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-using Org.BouncyCastle.Crypto.Generators;
-using System.Text.RegularExpressions;
 
-namespace Mmo_Application.Services
+namespace Mmo_Application.Services;
+
+public class AccountServices:BaseServices<Account>,IAccountServices
 {
-  
-    public class AccountServices : BaseServices<Account>, IAccountServices
+    private readonly IRoleServices _roleServices;
+
+    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices) : base(unitOfWork)
     {
-        // 🔹 Kế thừa _unitOfWork từ BaseServices
-        public AccountServices(IUnitOfWork unitOfWork) : base(unitOfWork)
+        _roleServices = roleServices;
+    }
+
+    public async Task<Account?> GetByUsernameAsync(string username)
+    {
+        var accounts = await GetAllAsync();
+        return accounts.FirstOrDefault(a => a.Username == username);
+    }
+
+    public async Task<Account?> GetByEmailAsync(string email)
+    {
+        var accounts = await GetAllAsync();
+        return accounts.FirstOrDefault(a => a.Email == email);
+    }
+
+    public Task<bool> VerifyPasswordAsync(Account account, string password)
+    {
+        return Task.FromResult(BCrypt.Net.BCrypt.Verify(password, account.Password));
+    }
+
+    public async Task<bool> IsAccountActiveAsync(int accountId)
+    {
+        var account = await GetByIdAsync(accountId);
+        return account?.IsActive == true;
+    }
+
+    public async Task<List<string>> GetUserRolesAsync(int accountId)
+    {
+        var accountRolesQuery = await _unitOfWork.GenericRepository<Accountrole>()
+            .GetQuery(ar => ar.AccountId == accountId);
+        var accountRoles = accountRolesQuery.ToList();
+
+        var roleIds = accountRoles.Select(ar => ar.RoleId).ToList();
+        var roles = await _roleServices.GetAllAsync();
+        
+        return roles.Where(r => roleIds.Contains(r.Id))
+                   .Select(r => r.RoleName)
+                   .ToList();
+    }
+
+    public async Task<bool> UpdateProfileAsync(int accountId, ProfileUpdateRequest request)
+    {
+        var account = await GetByIdAsync(accountId);
+        if (account == null)
         {
+            return false;
         }
 
-        public async Task<Result<AccountRegisterResponse>> RegisterAsync(AccountRegisterRequest request)
+        if (!string.IsNullOrEmpty(request.Username) && request.Username != account.Username)
         {
-            // (Code của bạn ở đây đã đúng logic)
-            if (await _unitOfWork.Accounts.CheckExistsAsync(request.Email, request.Username))
-                return Result<AccountRegisterResponse>.Fail("Email hoặc tài khoản đã tồn tại!");
-
-            if (request.Password != request.ConfirmPassword)
+            var existingAccount = await GetByUsernameAsync(request.Username);
+            if (existingAccount != null)
             {
-                return Result<AccountRegisterResponse>.Fail("Mật khẩu nhập lại không khớp!");
+                return false;
             }
-
-            if (!Regex.IsMatch(request.Password, @"^(?=.*[A-Za-z])(?=.*\d).{8,}$"))
-            {
-                return Result<AccountRegisterResponse>.Fail("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ và số!");
-            }
-
-            var newAccount = new Account
-            {
-                Username = request.Username,
-                Email = request.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _unitOfWork.Accounts.AddAsync(newAccount);
-            await _unitOfWork.SaveChangesAsync(); // 🔹 Lỗi sẽ hết khi bạn sửa IUnitOfWork
-
-            var response = new AccountRegisterResponse
-            {
-                Username = newAccount.Username,
-                Email = newAccount.Email,
-            };
-
-            return Result<AccountRegisterResponse>.Ok(response, "Đăng ký thành công!");
         }
 
-        public async Task<Result<AccountLoginResponse>> LoginAsync(AccountLoginRequest request)
+        if (!string.IsNullOrEmpty(request.Email) && request.Email != account.Email)
         {
-            // (Code của bạn ở đây đã đúng logic)
-            var account = await _unitOfWork.Accounts.GetByEmailAsync(request.Email); // 🔹 Lỗi sẽ hết khi bạn sửa IUnitOfWork
-            if (account == null)
-                return Result<AccountLoginResponse>.Fail("Email không tồn tại!");
-
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, account.Password))
-                return Result<AccountLoginResponse>.Fail("Sai mật khẩu!");
-
-            var token = Guid.NewGuid().ToString();
-
-            var response = new AccountLoginResponse
+            var existingAccount = await GetByEmailAsync(request.Email);
+            if (existingAccount != null)
             {
-                Username = account.Username,
-                Token = token
-            };
-
-            return Result<AccountLoginResponse>.Ok(response, "Đăng nhập thành công!");
+                return false;
+            }
         }
+
+        if (!string.IsNullOrEmpty(request.Username))
+        {
+            account.Username = request.Username;
+        }
+
+        if (!string.IsNullOrEmpty(request.Email))
+        {
+            account.Email = request.Email;
+        }
+
+        if (!string.IsNullOrEmpty(request.Phone))
+        {
+            account.Phone = request.Phone;
+        }
+
+        account.UpdatedAt = DateTime.Now;
+
+        return await UpdateAsync(account);
+    }
+
+    public async Task<bool> UpdateAccountAsync(int accountId, UserResponse request)
+    {
+        var account = await GetByIdAsync(accountId);
+        if (account == null)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(request.Username) && request.Username != account.Username)
+        {
+            var existingAccount = await GetByUsernameAsync(request.Username);
+            if (existingAccount != null)
+            {
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(request.Email) && request.Email != account.Email)
+        {
+            var existingAccount = await GetByEmailAsync(request.Email);
+            if (existingAccount != null)
+            {
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(request.Username))
+        {
+            account.Username = request.Username;
+        }
+
+        if (!string.IsNullOrEmpty(request.Email))
+        {
+            account.Email = request.Email;
+        }
+
+        if (!string.IsNullOrEmpty(request.Phone))
+        {
+            account.Phone = request.Phone;
+        }
+
+        if (request.Balance.HasValue)
+        {
+            account.Balance = request.Balance.Value;
+        }
+
+        if (request.IsActive.HasValue)
+        {
+            account.IsActive = request.IsActive.Value;
+        }
+
+        account.UpdatedAt = DateTime.Now;
+
+        return await UpdateAsync(account);
+    }
+
+    public async Task<bool> DeleteAccountAsync(int accountId, int currentUserId)
+    {
+        if (accountId == currentUserId)
+        {
+            return false;
+        }
+
+        var account = await GetByIdAsync(accountId);
+        if (account == null)
+        {
+            return false;
+        }
+
+        return await DeleteAsync(account);
+    }
+
+    public async Task<Account?> RegisterAsync(RegisterRequest registerRequest)
+    {
+        // Kiểm tra username đã tồn tại chưa
+        var existingUsername = await GetByUsernameAsync(registerRequest.Username);
+        if (existingUsername != null)
+        {
+            return null; // Username đã tồn tại
+        }
+
+        // Kiểm tra email đã tồn tại chưa
+        var existingEmail = await GetByEmailAsync(registerRequest.Email);
+        if (existingEmail != null)
+        {
+            return null; // Email đã tồn tại
+        }
+
+        // Hash password với BCrypt
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
+
+        // Tạo account mới
+        var newAccount = new Account
+        {
+            Username = registerRequest.Username,
+            Email = registerRequest.Email,
+            Password = hashedPassword,
+            Phone = null,
+            Balance = 0,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // Lưu vào database
+        await AddAsync(newAccount);
+
+        // Gán role USER mặc định
+        var userRoleQuery = await _unitOfWork.GenericRepository<Role>()
+            .GetQuery(r => r.RoleName == "USER");
+        var userRole = userRoleQuery.FirstOrDefault();
+
+        if (userRole != null)
+        {
+            var accountRole = new Accountrole
+            {
+                AccountId = newAccount.Id,
+                RoleId = userRole.Id
+            };
+            await _unitOfWork.GenericRepository<Accountrole>().AddAsync(accountRole);
+            await _unitOfWork.SaveChangeAsync();
+        }
+
+        return newAccount;
     }
 }

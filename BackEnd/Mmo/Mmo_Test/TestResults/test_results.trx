@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="2abba79e-00df-4de1-bed4-62013c1758da" name="hieun@THEHIEU 2025-10-19 23:42:02" runUser="THEHIEU\hieun" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-10-19T23:42:02.3865237+07:00" queuing="2025-10-19T23:42:02.3865241+07:00" start="2025-10-19T23:42:00.9296477+07:00" finish="2025-10-19T23:42:02.9415160+07:00" />
+  <TestSettings name="default" id="b28d9fac-47c2-4ded-b36f-c746015bafe3">
+    <Deployment runDeploymentRoot="hieun_THEHIEU_2025-10-19_23_42_02" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="28fb3d5a-c9ec-4d06-b368-18045545c86c" testId="dfcb95a0-2aff-2a6e-2a0b-70d126925ce1" testName="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnNotFound_WhenRoleMissing" computerName="THEHIEU" duration="00:00:00.0248259" startTime="2025-10-19T23:42:02.2686755+07:00" endTime="2025-10-19T23:42:02.2686760+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="28fb3d5a-c9ec-4d06-b368-18045545c86c" />
+    <UnitTestResult executionId="c2588118-72d3-447d-aa95-1a99c8ff78e1" testId="b5cfee5b-06a0-6484-b151-7a20fdab9491" testName="Mmo_UnitTest.UnitTest.RoleTest.Create_ShouldReturnBadRequest_WhenServiceFails" computerName="THEHIEU" duration="00:00:00.0029045" startTime="2025-10-19T23:42:02.3141943+07:00" endTime="2025-10-19T23:42:02.3141955+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c2588118-72d3-447d-aa95-1a99c8ff78e1" />
+    <UnitTestResult executionId="c11c2098-e739-4438-a5ce-deab24edf8eb" testId="58ddd06d-1967-3eae-e1dc-f78fa9fc476c" testName="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnOk_WithRole" computerName="THEHIEU" duration="00:00:00.0201025" startTime="2025-10-19T23:42:02.3110984+07:00" endTime="2025-10-19T23:42:02.3110988+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c11c2098-e739-4438-a5ce-deab24edf8eb" />
+    <UnitTestResult executionId="92ac4925-3e75-4443-8375-5b55fa435436" testId="ec748fee-d3e0-3260-6d52-1d8cbcb9f774" testName="Mmo_UnitTest.IntegrationTests.ApiRoleIntegrationTests.Test1" computerName="THEHIEU" duration="00:00:00.7760935" startTime="2025-10-19T23:42:02.8725677+07:00" endTime="2025-10-19T23:42:02.8725688+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92ac4925-3e75-4443-8375-5b55fa435436">
+      <Output>
+        <ErrorInfo>
+          <Message>Expected response.StatusCode to be HttpStatusCode.BadRequest {value: 400}, but found HttpStatusCode.NotFound {value: 404}.</Message>
+          <StackTrace>   at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)&#xD;
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+   at FluentAssertions.Primitives.EnumAssertions`2.Be(TEnum expected, String because, Object[] becauseArgs)&#xD;
+   at Mmo_UnitTest.IntegrationTests.ApiRoleIntegrationTests.Test1() in D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\IntegrationTests\ApiRoleIntergationTest.cs:line 25&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fd3c06e1-cccc-44e3-9434-cdbfc15e989c" testId="badea678-7cdb-ba7b-c026-84d1c86a44da" testName="Mmo_UnitTest.UnitTest.RoleTest.Create_ShouldReturnOk_WhenCreated" computerName="THEHIEU" duration="00:00:00.0182810" startTime="2025-10-19T23:42:02.2870992+07:00" endTime="2025-10-19T23:42:02.2870995+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fd3c06e1-cccc-44e3-9434-cdbfc15e989c" />
+    <UnitTestResult executionId="0b403090-73c3-4ede-af34-6400ecf251dc" testId="ffb487d1-9117-02c6-0926-e669f1726120" testName="Mmo_UnitTest.UnitTest.RoleTest.Create_ShouldReturnBadRequest_WhenModelInvalid" computerName="THEHIEU" duration="00:00:00.0030844" startTime="2025-10-19T23:42:02.3174659+07:00" endTime="2025-10-19T23:42:02.3174664+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0b403090-73c3-4ede-af34-6400ecf251dc" />
+    <UnitTestResult executionId="a31cc071-fe48-41db-a916-319b618c2810" testId="c09d8c83-fcf6-c34d-c938-923cc81b3409" testName="Mmo_UnitTest.UnitTest.RoleTest.Get_ShouldReturnBadRequest_WhenServiceReturnsNull" computerName="THEHIEU" duration="00:00:00.0036898" startTime="2025-10-19T23:42:02.2908849+07:00" endTime="2025-10-19T23:42:02.2908853+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a31cc071-fe48-41db-a916-319b618c2810" />
+    <UnitTestResult executionId="3cc3930e-4655-4a34-ad1e-cd61a31fe582" testId="67f75292-9bf1-fb09-7481-42f12bf633a9" testName="Mmo_UnitTest.UnitTest.RoleTest.Get_ShouldReturnOk_WithRoles" computerName="THEHIEU" duration="00:00:00.0019715" startTime="2025-10-19T23:42:02.3511381+07:00" endTime="2025-10-19T23:42:02.3511385+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3cc3930e-4655-4a34-ad1e-cd61a31fe582" />
+    <UnitTestResult executionId="e8618a5a-0b05-4612-8a22-5fb732ab0f41" testId="f1b808f4-1161-100c-955b-1043b185678d" testName="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnBadRequest_ForInvalidId(id: 0)" computerName="THEHIEU" duration="00:00:00.1625857" startTime="2025-10-19T23:42:02.2429657+07:00" endTime="2025-10-19T23:42:02.2429868+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8618a5a-0b05-4612-8a22-5fb732ab0f41" />
+    <UnitTestResult executionId="bf617075-474d-430a-93e0-1d07ee12d435" testId="2b2f4c67-4c2c-4028-c7fc-de16785adbe7" testName="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnBadRequest_ForInvalidId(id: -1)" computerName="THEHIEU" duration="00:00:00.0012506" startTime="2025-10-19T23:42:02.2458476+07:00" endTime="2025-10-19T23:42:02.2458477+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf617075-474d-430a-93e0-1d07ee12d435" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnOk_WithRole" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="58ddd06d-1967-3eae-e1dc-f78fa9fc476c">
+      <Execution id="c11c2098-e739-4438-a5ce-deab24edf8eb" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="GetById_ShouldReturnOk_WithRole" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.Create_ShouldReturnOk_WhenCreated" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="badea678-7cdb-ba7b-c026-84d1c86a44da">
+      <Execution id="fd3c06e1-cccc-44e3-9434-cdbfc15e989c" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="Create_ShouldReturnOk_WhenCreated" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnNotFound_WhenRoleMissing" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="dfcb95a0-2aff-2a6e-2a0b-70d126925ce1">
+      <Execution id="28fb3d5a-c9ec-4d06-b368-18045545c86c" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="GetById_ShouldReturnNotFound_WhenRoleMissing" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.Get_ShouldReturnOk_WithRoles" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="67f75292-9bf1-fb09-7481-42f12bf633a9">
+      <Execution id="3cc3930e-4655-4a34-ad1e-cd61a31fe582" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="Get_ShouldReturnOk_WithRoles" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.Create_ShouldReturnBadRequest_WhenServiceFails" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="b5cfee5b-06a0-6484-b151-7a20fdab9491">
+      <Execution id="c2588118-72d3-447d-aa95-1a99c8ff78e1" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="Create_ShouldReturnBadRequest_WhenServiceFails" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnBadRequest_ForInvalidId(id: 0)" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="f1b808f4-1161-100c-955b-1043b185678d">
+      <Execution id="e8618a5a-0b05-4612-8a22-5fb732ab0f41" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="GetById_ShouldReturnBadRequest_ForInvalidId" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.Create_ShouldReturnBadRequest_WhenModelInvalid" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="ffb487d1-9117-02c6-0926-e669f1726120">
+      <Execution id="0b403090-73c3-4ede-af34-6400ecf251dc" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="Create_ShouldReturnBadRequest_WhenModelInvalid" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.GetById_ShouldReturnBadRequest_ForInvalidId(id: -1)" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="2b2f4c67-4c2c-4028-c7fc-de16785adbe7">
+      <Execution id="bf617075-474d-430a-93e0-1d07ee12d435" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="GetById_ShouldReturnBadRequest_ForInvalidId" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.UnitTest.RoleTest.Get_ShouldReturnBadRequest_WhenServiceReturnsNull" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="c09d8c83-fcf6-c34d-c938-923cc81b3409">
+      <Execution id="a31cc071-fe48-41db-a916-319b618c2810" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.UnitTest.RoleTest" name="Get_ShouldReturnBadRequest_WhenServiceReturnsNull" />
+    </UnitTest>
+    <UnitTest name="Mmo_UnitTest.IntegrationTests.ApiRoleIntegrationTests.Test1" storage="d:\projectswpgroup3\group3_swp391\backend\mmo\mmo_test\bin\debug\net8.0\mmo_test.dll" id="ec748fee-d3e0-3260-6d52-1d8cbcb9f774">
+      <Execution id="92ac4925-3e75-4443-8375-5b55fa435436" />
+      <TestMethod codeBase="D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Mmo_UnitTest.IntegrationTests.ApiRoleIntegrationTests" name="Test1" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="dfcb95a0-2aff-2a6e-2a0b-70d126925ce1" executionId="28fb3d5a-c9ec-4d06-b368-18045545c86c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b5cfee5b-06a0-6484-b151-7a20fdab9491" executionId="c2588118-72d3-447d-aa95-1a99c8ff78e1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58ddd06d-1967-3eae-e1dc-f78fa9fc476c" executionId="c11c2098-e739-4438-a5ce-deab24edf8eb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ec748fee-d3e0-3260-6d52-1d8cbcb9f774" executionId="92ac4925-3e75-4443-8375-5b55fa435436" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="badea678-7cdb-ba7b-c026-84d1c86a44da" executionId="fd3c06e1-cccc-44e3-9434-cdbfc15e989c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ffb487d1-9117-02c6-0926-e669f1726120" executionId="0b403090-73c3-4ede-af34-6400ecf251dc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c09d8c83-fcf6-c34d-c938-923cc81b3409" executionId="a31cc071-fe48-41db-a916-319b618c2810" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="67f75292-9bf1-fb09-7481-42f12bf633a9" executionId="3cc3930e-4655-4a34-ad1e-cd61a31fe582" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f1b808f4-1161-100c-955b-1043b185678d" executionId="e8618a5a-0b05-4612-8a22-5fb732ab0f41" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2b2f4c67-4c2c-4028-c7fc-de16785adbe7" executionId="bf617075-474d-430a-93e0-1d07ee12d435" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="10" executed="10" passed="9" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>NUnit Adapter 4.5.0.0: Test execution started&#xD;
+Running all tests in D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\bin\Debug\net8.0\Mmo_Test.dll&#xD;
+   NUnit3TestExecutor discovered 0 of 0 NUnit test cases using Current Discovery mode, Explicit run&#xD;
+NUnit Adapter 4.5.0.0: Test execution complete&#xD;
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.20)&#xD;
+[xUnit.net 00:00:00.12]   Discovering: Mmo_Test&#xD;
+[xUnit.net 00:00:00.19]   Discovered:  Mmo_Test&#xD;
+[xUnit.net 00:00:00.19]   Starting:    Mmo_Test&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+[xUnit.net 00:00:01.03]       Expected response.StatusCode to be HttpStatusCode.BadRequest {value: 400}, but found HttpStatusCode.NotFound {value: 404}.&#xD;
+[xUnit.net 00:00:01.03]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message)&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)&#xD;
+[xUnit.net 00:00:01.03]            at FluentAssertions.Primitives.EnumAssertions`2.Be(TEnum expected, String because, Object[] becauseArgs)&#xD;
+[xUnit.net 00:00:01.03]         D:\ProjectSWPGroup3\Group3_SWP391\BackEnd\Mmo\Mmo_Test\IntegrationTests\ApiRoleIntergationTest.cs(25,0): at Mmo_UnitTest.IntegrationTests.ApiRoleIntegrationTests.Test1()&#xD;
+[xUnit.net 00:00:01.03]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.04]   Finished:    Mmo_Test&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="THEHIEU" outcome="Error" timestamp="2025-10-19T23:42:02.8705531+07:00">
+        <Text>[xUnit.net 00:00:01.03]     Mmo_UnitTest.IntegrationTests.ApiRoleIntegrationTests.Test1 [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
