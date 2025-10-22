@@ -1,12 +1,12 @@
 import { type ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "../../Button/Button.tsx";
-import routesConfig from "../../../config/routesConfig.tsx";
+import Button from "@components/Button/Button.tsx";
+import routesConfig from "@config/routesConfig.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { authServices } from "../../../services/AuthServices";
-import type { LoginRequest } from "../../../models/modelRequest/LoginRequest";
-import { useAuth } from "../../../hooks/useAuth.tsx";
+import { authServices } from "@services/AuthServices";
+import type { LoginRequest } from "@models/modelRequest/LoginRequest";
+import { useAuth } from "@hooks/useAuth.tsx";
 import Cookies from "js-cookie";
 
 const LoginMenu = () => {

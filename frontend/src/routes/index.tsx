@@ -1,15 +1,15 @@
 import type { FC, ReactNode } from "react";
-import Home from "../pages/UserAndSeller/Home/Home.tsx";
-import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
-import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
-import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
-import CategoryProducts from "../pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
-import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
-import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
-import AdminPanel from "../pages/Admin/AdminPanel.tsx";
-import AdminProductManagement from "../pages/Admin/AdminProductManagement.tsx";
-import routesConfig from "../config/routesConfig.tsx";
-import type { User } from "../models/modelResponse/LoginResponse";
+import Home from "@pages/UserAndSeller/Home/Home.tsx";
+import DefaultLayout from "@components/Layouts/DefaultLayout/DefaultLayout.tsx";
+import HeaderAndFooter from "@components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
+import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
+import CategoryProducts from "@pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
+import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
+import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
+import AdminPanel from "@pages/Admin/AdminPanel.tsx";
+import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
+import routesConfig from "@config/routesConfig.tsx";
+import type { User } from "@models/modelResponse/LoginResponse";
 type AppRoute = {
   path: string;
   element: ReactNode;
