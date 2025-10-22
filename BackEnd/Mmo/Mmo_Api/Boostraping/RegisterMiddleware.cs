@@ -64,7 +64,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IRoleServices, RoleServices>();
         builder.Services.AddScoped<IShopServices, ShopServices>();
         builder.Services.AddScoped<ISubcategoryServices, SubcategoryServices>();
-        builder.Services.AddScoped<ISupportticketServices, SupportticketServices>();
+        builder.Services.AddScoped<ISupportTicketServices, SupportticketServices>();
         builder.Services.AddScoped<ISystemsconfigServices, SystemsconfigServices>();
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();

@@ -7,5 +7,6 @@ public interface IAccountServices:IBaseServices<Account>
     Task<Account?> GetByUsernameAsync(string username);
     Task<Account?> GetByEmailAsync(string email);
     Task<bool> VerifyPasswordAsync(Account account, string password);
+    Task<bool> ChangePasswordAsync(int accountId, string oldPassword, string newPassword);
     Task<bool> IsAccountActiveAsync(int accountId);
 }

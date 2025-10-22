@@ -3,7 +3,7 @@ using Mmo_Domain.Models;
 
 namespace Mmo_Application.Services;
 
-public class AccountServices:BaseServices<Account>,IAccountServices
+public class AccountServices : BaseServices<Account>, IAccountServices
 {
     public AccountServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
@@ -30,5 +30,30 @@ public class AccountServices:BaseServices<Account>,IAccountServices
     {
         var account = await GetByIdAsync(accountId);
         return account?.IsActive == true;
+    }
+
+    Task<Account?> IAccountServices.GetByUsernameAsync(string username)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<Account?> IAccountServices.GetByEmailAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IAccountServices.VerifyPasswordAsync(Account account, string password)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IAccountServices.ChangePasswordAsync(int accountId, string oldPassword, string newPassword)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IAccountServices.IsAccountActiveAsync(int accountId)
+    {
+        throw new NotImplementedException();
     }
 }

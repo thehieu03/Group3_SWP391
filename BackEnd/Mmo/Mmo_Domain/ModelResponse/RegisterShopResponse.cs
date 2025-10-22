@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Mmo_Domain.Models;
-
-public partial class Shop
+﻿namespace Mmo_Domain.ModelResponse
 {
+    public class RegisterShopResponse
+    {
         public int Id { get; set; }
         public uint? AccountId { get; set; }
         public string Name { get; set; } = null!;
@@ -17,14 +14,7 @@ public partial class Shop
         public string? CitizenId { get; set; }
         public string? IdCardFrontImage { get; set; }
         public string? IdCardBackImage { get; set; }
-        public int ReportCount { get; set; }
-        public sbyte IsActive { get; set; }
+        public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-
-    public virtual Account? Account { get; set; }
-
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
-
-    public virtual ICollection<Reply> Replies { get; set; } = new List<Reply>();
+    }
 }

@@ -46,7 +46,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Subcategory> Subcategories { get; set; }
 
-    public virtual DbSet<Supportticket> Supporttickets { get; set; }
+    public virtual DbSet<SupportTicket> Supporttickets { get; set; }
 
     public virtual DbSet<Systemsconfig> Systemsconfigs { get; set; }
 
@@ -547,7 +547,7 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("subcategories_ibfk_1");
         });
 
-        modelBuilder.Entity<Supportticket>(entity =>
+        modelBuilder.Entity<SupportTicket>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 

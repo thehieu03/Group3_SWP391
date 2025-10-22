@@ -1,4 +1,5 @@
 ﻿using Mmo_Domain.ModelResponse;
+using Mmo_Domain.Models;
 
 namespace Mmo_Api.Helper;
 
@@ -26,6 +27,18 @@ public class MapperClass : Profile
             .ForMember(dest => dest.ComplaintRate, opt => opt.MapFrom(src => 0))
             .ReverseMap();
         CreateMap<Product, ProductRequest>().ReverseMap();
+
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
+
+        CreateMap<Productvariant, ProductVariantResponse>().ReverseMap();
+        CreateMap<Shop, ShopResponse>().ReverseMap();
+        CreateMap<SupportTicket, SupportTicketResponse>()
+            .ForMember(dest => dest.Username,
+               opt => opt.MapFrom(src => src.Account != null ? src.Account.Username : null))
+            .ReverseMap();
+        CreateMap<SupportTicket, SupportTicketRequest>().ReverseMap();
+        CreateMap<Shop, RegisterShopResponse>().ReverseMap();
+        CreateMap<Shop, RegisterShopRequest>().ReverseMap();
+
     }
 }
