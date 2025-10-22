@@ -56,12 +56,12 @@ const LoginMenu = () => {
       });
       login(response.user);
       console.log("login success");
-      
-      if (response.user.roles.includes('ADMIN')) {
-        navigate('/admin/dashboard');
-      } else if (response.user.roles.includes('SELLER')) {
+
+      if (response.user.roles.includes("ADMIN")) {
+        navigate("/admin/dashboard");
+      } else if (response.user.roles.includes("SELLER")) {
         navigate(routesConfig.home);
-      } else if (response.user.roles.includes('USER')) {
+      } else if (response.user.roles.includes("USER")) {
         navigate(routesConfig.home);
       } else {
         navigate(routesConfig.home);

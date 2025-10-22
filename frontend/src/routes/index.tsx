@@ -7,6 +7,7 @@ import CategoryProducts from "../pages/UserAndSeller/CategoryProducts/CategoryPr
 import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
 import AdminPanel from "../pages/Admin/AdminPanel.tsx";
+import AdminProductManagement from "../pages/Admin/AdminProductManagement.tsx";
 import routesConfig from "../config/routesConfig.tsx";
 import type { User } from "../models/modelResponse/LoginResponse";
 type AppRoute = {
@@ -27,7 +28,7 @@ const publicRoutes: AppRoute[] = [
     layout: HeaderAndFooter,
   },
   {
-    path: routesConfig.categoryProducts + '/:id',
+    path: routesConfig.categoryProducts + "/:id",
     element: <CategoryProducts />,
     layout: DefaultLayout,
   },
@@ -42,65 +43,79 @@ const privateRoutes: AppRoute[] = [
     path: routesConfig.userProfile,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['USER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["USER", "SELLER", "ADMIN"],
   },
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['USER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["USER", "SELLER", "ADMIN"],
   },
 ];
 
 const sellerRoutes: AppRoute[] = [
   {
-    path: '/seller/dashboard',
+    path: "/seller/dashboard",
     element: <div>Seller Dashboard - Quản lý shop</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: '/seller/products',
+    path: "/seller/products",
     element: <div>Quản lý sản phẩm</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: '/seller/orders',
+    path: "/seller/orders",
     element: <div>Quản lý đơn hàng</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
 ];
 
 const adminRoutes: AppRoute[] = [
   {
-    path: '/admin/dashboard',
+    path: "/admin/dashboard",
     element: <AdminPanel />,
     layout: DefaultLayout,
-    requiredRoles: ['ADMIN'],
+    requiredRoles: ["ADMIN"],
+  },
+  {
+    path: "/admin/products",
+    element: <AdminProductManagement />,
+    layout: DefaultLayout,
+    requiredRoles: ["ADMIN"],
   },
 ];
-export const hasRequiredRole = (user: User | null, requiredRoles?: string[]): boolean => {
+export const hasRequiredRole = (
+  user: User | null,
+  requiredRoles?: string[]
+): boolean => {
   if (!requiredRoles || requiredRoles.length === 0) {
     return true;
   }
-  
+
   if (!user || !user.roles || user.roles.length === 0) {
     return false;
   }
-  
-  return requiredRoles.some(role => user.roles.includes(role));
+
+  return requiredRoles.some((role) => user.roles.includes(role));
 };
 
 export const getAccessibleRoutes = (user: User | null): AppRoute[] => {
-  const allRoutes = [...publicRoutes, ...privateRoutes, ...sellerRoutes, ...adminRoutes];
-  
-  return allRoutes.filter(route => {
+  const allRoutes = [
+    ...publicRoutes,
+    ...privateRoutes,
+    ...sellerRoutes,
+    ...adminRoutes,
+  ];
+
+  return allRoutes.filter((route) => {
     if (!route.requiredRoles) {
       return true;
     }
-    
+
     return hasRequiredRole(user, route.requiredRoles);
   });
 };
