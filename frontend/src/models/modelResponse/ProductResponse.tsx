@@ -1,4 +1,5 @@
 export interface ProductResponse {
+    price: any;
     id: number;
     shopId?: number | null;
     categoryId?: number | null;

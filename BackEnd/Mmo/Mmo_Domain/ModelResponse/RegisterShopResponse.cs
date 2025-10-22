@@ -17,4 +17,8 @@
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

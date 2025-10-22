@@ -14,4 +14,8 @@
         public string? IdCardFrontImage { get; set; }
         public string? IdCardBackImage { get; set; }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

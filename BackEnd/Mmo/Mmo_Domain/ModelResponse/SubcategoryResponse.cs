@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 namespace Mmo_Domain.ModelResponse;
+=======
+﻿namespace Mmo_Domain.ModelResponse;
+>>>>>>> Stashed changes
 
 public class SubcategoryResponse
 {
@@ -8,4 +12,7 @@ public class SubcategoryResponse
     public bool? IsActive { get; set; }
 }
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes

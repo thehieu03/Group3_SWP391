@@ -9,4 +9,8 @@ public interface ISupportTicketServices
     Task<int> AddAsync(SupportTicket ticket);
     Task<int> UpdateAsync(SupportTicket ticket);
     Task<int> DeleteAsync(int id);
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

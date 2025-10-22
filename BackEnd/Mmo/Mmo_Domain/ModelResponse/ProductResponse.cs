@@ -35,7 +35,11 @@ public class ProductResponse
     public string? ShopName { get; set; }
     public string? CategoryName { get; set; }
     public string? SubcategoryName { get; set; }
+<<<<<<< Updated upstream
     
+=======
+
+>>>>>>> Stashed changes
     //  data for product card
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
@@ -49,6 +53,19 @@ public class ProductResponse
     public ShopResponse? Shop { get; set; }
 
     public List<ProductVariantResponse>? ProductVariants { get; set; }
+<<<<<<< Updated upstream
+}
+
+public class ProductVariantResponse
+{
+    public int Id { get; set; }
+    public int ProductId { get; set; }
+    public string? Name { get; set; }
+    public decimal? Price { get; set; }
+    public bool IsActive { get; set; }
+
+=======
+>>>>>>> Stashed changes
 }
 
 public class ProductVariantResponse

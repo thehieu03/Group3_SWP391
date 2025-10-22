@@ -6,4 +6,8 @@
     public string Phone { get; set; } = string.Empty;
     public string Username { get; set; } = string.Empty;
     public int? AccountId { get; set; }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

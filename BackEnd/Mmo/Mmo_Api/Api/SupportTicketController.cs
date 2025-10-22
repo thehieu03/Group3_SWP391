@@ -1,7 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+<<<<<<< Updated upstream
 using Microsoft.AspNetCore.OData.Query;
 using Mmo_Application.Services;
+=======
+>>>>>>> Stashed changes
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.ModelRequest;
 using Mmo_Domain.ModelResponse;
@@ -27,6 +30,7 @@ namespace Mmo_Api.Api
             _mapper = mapper;
         }
 
+<<<<<<< Updated upstream
         public ISupportTicketServices Get_supportTicketServices()
         {
             return _supportTicketServices;
@@ -39,18 +43,68 @@ namespace Mmo_Api.Api
         [ProducesResponseType(typeof(IEnumerable<SupportTicketResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<SupportTicketResponse>>> GetAllTickets(ISupportTicketServices _supportTicketServices)
         {
+=======
+        // ? GET: api/supporttickets?pageNumber=1&pageSize=10
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(IEnumerable<SupportTicketResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<object>> GetAllTickets(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            // ? Gi?i h?n pageSize ch? ???c phép 5, 10, 20
+            var allowedPageSizes = new[] { 5, 10, 20 };
+            if (!allowedPageSizes.Contains(pageSize))
+                pageSize = 10; // m?c ??nh 10 n?u nh?p sai
+
+            if (pageNumber <= 0)
+                pageNumber = 1;
+
+>>>>>>> Stashed changes
             var tickets = await _supportTicketServices.GetAllAsync();
             if (tickets == null || !tickets.Any())
                 return NotFound();
 
+<<<<<<< Updated upstream
             var accounts = await _accountServices.GetAllAsync();
             foreach (var ticket in tickets)
+=======
+            var totalRecords = tickets.Count();
+            var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            // ? Phân trang
+            var pagedTickets = tickets
+                .OrderByDescending(t => t.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // ? Gán thông tin tài kho?n
+            var accounts = await _accountServices.GetAllAsync();
+            foreach (var ticket in pagedTickets)
+>>>>>>> Stashed changes
             {
                 ticket.Account = accounts.FirstOrDefault(a => a.Id == ticket.AccountId);
             }
 
+<<<<<<< Updated upstream
             var response = _mapper.Map<IEnumerable<SupportTicketResponse>>(tickets);
             return Ok(response);
+=======
+            var response = _mapper.Map<IEnumerable<SupportTicketResponse>>(pagedTickets);
+
+            // ? Tr? v? d? li?u kèm meta
+            return Ok(new
+            {
+                TotalRecords = totalRecords,
+                TotalPages = totalPages,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                AllowedPageSizes = allowedPageSizes,
+                Data = response
+            });
+>>>>>>> Stashed changes
         }
 
         [HttpGet("getTicketById")]
@@ -80,7 +134,10 @@ namespace Mmo_Api.Api
 
             var newTicket = _mapper.Map<SupportTicket>(request);
             newTicket.CreatedAt = DateTime.Now;
+<<<<<<< Updated upstream
             
+=======
+>>>>>>> Stashed changes
 
             var result = await _supportTicketServices.AddAsync(newTicket);
             return result > 0 ? Ok() : BadRequest();

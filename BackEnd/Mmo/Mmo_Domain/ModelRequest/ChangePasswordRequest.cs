@@ -1,16 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
-namespace Mmo_Domain.ModelRequest;
-
-public class ChangePasswordRequest
+namespace Mmo_Domain.ModelRequest
 {
-    [Required(ErrorMessage = "Account ID is required")]
-    [JsonPropertyName("accountId")]
-    public int AccountId { get; set; }
-
-    [Required(ErrorMessage = "New password is required")]
-    [JsonPropertyName("password")]
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "New password must be between 6 and 100 characters")]
-    public string NewPassword { get; set; } = null!;
+    public class ChangePasswordRequest
+    {
+        public string OldPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+    }
 }

@@ -14,7 +14,16 @@ const routesConfig  =  {
     share:'/share',
     faqs:'/faqs',
     forgotPassword:'/forgotPassword',
+<<<<<<< Updated upstream
     registerShop:'/registerShop'
+=======
+    infoAccount:'/infoAccount',
+    userProfile:'/userProfile',
+    registerShop:'/registerShop',
+    getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
+    getProductUrl: (id: number) => `/product/${id}`,
+    getCategoryProductsUrl: (id: number) => `/category/${id}`
+>>>>>>> Stashed changes
 };
 
 export default routesConfig ;

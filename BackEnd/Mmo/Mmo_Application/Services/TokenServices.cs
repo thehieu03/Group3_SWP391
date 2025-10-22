@@ -130,6 +130,8 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
         var claims = new List<Claim>
         {
+            new("id", account.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
             new(ClaimTypes.NameIdentifier, account.Id.ToString()),
             new(ClaimTypes.Name, account.Username),
             new(ClaimTypes.Email, account.Email),

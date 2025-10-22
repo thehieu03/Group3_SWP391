@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 
 namespace Mmo_Domain.Models;
@@ -6,7 +6,11 @@ namespace Mmo_Domain.Models;
 public partial class Shop
 {
         public int Id { get; set; }
+<<<<<<< Updated upstream
         public uint? AccountId { get; set; }
+=======
+        public int? AccountId { get; set; }
+>>>>>>> Stashed changes
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public string? Phone { get; set; }

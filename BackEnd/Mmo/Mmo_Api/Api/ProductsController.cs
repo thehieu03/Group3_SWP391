@@ -6,6 +6,14 @@ using Mmo_Domain.Models;
 using Mmo_Domain.ModelRequest;
 using Mmo_Domain.ModelResponse;
 
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Mmo_Application.Services.Interface;
+using Mmo_Domain.Models;
+using Mmo_Domain.ModelRequest;
+using Mmo_Domain.ModelResponse;
+
 namespace Mmo_Api.Api;
 
 [Route("api/products")]
@@ -145,5 +153,54 @@ public class ProductsController : ControllerBase
         var productAdd = _mapper.Map<Product>(productRequest);
         var result = await _productServices.AddAsync(productAdd);
         return result > 0 ? Ok() : BadRequest();
+    }
+
+    [HttpGet("by-subcategory")]
+    [EnableQuery]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProductsBySubcategory([FromQuery] int subcategoryId)
+    {
+        // 🟢 Lấy tất cả sản phẩm
+        var allProducts = await _productServices.GetAllAsync();
+        if (allProducts == null || !allProducts.Any())
+            return NotFound("Không có sản phẩm nào trong hệ thống.");
+
+        // 🟢 Lọc theo subcategoryId
+        var filteredProducts = allProducts
+            .Where(p => p.SubcategoryId == (uint)subcategoryId)
+            .ToList();
+
+        if (!filteredProducts.Any())
+            return NotFound($"Không tìm thấy sản phẩm thuộc SubcategoryId = {subcategoryId}");
+
+        // 🟢 Lấy variants
+        var variants = await _productVariantServices.GetAllAsync();
+        foreach (var product in filteredProducts)
+        {
+            product.Productvariants = variants
+                .Where(v => v.ProductId == product.Id)
+                .ToList();
+        }
+
+        // 🟢 Gắn category
+        var categories = await _categoryServices.GetAllAsync();
+        foreach (var product in filteredProducts)
+        {
+            product.Category = categories.FirstOrDefault(c => c.Id == product.CategoryId);
+        }
+
+        // 🟢 Gắn shop
+        var shops = await _shopServices.GetAllAsync();
+        foreach (var product in filteredProducts)
+        {
+            product.Shop = shops.FirstOrDefault(s => s.Id == product.ShopId);
+        }
+
+        // 🟢 Map sang DTO để trả ra frontend
+        var response = _mapper.Map<IEnumerable<ProductResponse>>(filteredProducts);
+
+        return Ok(response);
     }
 }
