@@ -6,6 +6,8 @@ import type { LoginRequest } from "../../../models/modelRequest/LoginRequest";
 import { useAuth } from "../../../hooks/useAuth.tsx";
 import Cookies from "js-cookie";
 import routesConfig from "../../../config/routesConfig.tsx";
+import Header from "../../../components/Layouts/components/Header/Header.tsx";
+import Footer from "../../../components/Layouts/components/Footer/Footer.tsx";
 import "./Register.css";
 
 const Register = () => {
@@ -199,10 +201,12 @@ const Register = () => {
   };
 
   return (
-    <div className="login-register-container">
-      <div className="form-wrapper">
-        {/* FORM ĐĂNG NHẬP */}
-        <div className="form-box form-login">
+    <>
+      <Header />
+      <div className="login-register-container">
+        <div className="form-wrapper">
+          {/* FORM ĐĂNG NHẬP */}
+          <div className="form-box form-login">
           <h2 className="form-title">Đăng nhập</h2>
 
           {errorLogin && (
@@ -345,7 +349,9 @@ const Register = () => {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 

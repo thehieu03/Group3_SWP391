@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_application\\services\\shopservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\shopservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\swp_fall25\\new folder\\backend\\mmo\\mmo_domain\\modelrequest\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelrequest\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -135,6 +139,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ShopServices.cs",
+              "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\ShopServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\ShopServices.cs",
+              "ToolTip": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\ShopServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\ShopServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T14:54:32.085Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "RegisterRequest.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\RegisterRequest.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\RegisterRequest.cs",
@@ -147,7 +164,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "IAccountServices.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\IAccountServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\Interface\\IAccountServices.cs",
@@ -155,12 +172,11 @@
               "RelativeToolTip": "Mmo_Application\\Services\\Interface\\IAccountServices.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-21T19:14:27.612Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-21T19:14:27.612Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AccountServices.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\AccountServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\AccountServices.cs",
@@ -168,12 +184,11 @@
               "RelativeToolTip": "Mmo_Application\\Services\\AccountServices.cs",
               "ViewState": "AgIAAIsAAAAAAAAAAADwvw0AAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-21T19:14:18.692Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-21T19:14:18.692Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "GenericRepository.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\GenericRepository.cs",
               "RelativeDocumentMoniker": "Mmo_Infrastructure\\Repository\\GenericRepository.cs",
@@ -181,12 +196,11 @@
               "RelativeToolTip": "Mmo_Infrastructure\\Repository\\GenericRepository.cs",
               "ViewState": "AgIAAFcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-21T19:14:09.268Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-21T19:14:09.268Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "ShopController.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\ShopController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\ShopController.cs",
@@ -194,12 +208,11 @@
               "RelativeToolTip": "Mmo_Api\\Api\\ShopController.cs",
               "ViewState": "AgIAAAwAAAAAAAAAAAAAABgAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-20T07:06:48.335Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-20T07:06:48.335Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "UserResponse.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\UserResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\UserResponse.cs",
@@ -211,7 +224,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Supportticket.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Supportticket.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Supportticket.cs",
@@ -223,7 +236,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Subcategory.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Subcategory.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Subcategory.cs",
@@ -235,7 +248,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "LoginRequest.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\LoginRequest.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\LoginRequest.cs",
@@ -243,12 +256,11 @@
               "RelativeToolTip": "Mmo_Domain\\ModelRequest\\LoginRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T11:54:25.304Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-19T11:54:25.304Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "ITokenServices.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Interface\\ITokenServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\Interface\\ITokenServices.cs",
@@ -256,12 +268,11 @@
               "RelativeToolTip": "Mmo_Application\\Services\\Interface\\ITokenServices.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-21T19:14:35.878Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-21T19:14:35.878Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Category.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Category.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Category.cs",
@@ -273,7 +284,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "Systemsconfig.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Systemsconfig.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Systemsconfig.cs",
@@ -285,7 +296,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "Account.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Account.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Account.cs",
@@ -297,7 +308,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "OrderController.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\OrderController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\OrderController.cs",
@@ -309,7 +320,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "ProductsController.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\ProductsController.cs",
@@ -321,7 +332,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "IBaseServices.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\Base\\IBaseServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\Base\\IBaseServices.cs",
@@ -333,7 +344,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "launchSettings.json",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "Mmo_Api\\Properties\\launchSettings.json",
@@ -345,7 +356,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "CategoryResponse.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\CategoryResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\CategoryResponse.cs",
@@ -357,7 +368,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "ProductResponse.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\ProductResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\ProductResponse.cs",
@@ -369,7 +380,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "AccountResponse.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AccountResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AccountResponse.cs",
@@ -381,7 +392,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Models\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\AppDbContext.cs",
@@ -393,7 +404,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "RefreshTokenResponse.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\RefreshTokenResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\RefreshTokenResponse.cs",
@@ -405,7 +416,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "AuthResponse.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\AuthResponse.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\AuthResponse.cs",
@@ -417,7 +428,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "RefreshTokenRequest.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\RefreshTokenRequest.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\RefreshTokenRequest.cs",
@@ -429,7 +440,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\appsettings.json",
               "RelativeDocumentMoniker": "Mmo_Api\\appsettings.json",
@@ -441,7 +452,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "TokenServices.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Application\\Services\\TokenServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\TokenServices.cs",
@@ -453,7 +464,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 30,
               "Title": "Mmo_Domain.csproj",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\Mmo_Domain.csproj",
               "RelativeDocumentMoniker": "Mmo_Domain\\Mmo_Domain.csproj",
@@ -465,7 +476,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "ChangePasswordRequest.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\ChangePasswordRequest.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\ChangePasswordRequest.cs",
@@ -477,7 +488,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\AuthController.cs",
@@ -489,7 +500,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "AccountController.cs",
               "DocumentMoniker": "D:\\SWP_Fall25\\New folder\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\AccountController.cs",
