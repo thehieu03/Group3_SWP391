@@ -8,9 +8,11 @@ import type {ProductResponse} from "../../models/modelResponse/ProductResponse.t
 import type {SubcategoryResponse} from "../../models/modelResponse/SubcategoryResponse.tsx";
 import {productServices} from "../../services/ProductServices.tsx";
 import {subcategoryServices} from "../../services/SubcategoryServices.tsx";
+import { useNavigate } from "react-router-dom";
 
 
 const Products: FC = () => {
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const [products, setProducts] = useState<ProductResponse[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -27,7 +29,7 @@ const Products: FC = () => {
     // Redirect if no category is selected
     useEffect(() => {
         if (categoryId === null) {
-            window.location.href = '/';
+            navigate("/");
         }
     }, [categoryId]);
 
@@ -187,7 +189,7 @@ const Products: FC = () => {
     }
 
     return (
-        <div className="mx-auto max-w-6xl px-4 py-5">
+        <div className="h-full px-4 py-5">
             <div className="mb-4 rounded-lg bg-white p-4 shadow">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
                     <input
@@ -257,8 +259,8 @@ const Products: FC = () => {
                     </div>
                 </aside>
 
-                <section className="min-w-0 flex-1">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <section className=" flex-1">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
                         {(loading ? [] : mappedProducts).map((p) => (
                             <ProductCard key={p.id} product={p} />
                         ))}
