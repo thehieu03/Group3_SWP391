@@ -22,14 +22,18 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProductsByCategory([FromQuery] int categoryId,
-        [FromQuery] int? subcategoryId, [FromQuery] string? searchTerm, [FromQuery] string? sortBy)
+    [ProducesResponseType(typeof(PaginationResponse<ProductResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PaginationResponse<ProductResponse>>> GetProductsByCategory([FromQuery] int categoryId,
+        [FromQuery] int? subcategoryId, [FromQuery] string? searchTerm, [FromQuery] string? sortBy,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 8)
     {
         if (categoryId <= 0)
         {
             return BadRequest("CategoryId is required and must be greater than 0");
         }
+
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 8;
 
         var products = await _productServices.GetAllWithRelatedAsync();
 
@@ -48,9 +52,21 @@ public class ProductsController : ControllerBase
             products = products.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (!products.Any())
+        var totalItems = products.Count();
+        var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+        if (totalItems == 0)
         {
-            return NotFound();
+            return Ok(new PaginationResponse<ProductResponse>
+            {
+                Data = new List<ProductResponse>(),
+                CurrentPage = page,
+                TotalPages = 0,
+                TotalItems = 0,
+                ItemsPerPage = pageSize,
+                HasNextPage = false,
+                HasPreviousPage = false
+            });
         }
 
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(products);
@@ -84,7 +100,24 @@ public class ProductsController : ControllerBase
             }
         }
 
-        return Ok(resultResponse);
+        // Apply pagination
+        var paginatedData = resultResponse
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var paginationResponse = new PaginationResponse<ProductResponse>
+        {
+            Data = paginatedData,
+            CurrentPage = page,
+            TotalPages = totalPages,
+            TotalItems = totalItems,
+            ItemsPerPage = pageSize,
+            HasNextPage = page < totalPages,
+            HasPreviousPage = page > 1
+        };
+
+        return Ok(paginationResponse);
     }
 
 

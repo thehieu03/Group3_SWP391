@@ -3,9 +3,11 @@ import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import Button from "../../components/Button/Button";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import Pagination from "../../components/Pagination/Pagination";
 import type { ProductCardData } from "../../components/ProductCard/ProductCard";
 import type {ProductResponse} from "../../models/modelResponse/ProductResponse.tsx";
 import type {SubcategoryResponse} from "../../models/modelResponse/SubcategoryResponse.tsx";
+import type {PaginationResponse} from "../../models/modelResponse/PaginationResponse.tsx";
 import {productServices} from "../../services/ProductServices.tsx";
 import {subcategoryServices} from "../../services/SubcategoryServices.tsx";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +24,9 @@ const Products: FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [sortBy, setSortBy] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const [pagination, setPagination] = useState<PaginationResponse<ProductResponse> | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pageSize] = useState<number>(8);
 
     // Get category ID from URL params
     const categoryId = id ? parseInt(id) : null;
@@ -31,6 +36,11 @@ const Products: FC = () => {
         if (categoryId === null) {
             navigate("/");
         }
+    }, [categoryId]);
+
+    // Reset page when category changes
+    useEffect(() => {
+        setCurrentPage(1);
     }, [categoryId]);
 
     // Load categories and products when component mounts or categoryId changes
@@ -49,14 +59,17 @@ const Products: FC = () => {
                 }
                 
                 // Fetch products by category
-                const prods = await productServices.getProductsByCategory({ 
+                const response = await productServices.getProductsByCategory({ 
                     categoryId: categoryId, 
                     searchTerm: searchTerm || undefined,
-                    sortBy: sortBy || undefined 
+                    sortBy: sortBy || undefined,
+                    page: currentPage,
+                    pageSize: pageSize
                 });
                 
                 if (mounted) {
-                    setProducts(prods);
+                    setProducts(response.data);
+                    setPagination(response);
                 }
             } catch (err) {
                 console.error('Error fetching data:', err);
@@ -68,9 +81,9 @@ const Products: FC = () => {
             }
         })();
         return () => { mounted = false; };
-    }, [categoryId, searchTerm, sortBy]);
+    }, [categoryId, searchTerm, sortBy, currentPage]);
 
-    // fetch subcategories based on category 
+    // fetch subcategories
     useEffect(() => {
         let mounted = true;
         (async () => {
@@ -88,7 +101,6 @@ const Products: FC = () => {
         return () => { mounted = false; };
     }, [selectedCategory]);
 
-    // Debounced search effect
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             if (searchTerm !== "") {
@@ -107,26 +119,52 @@ const Products: FC = () => {
             .filter(([, v]) => v)
             .map(([k]) => Number(k));
 
-        let res: ProductResponse[] = [];
+        let response: PaginationResponse<ProductResponse>;
         const searchParams = {
             categoryId: categoryId,
             searchTerm: searchTerm || undefined,
-            sortBy: sortBy || undefined
+            sortBy: sortBy || undefined,
+            page: currentPage,
+            pageSize: pageSize
         };
 
         if (subcatIds.length > 0) {
             const results = await Promise.all(subcatIds.map(id => productServices.getProductsByCategory({ 
                 subcategoryId: id, 
-                ...searchParams 
+                ...searchParams,
+                page: 1,
+                pageSize: 1000 // Get all results for subcategory filtering
             })));
-            const flat = results.flat();
+            const flat = results.flatMap(r => r.data);
             const seen = new Set<number>();
-            res = flat.filter(p => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+            const uniqueProducts = flat.filter(p => (seen.has(p.id) ? false : (seen.add(p.id), true)));
+            
+            // Manual pagination for subcategory results
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const paginatedProducts = uniqueProducts.slice(startIndex, endIndex);
+            
+            response = {
+                data: paginatedProducts,
+                currentPage: currentPage,
+                totalPages: Math.ceil(uniqueProducts.length / pageSize),
+                totalItems: uniqueProducts.length,
+                itemsPerPage: pageSize,
+                hasNextPage: endIndex < uniqueProducts.length,
+                hasPreviousPage: currentPage > 1
+            };
         } else {
-            res = await productServices.getProductsByCategory(searchParams);
+            response = await productServices.getProductsByCategory(searchParams);
         }
-        setProducts(res);
+        
+        setProducts(response.data);
+        setPagination(response);
     }
+
+    // Handle page change
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     const mappedProducts: ProductCardData[] = products.map((p) => ({
         id: String(p.id),
@@ -268,6 +306,18 @@ const Products: FC = () => {
                             <div className="col-span-full text-center text-sm text-gray-500">Không có sản phẩm phù hợp.</div>
                         )}
                     </div>
+                    
+                    {/* Pagination */}
+                    {pagination && pagination.totalPages > 1 && (
+                        <div className="mt-8">
+                            <Pagination
+                                currentPage={pagination.currentPage}
+                                totalPages={pagination.totalPages}
+                                onPageChange={handlePageChange}
+                                className="mt-6"
+                            />
+                        </div>
+                    )}
                 </section>
             </div>
         </div>
