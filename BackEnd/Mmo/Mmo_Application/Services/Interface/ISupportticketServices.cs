@@ -1,6 +1,12 @@
-﻿namespace Mmo_Application.Services.Interface;
+﻿using Mmo_Domain.Models;
 
-public interface ISupportticketServices :IBaseServices<Supportticket>
+namespace Mmo_Application.Services.Interface;
+
+public interface ISupportTicketServices
 {
-    
+    Task<IEnumerable<SupportTicket>> GetAllAsync();
+    Task<SupportTicket?> GetByIdAsync(int id);
+    Task<int> AddAsync(SupportTicket ticket);
+    Task<int> UpdateAsync(SupportTicket ticket);
+    Task<int> DeleteAsync(int id);
 }

@@ -41,7 +41,7 @@ public partial class Account
 
     public virtual ICollection<Shop> Shops { get; set; } = new List<Shop>();
 
-    public virtual ICollection<Supportticket> Supporttickets { get; set; } = new List<Supportticket>();
+    public virtual ICollection<SupportTicket> Supporttickets { get; set; } = new List<SupportTicket>();
 
     public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
 }

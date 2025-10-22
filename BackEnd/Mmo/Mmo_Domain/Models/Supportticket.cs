@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Mmo_Domain.Models;
 
-public partial class Supportticket
+public partial class SupportTicket
 {
     public int Id { get; set; }
 
-    public int? AccountId { get; set; }
+    public int AccountId { get; set; }
 
     public string Email { get; set; } = null!;
 

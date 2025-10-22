@@ -7,11 +7,10 @@ import ProductDetails from "../pages/ProductDetails/ProductDetails.tsx";
 import Deposit from "../pages/Deposit/Deposit.tsx";
 import ChangePassword from "../pages/ChangePassword/ChangePassword.tsx";
 import routesConfig from "../config/routesConfig.tsx";
-<<<<<<< Updated upstream
 import Products from "../pages/Products/Products.tsx";
-=======
+import Support from "../pages/Support/Support.tsx";
+import RegisterShop from "../pages/RegisterShop/RegisterShop.tsx";
 
->>>>>>> Stashed changes
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -52,6 +51,16 @@ const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.changePassword,
     element: <ChangePassword />,
+    layout: HeaderAndFooter,
+  },
+  {
+    path: routesConfig.support,
+    element: <Support />,
+    layout: HeaderAndFooter,
+  },
+  {
+    path: routesConfig.registerShop,
+    element: <RegisterShop />,
     layout: HeaderAndFooter,
   },
 ];

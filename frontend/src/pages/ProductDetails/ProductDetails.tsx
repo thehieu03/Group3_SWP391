@@ -18,9 +18,10 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [discountCode, setDiscountCode] = useState("");
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
-  const isLoggedIn = false;
+  const [showBuyModal, setShowBuyModal] = useState(false);
+
+  const isLoggedIn = true;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -43,17 +44,14 @@ export default function ProductDetails() {
       if (!product?.categoryId) return;
       try {
         const res = await axios.get(`/api/products?categoryId=${product.categoryId}`);
-
         const filtered = res.data
           .filter((p: any) => p.categoryId === product.categoryId && p.id !== product.id)
           .slice(0, 5);
-
         setRelatedProducts(filtered);
       } catch (err) {
         console.error("Lỗi khi tải sản phẩm tương tự:", err);
       }
     };
-
     fetchRelatedProducts();
   }, [product?.categoryId, product?.id]);
 
@@ -77,6 +75,7 @@ export default function ProductDetails() {
 
   const currentPrice = selectedVariant?.price ?? product.fee ?? 0;
   const currentStock = selectedVariant?.stock ?? product.stock ?? 0;
+  const totalPrice = currentPrice * quantity; // ✅ Tính tổng tiền động
 
   const handleShopClick = () => {
     if (product.shop?.id) {
@@ -97,6 +96,7 @@ export default function ProductDetails() {
 
   return (
     <div className="container mx-auto max-w-[1024px] p-4 font-sans text-gray-800">
+      {/* --- Chi tiết sản phẩm --- */}
       <div className="flex flex-col md:flex-row bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition">
         {/* Ảnh */}
         <div className="md:w-1/2 flex justify-center mb-4 md:mb-0 relative">
@@ -115,6 +115,7 @@ export default function ProductDetails() {
           </div>
         </div>
 
+        {/* Thông tin */}
         <div className="md:w-1/2 md:pl-6">
           <h2 className="text-2xl font-bold text-green-700 mb-1">{product.name}</h2>
 
@@ -151,6 +152,7 @@ export default function ProductDetails() {
           </div>
           <div className="text-sm text-gray-500 mb-4">Kho: {currentStock}</div>
 
+          {/* Biến thể sản phẩm */}
           {product.productVariants && product.productVariants.length > 0 && (
             <div className="mb-4">
               <h4 className="font-semibold text-gray-800 mb-2">SẢN PHẨM</h4>
@@ -161,10 +163,11 @@ export default function ProductDetails() {
                     <button
                       key={variant.id}
                       onClick={() => setSelectedVariant(variant)}
-                      className={`border rounded-lg px-3 py-2 text-sm font-semibold transition ${isSelected
-                        ? "border-green-600 bg-green-100 text-green-700"
-                        : "border-gray-300 hover:border-green-400"
-                        }`}
+                      className={`border rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                        isSelected
+                          ? "border-green-600 bg-green-100 text-green-700"
+                          : "border-gray-300 hover:border-green-400"
+                      }`}
                     >
                       {variant.name}
                     </button>
@@ -174,6 +177,7 @@ export default function ProductDetails() {
             </div>
           )}
 
+          {/* Số lượng */}
           <div className="mb-4">
             <p className="text-sm font-semibold text-gray-700 mb-1">SỐ LƯỢNG</p>
             <div className="flex items-center gap-2 mb-3">
@@ -191,43 +195,30 @@ export default function ProductDetails() {
                 +
               </button>
             </div>
-
-            <input
-              type="text"
-              placeholder="NHẬP MÃ GIẢM GIÁ"
-              value={discountCode}
-              onChange={(e) => setDiscountCode(e.target.value)}
-              className="border border-gray-300 rounded-lg p-2 w-full text-sm focus:ring-1 focus:ring-green-600"
-            />
           </div>
 
+          {/* Nút hành động */}
           <div className="flex flex-wrap gap-2 mt-4">
             <button
               disabled={!isLoggedIn}
-              className={`flex-1 py-2 rounded font-semibold text-white transition ${isLoggedIn
-                ? "bg-[#7cc47f] hover:opacity-90"
-                : "bg-[#7cc47f]/60 cursor-not-allowed"
-                }`}
+              onClick={() => setShowBuyModal(true)}
+              className={`flex-1 py-2 rounded font-semibold text-white transition ${
+                isLoggedIn
+                  ? "bg-[#7cc47f] hover:opacity-90"
+                  : "bg-[#7cc47f]/60 cursor-not-allowed"
+              }`}
             >
               Mua hàng
             </button>
 
             <button
               disabled={!isLoggedIn}
-              className={`flex-1 py-2 rounded font-semibold text-white transition ${isLoggedIn
-                ? "bg-[#2d8a34] hover:opacity-90"
-                : "bg-[#2d8a34]/60 cursor-not-allowed"
-                }`}
-            >
-              Đặt trước
-            </button>
-
-            <button
-              disabled={!isLoggedIn}
-              className={`flex-1 py-2 rounded font-semibold border-2 transition ${isLoggedIn
-                ? "border-[#2d8a34] text-[#2d8a34] hover:bg-[#e8f6e9]"
-                : "border-gray-300 text-gray-400 cursor-not-allowed"
-                }`}
+              onClick={() => navigate(`/chat?shopId=${product.shop?.id || ""}`)}
+              className={`flex-1 py-2 rounded font-semibold border-2 transition ${
+                isLoggedIn
+                  ? "border-[#2d8a34] text-[#2d8a34] hover:bg-[#e8f6e9]"
+                  : "border-gray-300 text-gray-400 cursor-not-allowed"
+              }`}
             >
               Nhắn tin
             </button>
@@ -235,15 +226,70 @@ export default function ProductDetails() {
         </div>
       </div>
 
+      {/* ✅ Modal Xác nhận đơn hàng */}
+      {showBuyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-[400px] p-5 animate-fadeIn">
+            <h2 className="text-lg font-bold text-green-700 mb-3 text-center">
+              Xác nhận đơn hàng
+            </h2>
+            <p className="text-gray-700 text-sm mb-3 text-center">
+              Vui lòng xác nhận các thông tin sau:
+            </p>
+
+            <div className="bg-yellow-100 border border-yellow-400 rounded-md p-3 mb-3">
+              <p className="font-semibold text-sm text-gray-700">
+                Mặt hàng: {product.name}
+              </p>
+            </div>
+
+            <p className="text-sm">Số lượng: {quantity}</p>
+            <p className="text-sm">
+              Tổng tiền: {totalPrice.toLocaleString("vi-VN")} VND
+            </p>
+            <p className="font-semibold text-lg mt-1">
+              Tổng thanh toán:{" "}
+              <span className="text-green-700">
+                {totalPrice.toLocaleString("vi-VN")} VND
+              </span>
+            </p>
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowBuyModal(false)}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Đóng
+              </button>
+              <button
+                onClick={() => {
+                  alert(
+                    `🛒 Mua hàng thành công!\nTổng tiền: ${totalPrice.toLocaleString(
+                      "vi-VN"
+                    )} VND`
+                  );
+                  setShowBuyModal(false);
+                }}
+                className="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Mua hàng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- Tabs mô tả / đánh giá --- */}
       <div className="bg-white rounded-2xl mt-6 shadow-md">
         <div className="flex border-b">
           {["mota", "reviews"].map((t) => (
             <button
               key={t}
-              className={`flex-1 py-2 text-center font-semibold ${tab === t
-                ? "text-green-600 border-b-2 border-green-600"
-                : "text-gray-600"
-                }`}
+              className={`flex-1 py-2 text-center font-semibold ${
+                tab === t
+                  ? "text-green-600 border-b-2 border-green-600"
+                  : "text-gray-600"
+              }`}
               onClick={() => setTab(t)}
             >
               {t === "mota" ? "Mô tả" : "Đánh giá"}
@@ -264,6 +310,7 @@ export default function ProductDetails() {
         </div>
       </div>
 
+      {/* ✅ SẢN PHẨM TƯƠNG TỰ */}
       {relatedProducts.length > 0 && (
         <div className="mt-8">
           <h4 className="font-bold text-lg mb-4">Sản phẩm tương tự</h4>

@@ -9,11 +9,12 @@ const routesConfig  =  {
     orders:'/orders',
     paymentHistory:'/paymentHistory',
     contentManager:'/contentManager',
-    changePassword:'/changePassword',
+    changePassword:'/change-password',
     support:'/support',
     share:'/share',
     faqs:'/faqs',
     forgotPassword:'/forgotPassword',
+    registerShop:'/registerShop'
 };
 
 export default routesConfig ;
