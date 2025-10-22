@@ -31,7 +31,7 @@ public class ShopController : ControllerBase
 	{
 		try
 		{
-			var shops = await _shopServices.GetAllAsync();
+			var shops = await _shopServices.GetAllWithDetailsAsync();
 			if (!shops.Any())
 			{
 				return NotFound("No shops found");

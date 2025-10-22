@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AdminDashboard from './AdminDashboard';
-import UserManagement from './UserManagement';
+import UserManagement from './UserManagement/UserManagement.tsx';
 import ShopManagement from './ShopManagement';
 import CategoryManagement from './CategoryManagement';
 import SystemSettings from './SystemSettings';

@@ -34,7 +34,7 @@ public class BaseServices<T> : IBaseServices<T> where T : class
         return await _unitOfWork.SaveChangeAsync() > 0;
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
         return await _unitOfWork.GenericRepository<T>().GetAllAsync();
     }

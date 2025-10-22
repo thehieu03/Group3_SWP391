@@ -47,89 +47,83 @@ public class DashboardServices : IDashboardServices
         // Thông báo
         var notifications = new List<NotificationItem>();
 
-        // Thông báo shop đăng ký hôm nay
-        var newShopsToday = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Shop>()
+        // Shop đăng ký mới nhất
+        var latestShop = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Shop>()
             .GetQuery()
-            .Where(s => s.CreatedAt >= startOfToday && s.CreatedAt < endOfToday)
-            .CountAsync();
+            .OrderByDescending(s => s.CreatedAt)
+            .FirstOrDefaultAsync();
 
-        if (newShopsToday > 0)
+        if (latestShop != null)
         {
             notifications.Add(new NotificationItem
             {
-                Type = "NewShop",
-                Message = $"{newShopsToday} shop mới đã đăng ký hôm nay",
-                CreatedAt = DateTime.Now,
-                Count = newShopsToday
+                Type = "LatestShop",
+                Message = $"Shop mới nhất: {latestShop.Name}",
+                CreatedAt = latestShop.CreatedAt ?? DateTime.Now,
+                Count = 1
             });
         }
 
-        // Thông báo giao dịch mới hôm nay
-        var newTransactionsToday = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Paymenttransaction>()
+        // Giao dịch mới nhất
+        var latestTransaction = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Paymenttransaction>()
             .GetQuery()
-            .Where(p => p.CreatedAt >= startOfToday && p.CreatedAt < endOfToday)
-            .CountAsync();
+            .OrderByDescending(p => p.CreatedAt)
+            .FirstOrDefaultAsync();
 
-        if (newTransactionsToday > 0)
+        if (latestTransaction != null)
         {
             notifications.Add(new NotificationItem
             {
-                Type = "NewTransaction",
-                Message = $"{newTransactionsToday} giao dịch mới hôm nay",
-                CreatedAt = DateTime.Now,
-                Count = newTransactionsToday
+                Type = "LatestTransaction",
+                Message = $"Giao dịch mới nhất: {latestTransaction.Amount:N0} VNĐ",
+                CreatedAt = latestTransaction.CreatedAt ?? DateTime.Now,
+                Count = 1
             });
         }
 
-        // Thông báo hỗ trợ mới hôm nay
-        var newSupportTicketsToday = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Supportticket>()
+        // Ticket hỗ trợ mới nhất
+        var latestSupportTicket = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Supportticket>()
             .GetQuery()
-            .Where(st => st.CreatedAt >= startOfToday && st.CreatedAt < endOfToday)
-            .CountAsync();
+            .OrderByDescending(st => st.CreatedAt)
+            .FirstOrDefaultAsync();
 
-        if (newSupportTicketsToday > 0)
+        if (latestSupportTicket != null)
         {
             notifications.Add(new NotificationItem
             {
-                Type = "NewSupportTicket",
-                Message = $"{newSupportTicketsToday} yêu cầu hỗ trợ mới hôm nay",
-                CreatedAt = DateTime.Now,
-                Count = newSupportTicketsToday
+                Type = "LatestSupportTicket",
+                Message = $"Ticket hỗ trợ mới nhất: {latestSupportTicket.Title}",
+                CreatedAt = latestSupportTicket.CreatedAt ?? DateTime.Now,
+                Count = 1
             });
         }
 
-        // Thông báo đơn hàng mới hôm nay (sử dụng ID thay vì CreatedAt)
+        // Đơn hàng mới trong ngày hôm nay
         var newOrdersToday = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Order>()
             .GetQuery()
             .CountAsync();
 
-        if (newOrdersToday > 0)
+        notifications.Add(new NotificationItem
         {
-            notifications.Add(new NotificationItem
-            {
-                Type = "NewOrder",
-                Message = $"Tổng số đơn hàng: {newOrdersToday}",
-                CreatedAt = DateTime.Now,
-                Count = newOrdersToday
-            });
-        }
+            Type = "NewOrder",
+            Message = $"Tổng số đơn hàng: {newOrdersToday}",
+            CreatedAt = DateTime.Now,
+            Count = newOrdersToday
+        });
 
-        // Thông báo doanh thu mới hôm nay
+        // Doanh thu hôm nay
         var todayRevenue = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Paymenttransaction>()
             .GetQuery()
             .Where(p => p.CreatedAt >= startOfToday && p.CreatedAt < endOfToday && p.Status == "SUCCESS")
             .SumAsync(p => p.Amount);
 
-        if (todayRevenue > 0)
+        notifications.Add(new NotificationItem
         {
-            notifications.Add(new NotificationItem
-            {
-                Type = "NewRevenue",
-                Message = $"Doanh thu hôm nay: {todayRevenue:N0} VNĐ",
-                CreatedAt = DateTime.Now,
-                Count = (int)todayRevenue
-            });
-        }
+            Type = "TodayRevenue",
+            Message = $"Doanh thu hôm nay: {todayRevenue:N0} VNĐ",
+            CreatedAt = DateTime.Now,
+            Count = (int)todayRevenue
+        });
 
         return new DashboardResponse
         {

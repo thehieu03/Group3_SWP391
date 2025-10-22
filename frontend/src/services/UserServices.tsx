@@ -1,48 +1,11 @@
 import { httpPut, httpGet, httpPost, httpDelete } from "@utils/http";
-
-export interface UpdateProfileRequest {
-  username?: string;
-  email?: string;
-  phone?: string;
-}
-
-export interface UploadAvatarRequest {
-  avatar: File;
-}
-
-export interface UpdateProfileResponse {
-  id: number;
-  username: string;
-  email: string;
-  phone?: string;
-  balance?: number;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  avatarUrl?: string;
-}
-
-export interface UserForAdmin {
-  id: number;
-  username: string;
-  email: string;
-  phone: string;
-  balance: number;
-  isActive: boolean;
-  createdAt: string;
-  roles: string[];
-}
-
-export interface UpdateAccountRequest {
-  id: number;
-  username: string;
-  email: string;
-  phone: string;
-  balance: number;
-  isActive: boolean;
-  createdAt: string;
-  roles: string[];
-}
+import type {
+  UpdateProfileRequest,
+  UpdateAccountRequest,
+  UpdateProfileResponse,
+  UserForAdmin,
+  PaginatedUsersResponse,
+} from "../models";
 
 class UserServices {
   async updateProfileAsync(
@@ -109,12 +72,71 @@ class UserServices {
     return response;
   }
 
+  async getAllUsersForPaginationAsync(
+    searchTerm?: string,
+    roleFilter?: string,
+    sortOrder?: "asc" | "desc",
+    usernameSearch?: string,
+    emailSearch?: string,
+    isActive?: boolean
+  ): Promise<UserForAdmin[]> {
+    const params = new URLSearchParams();
+
+    // OData filters
+    let filter = "";
+
+    // Handle specific username and email search
+    if (usernameSearch && usernameSearch.trim()) {
+      filter = `contains(username, '${usernameSearch.trim()}')`;
+    }
+
+    if (emailSearch && emailSearch.trim()) {
+      const emailFilter = `contains(email, '${emailSearch.trim()}')`;
+      filter = filter ? `(${filter}) and (${emailFilter})` : emailFilter;
+    }
+
+    // Fallback to general search term if no specific searches
+    if (!filter && searchTerm && searchTerm.trim()) {
+      filter = `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`;
+    }
+
+    if (roleFilter && roleFilter !== "ALL") {
+      const roleFilterQuery = `roles/any(r: r eq '${roleFilter}')`;
+      filter = filter
+        ? `(${filter}) and (${roleFilterQuery})`
+        : roleFilterQuery;
+    }
+
+    // Add isActive filter
+    if (isActive !== undefined) {
+      const activeFilter = `isActive eq ${isActive}`;
+      filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
+    }
+
+    if (filter) params.set("$filter", filter);
+
+    // OData sorting
+    if (sortOrder) {
+      const sortDirection = sortOrder === "asc" ? "asc" : "desc";
+      params.set("$orderby", `createdAt ${sortDirection}`);
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : "";
+
+    const res = await httpGet<UserForAdmin[]>(`accounts${query}`);
+    return Array.isArray(res) ? res : [];
+  }
+
   async getUsersPagedAsync(
     page: number,
     pageSize: number,
     searchTerm?: string,
-    roleFilter?: string
-  ): Promise<{ items: UserForAdmin[]; total: number }> {
+    roleFilter?: string,
+    sortOrder?: "asc" | "desc",
+    usernameSearch?: string,
+    emailSearch?: string,
+    isActive?: boolean
+  ): Promise<PaginatedUsersResponse> {
     const params = new URLSearchParams();
 
     // OData paging
@@ -125,16 +147,42 @@ class UserServices {
 
     // OData filters
     let filter = "";
-    if (searchTerm && searchTerm.trim()) {
+
+    // Handle specific username and email search
+    if (usernameSearch && usernameSearch.trim()) {
+      filter = `contains(username, '${usernameSearch.trim()}')`;
+    }
+
+    if (emailSearch && emailSearch.trim()) {
+      const emailFilter = `contains(email, '${emailSearch.trim()}')`;
+      filter = filter ? `(${filter}) and (${emailFilter})` : emailFilter;
+    }
+
+    // Fallback to general search term if no specific searches
+    if (!filter && searchTerm && searchTerm.trim()) {
       filter = `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`;
     }
+
     if (roleFilter && roleFilter !== "ALL") {
       const roleFilterQuery = `roles/any(r: r eq '${roleFilter}')`;
       filter = filter
         ? `(${filter}) and (${roleFilterQuery})`
         : roleFilterQuery;
     }
+
+    // Add isActive filter
+    if (isActive !== undefined) {
+      const activeFilter = `isActive eq ${isActive}`;
+      filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
+    }
+
     if (filter) params.set("$filter", filter);
+
+    // OData sorting
+    if (sortOrder) {
+      const sortDirection = sortOrder === "asc" ? "asc" : "desc";
+      params.set("$orderby", `createdAt ${sortDirection}`);
+    }
 
     const query = params.toString() ? `?${params.toString()}` : "";
 
@@ -142,20 +190,39 @@ class UserServices {
     const res = await httpGet<
       { value: UserForAdmin[]; "@odata.count": number } | UserForAdmin[]
     >(`accounts${query}`);
+
     if (
       res &&
       typeof res === "object" &&
       "value" in res &&
       Array.isArray(res.value)
     ) {
+      // OData response format
+      const total = res["@odata.count"] ?? res.value.length;
       return {
         items: res.value,
-        total: res["@odata.count"] ?? res.value.length,
+        total: total,
       };
     }
-    // Fallback for non-odata list
-    const list = Array.isArray(res) ? res : [];
-    return { items: list, total: list.length };
+
+    // If backend pagination doesn't work properly, use frontend pagination
+    const allUsers = await this.getAllUsersForPaginationAsync(
+      searchTerm,
+      roleFilter,
+      sortOrder,
+      usernameSearch,
+      emailSearch,
+      isActive
+    );
+
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedUsers = allUsers.slice(startIndex, endIndex);
+
+    return {
+      items: paginatedUsers,
+      total: allUsers.length,
+    };
   }
 
   async updateAccountAsync(
