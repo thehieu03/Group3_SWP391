@@ -33,6 +33,7 @@ public static class RegisterMiddleware
             );
         });
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
+        builder.Services.AddAutoMapper(typeof(Helper.MapperClass));
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtOptions =>
             {
@@ -57,6 +58,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IMessageServices, MessageServices>();
         builder.Services.AddScoped<IOrderServices, OrderServices>();
         builder.Services.AddScoped<IPaymenttransactionServices, PaymenttransactionServices>();
+        builder.Services.AddScoped<IPaymentHistoryServices, PaymentHistoryServices>();
         builder.Services.AddScoped<IProductServices, ProductServices>();
         builder.Services.AddScoped<IProductStorageServices, ProductStorageServices>();
         builder.Services.AddScoped<IProductVariantServices, ProductVariantServices>();

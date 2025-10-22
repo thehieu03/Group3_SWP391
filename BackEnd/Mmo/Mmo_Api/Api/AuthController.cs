@@ -4,6 +4,8 @@ using Mmo_Domain.ModelRequest;
 using Mmo_Domain.ModelResponse;
 using Mmo_Domain.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Mmo_Api.Api;
 
@@ -21,12 +23,6 @@ public class AuthController : ControllerBase
         _tokenServices = tokenServices;
         _mapper = mapper;
     }
-
-    /// <summary>
-    /// Đăng nhập và tạo token
-    /// </summary>
-    /// <param name="loginRequest">Thông tin đăng nhập</param>
-    /// <returns>Token và thông tin user</returns>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -41,7 +37,7 @@ public class AuthController : ControllerBase
             }
 
             // Tìm user theo username hoặc email
-            var account = await _accountServices.GetByUsernameAsync(loginRequest.Username) 
+            var account = await _accountServices.GetByUsernameAsync(loginRequest.Username)
                          ?? await _accountServices.GetByEmailAsync(loginRequest.Username);
 
             if (account == null)
@@ -63,7 +59,7 @@ public class AuthController : ControllerBase
 
             // Tạo token
             var authResponse = await _tokenServices.GenerateTokensAsync(account);
-            
+
             return Ok(authResponse);
         }
         catch (Exception ex)
@@ -71,12 +67,6 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
-    /// <summary>
-    /// Refresh token khi access token hết hạn
-    /// </summary>
-    /// <param name="refreshRequest">Refresh token</param>
-    /// <returns>Token mới</returns>
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,7 +81,7 @@ public class AuthController : ControllerBase
             }
 
             var refreshResponse = await _tokenServices.RefreshTokenAsync(refreshRequest.RefreshToken);
-            
+
             if (refreshResponse == null)
             {
                 return Unauthorized("Invalid or expired refresh token");
@@ -104,12 +94,6 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
-    /// <summary>
-    /// Đăng xuất và thu hồi token
-    /// </summary>
-    /// <param name="refreshRequest">Refresh token cần thu hồi</param>
-    /// <returns>Kết quả đăng xuất</returns>
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -123,7 +107,7 @@ public class AuthController : ControllerBase
             }
 
             var result = await _tokenServices.RevokeTokenAsync(refreshRequest.RefreshToken);
-            
+
             if (!result)
             {
                 return BadRequest("Failed to revoke token");
@@ -136,11 +120,6 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
-    /// <summary>
-    /// Kiểm tra token có hợp lệ không
-    /// </summary>
-    /// <returns>Trạng thái token</returns>
     [HttpGet("validate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -149,20 +128,66 @@ public class AuthController : ControllerBase
         try
         {
             var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            
+
             if (string.IsNullOrEmpty(token))
             {
                 return Unauthorized("Token not provided");
             }
 
             var isValid = await _tokenServices.IsTokenValidAsync(token);
-            
+
             if (!isValid)
             {
                 return Unauthorized("Invalid or expired token");
             }
 
             return Ok(new { message = "Token is valid" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+    [HttpGet("me")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize] // Cần authentication
+    public async Task<ActionResult<AccountResponse>> GetCurrentUser()
+    {
+        try
+        {
+            // Lấy user ID từ token (ClaimTypes.NameIdentifier)
+            
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            // Lấy thông tin user
+            var account = await _accountServices.GetByIdAsync(userId);
+            if (account == null)
+            {
+                return Unauthorized("User not found");
+            }
+
+            // Lấy roles của user
+            var roles = await _accountServices.GetUserRolesAsync(userId);
+
+            // Map sang response model
+            var userResponse = new AccountResponse
+            {
+                Id = account.Id,
+                Username = account.Username,
+                Email = account.Email,
+                Phone = account.Phone,
+                Balance = account.Balance,
+                IsActive = account.IsActive,
+                CreatedAt = account.CreatedAt,
+                Roles = roles
+            };
+
+            return Ok(userResponse);
         }
         catch (Exception ex)
         {

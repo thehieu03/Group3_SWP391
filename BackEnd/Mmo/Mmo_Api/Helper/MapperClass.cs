@@ -1,4 +1,6 @@
 ﻿using Mmo_Domain.ModelResponse;
+using Mmo_Domain.Models;
+using Mmo_Domain.ModelRequest;
 
 namespace Mmo_Api.Helper;
 
@@ -27,5 +29,7 @@ public class MapperClass : Profile
             .ReverseMap();
         CreateMap<Product, ProductRequest>().ReverseMap();
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
+        CreateMap<Order, OrderResponse>().ReverseMap();
+        CreateMap<ProfileUpdateRequest, Account>().ReverseMap();
     }
 }
