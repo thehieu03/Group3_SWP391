@@ -29,7 +29,6 @@ const ProductDetails = () => {
                         </div>
                     </div>
 
-                    {/* Thông tin sản phẩm */}
                     <div className="md:w-1/2 md:pl-6">
                         <div className="flex gap-2 mb-2">
                             <span className="bg-green-600 text-white text-sm px-2 py-1 rounded">
@@ -213,7 +212,6 @@ const ProductDetails = () => {
                                     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
                                 />
 
-                                {/* Feedback 1 */}
                                 <div className="border-b pb-3">
                                     <div className="flex items-center mb-1">
                                         <span className="font-semibold mr-2">Nguyễn Văn A</span>
@@ -231,7 +229,6 @@ const ProductDetails = () => {
                                     <span className="text-xs text-gray-400">2 ngày trước</span>
                                 </div>
 
-                                {/* Feedback 2 */}
                                 <div className="border-b pb-3">
                                     <div className="flex items-center mb-1">
                                         <span className="font-semibold mr-2">Lê Thị B</span>
@@ -249,7 +246,6 @@ const ProductDetails = () => {
                                     <span className="text-xs text-gray-400">5 ngày trước</span>
                                 </div>
 
-                                {/* Feedback 3 */}
                                 <div>
                                     <div className="flex items-center mb-1">
                                         <span className="font-semibold mr-2">Trần Minh C</span>

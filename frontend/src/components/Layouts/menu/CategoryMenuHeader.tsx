@@ -21,7 +21,7 @@ const tools: Tools[] = [
 const MENU_ITEM_CLASS =
   "h-full px-4 flex items-center text-white font-medium cursor-pointer hover:bg-emerald-600/90 transition-colors";
 
-  const DROPDOWN_ITEM_CLASS =
+const DROPDOWN_ITEM_CLASS =
   "block w-full text-left py-2 text-[15px] text-gray-700 hover:text-emerald-600 cursor-pointer transition-colors";
 
 const DROPDOWN_CONTAINER_CLASS =
@@ -53,7 +53,7 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
     };
     void fetchData();
   }, []);
-
+  
   const mid = Math.ceil(categoriesItems.length / 2);
   const firstCol = categoriesItems.slice(0, mid);
   const secondCol = categoriesItems.slice(mid);

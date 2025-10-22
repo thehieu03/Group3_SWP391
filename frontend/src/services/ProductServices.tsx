@@ -1,7 +1,8 @@
-import type {ProductResponse} from "../models/modelResponse/ProductResponse.tsx";
+import type { ProductResponse } from "@models/modelResponse/ProductResponse.tsx";
 import type {PaginationResponse} from "../models/modelResponse/PaginationResponse.tsx";
-import {httpGet} from "../utils/http.tsx";
+import { httpGet } from "@utils/http.tsx";
 import type { AxiosError } from "axios";
+
 
 class ProductServices {
     async getProductsByCategory(params: { 

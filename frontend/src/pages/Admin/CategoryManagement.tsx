@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react';
 import type { CategoriesResponse } from '../../models/modelResponse/CategoriesResponse';
 import type { SubcategoryResponse } from '../../models/modelResponse/SubcategoryResponse';
+import { categoryServices } from '../../services/CategoryServices';
+
+interface ApiError {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+      errors?: Record<string, unknown>;
+    };
+  };
+}
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState<CategoriesResponse[]>([]);
   const [subcategories, setSubcategories] = useState<SubcategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showSubcategories, setShowSubcategories] = useState<number | null>(null);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [isAddingSubcategory, setIsAddingSubcategory] = useState(false);
@@ -14,51 +26,28 @@ const CategoryManagement = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   useEffect(() => {
-    // TODO: Fetch categories and subcategories from API
-    // Simulate loading data
-    setTimeout(() => {
-      setCategories([
-        {
-          id: 1,
-          name: 'Email',
-          isActive: true,
-          createdAt: '2024-01-01',
-          subcategories: [
-            { id: 1, categoryId: 1, name: 'Gmail', isActive: true },
-            { id: 2, categoryId: 1, name: 'Yahoo Mail', isActive: true },
-            { id: 3, categoryId: 1, name: 'Outlook', isActive: true },
-          ]
-        },
-        {
-          id: 2,
-          name: 'Phần mềm',
-          isActive: true,
-          createdAt: '2024-01-02',
-          subcategories: [
-            { id: 4, categoryId: 2, name: 'Phần mềm MMO', isActive: true },
-            { id: 5, categoryId: 2, name: 'Phần mềm Marketing', isActive: true },
-          ]
-        },
-        {
-          id: 3,
-          name: 'Tài khoản',
-          isActive: true,
-          createdAt: '2024-01-03',
-          subcategories: [
-            { id: 6, categoryId: 3, name: 'Facebook', isActive: true },
-            { id: 7, categoryId: 3, name: 'Instagram', isActive: true },
-            { id: 8, categoryId: 3, name: 'Twitter', isActive: true },
-          ]
-        },
-      ]);
-      setLoading(false);
-    }, 1000);
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const categoriesData = await categoryServices.getAllCategoryAsync();
+        setCategories(categoriesData);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error && 'response' in err 
+          ? (err as ApiError).response?.data?.message 
+          : 'Không thể tải danh sách danh mục';
+        setError(errorMessage || 'Không thể tải danh sách danh mục');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchCategories();
   }, []);
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
     
-    // TODO: Call API to add category
     const newCategory: CategoriesResponse = {
       id: categories.length + 1,
       name: newCategoryName,
@@ -75,7 +64,6 @@ const CategoryManagement = () => {
   const handleAddSubcategory = async () => {
     if (!newSubcategoryName.trim() || !selectedCategoryId) return;
     
-    // TODO: Call API to add subcategory
     const newSubcategory: SubcategoryResponse = {
       id: subcategories.length + 1,
       categoryId: selectedCategoryId,
@@ -91,14 +79,12 @@ const CategoryManagement = () => {
   };
 
   const toggleCategoryStatus = async (categoryId: number) => {
-    // TODO: Call API to toggle category status
     setCategories(categories.map(cat => 
       cat.id === categoryId ? { ...cat, isActive: !cat.isActive } : cat
     ));
   };
 
   const toggleSubcategoryStatus = async (subcategoryId: number) => {
-    // TODO: Call API to toggle subcategory status
     setSubcategories(subcategories.map(sub => 
       sub.id === subcategoryId ? { ...sub, isActive: !sub.isActive } : sub
     ));
@@ -108,6 +94,22 @@ const CategoryManagement = () => {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          >
+            Thử lại
+          </button>
+        </div>
       </div>
     );
   }
@@ -124,7 +126,6 @@ const CategoryManagement = () => {
         </button>
       </div>
 
-      {/* Add Category Modal */}
       {isAddingCategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
@@ -157,9 +158,25 @@ const CategoryManagement = () => {
         </div>
       )}
 
-      {/* Categories List */}
       <div className="space-y-4">
-        {categories.map((category) => (
+        {categories.length === 0 ? (
+          <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="text-gray-500 mb-4">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có danh mục nào</h3>
+            <p className="text-gray-500 mb-4">Bắt đầu bằng cách thêm danh mục đầu tiên của bạn.</p>
+            <button
+              onClick={() => setIsAddingCategory(true)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+            >
+              Thêm danh mục đầu tiên
+            </button>
+          </div>
+        ) : (
+          categories.map((category) => (
           <div key={category.id} className="bg-white rounded-lg shadow">
             <div className="p-6">
               <div className="flex items-center justify-between">
@@ -182,6 +199,14 @@ const CategoryManagement = () => {
                     Thêm subcategory
                   </button>
                   <button
+                    onClick={() => {
+                      alert(`Xem tất cả subcategory của ${category.name} (ID: ${category.id})`);
+                    }}
+                    className="text-green-600 hover:text-green-800 text-sm font-medium"
+                  >
+                    View all subcategory
+                  </button>
+                  <button
                     onClick={() => setShowSubcategories(showSubcategories === category.id ? null : category.id)}
                     className="text-gray-600 hover:text-gray-800 text-sm"
                   >
@@ -200,42 +225,47 @@ const CategoryManagement = () => {
                 </div>
               </div>
 
-              {/* Subcategories */}
               {showSubcategories === category.id && (
                 <div className="mt-4 pl-4 border-l-2 border-gray-200">
                   <div className="space-y-2">
-                    {category.subcategories?.map((subcategory) => (
-                      <div key={subcategory.id} className="flex items-center justify-between py-2">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-gray-600">•</span>
-                          <span className="text-gray-900">{subcategory.name}</span>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            subcategory.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
-                            {subcategory.isActive ? 'Hoạt động' : 'Không hoạt động'}
-                          </span>
+                    {category.subcategories && category.subcategories.length > 0 ? (
+                      category.subcategories.map((subcategory) => (
+                        <div key={subcategory.id} className="flex items-center justify-between py-2">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-gray-600">•</span>
+                            <span className="text-gray-900">{subcategory.name}</span>
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              subcategory.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {subcategory.isActive ? 'Hoạt động' : 'Không hoạt động'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => toggleSubcategoryStatus(subcategory.id)}
+                            className={`px-2 py-1 text-xs rounded-md ${
+                              subcategory.isActive 
+                                ? 'bg-red-100 text-red-800 hover:bg-red-200' 
+                                : 'bg-green-100 text-green-800 hover:bg-green-200'
+                            }`}
+                          >
+                            {subcategory.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                          </button>
                         </div>
-                        <button
-                          onClick={() => toggleSubcategoryStatus(subcategory.id)}
-                          className={`px-2 py-1 text-xs rounded-md ${
-                            subcategory.isActive 
-                              ? 'bg-red-100 text-red-800 hover:bg-red-200' 
-                              : 'bg-green-100 text-green-800 hover:bg-green-200'
-                          }`}
-                        >
-                          {subcategory.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
-                        </button>
+                      ))
+                    ) : (
+                      <div className="text-gray-500 text-sm py-2">
+                        Chưa có subcategory nào. Nhấn "Thêm subcategory" để thêm mới.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* Add Subcategory Modal */}
       {isAddingSubcategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">

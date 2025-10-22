@@ -5,7 +5,6 @@ const Footer = () => {
         <div className="bg-white py-12">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Column 1: Liên hệ */}
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 mb-4">Liên hệ</h3>
                         <p className="text-sm text-gray-600 mb-4">
@@ -31,7 +30,6 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Column 2: Thông tin */}
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 mb-4">Thông tin</h3>
                         <p className="text-sm text-gray-600 mb-4">
@@ -50,7 +48,6 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Column 3: Đăng ký bán hàng */}
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 mb-4">Đăng ký bán hàng</h3>
                         <p className="text-sm text-gray-600 mb-4">

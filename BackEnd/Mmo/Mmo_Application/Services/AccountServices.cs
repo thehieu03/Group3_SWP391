@@ -1,6 +1,7 @@
 ﻿using BCrypt.Net;
 using Mmo_Domain.Models;
 using Mmo_Domain.ModelRequest;
+using Mmo_Domain.ModelResponse;
 
 namespace Mmo_Application.Services;
 
@@ -52,34 +53,30 @@ public class AccountServices:BaseServices<Account>,IAccountServices
 
     public async Task<bool> UpdateProfileAsync(int accountId, ProfileUpdateRequest request)
     {
-        // Lấy account hiện tại
         var account = await GetByIdAsync(accountId);
         if (account == null)
         {
             return false;
         }
 
-        // Kiểm tra username đã tồn tại chưa (nếu có thay đổi)
         if (!string.IsNullOrEmpty(request.Username) && request.Username != account.Username)
         {
             var existingAccount = await GetByUsernameAsync(request.Username);
             if (existingAccount != null)
             {
-                return false; // Username đã tồn tại
+                return false;
             }
         }
 
-        // Kiểm tra email đã tồn tại chưa (nếu có thay đổi)
         if (!string.IsNullOrEmpty(request.Email) && request.Email != account.Email)
         {
             var existingAccount = await GetByEmailAsync(request.Email);
             if (existingAccount != null)
             {
-                return false; // Email đã tồn tại
+                return false;
             }
         }
 
-        // Cập nhật các field
         if (!string.IsNullOrEmpty(request.Username))
         {
             account.Username = request.Username;
@@ -95,10 +92,80 @@ public class AccountServices:BaseServices<Account>,IAccountServices
             account.Phone = request.Phone;
         }
 
-        // Cập nhật UpdatedAt
         account.UpdatedAt = DateTime.Now;
 
-        // Lưu thay đổi
         return await UpdateAsync(account);
+    }
+
+    public async Task<bool> UpdateAccountAsync(int accountId, UserResponse request)
+    {
+        var account = await GetByIdAsync(accountId);
+        if (account == null)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(request.Username) && request.Username != account.Username)
+        {
+            var existingAccount = await GetByUsernameAsync(request.Username);
+            if (existingAccount != null)
+            {
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(request.Email) && request.Email != account.Email)
+        {
+            var existingAccount = await GetByEmailAsync(request.Email);
+            if (existingAccount != null)
+            {
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(request.Username))
+        {
+            account.Username = request.Username;
+        }
+
+        if (!string.IsNullOrEmpty(request.Email))
+        {
+            account.Email = request.Email;
+        }
+
+        if (!string.IsNullOrEmpty(request.Phone))
+        {
+            account.Phone = request.Phone;
+        }
+
+        if (request.Balance.HasValue)
+        {
+            account.Balance = request.Balance.Value;
+        }
+
+        if (request.IsActive.HasValue)
+        {
+            account.IsActive = request.IsActive.Value;
+        }
+
+        account.UpdatedAt = DateTime.Now;
+
+        return await UpdateAsync(account);
+    }
+
+    public async Task<bool> DeleteAccountAsync(int accountId, int currentUserId)
+    {
+        if (accountId == currentUserId)
+        {
+            return false;
+        }
+
+        var account = await GetByIdAsync(accountId);
+        if (account == null)
+        {
+            return false;
+        }
+
+        return await DeleteAsync(account);
     }
 }

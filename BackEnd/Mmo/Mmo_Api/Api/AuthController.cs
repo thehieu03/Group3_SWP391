@@ -36,7 +36,6 @@ public class AuthController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            // Tìm user theo username hoặc email
             var account = await _accountServices.GetByUsernameAsync(loginRequest.Username)
                          ?? await _accountServices.GetByEmailAsync(loginRequest.Username);
 
@@ -45,19 +44,16 @@ public class AuthController : ControllerBase
                 return Unauthorized("Invalid username or password");
             }
 
-            // Kiểm tra tài khoản có active không
             if (account.IsActive != true)
             {
                 return Unauthorized("Account is deactivated");
             }
 
-            // Verify password
             if (!await _accountServices.VerifyPasswordAsync(account, loginRequest.Password))
             {
                 return Unauthorized("Invalid username or password");
             }
 
-            // Tạo token
             var authResponse = await _tokenServices.GenerateTokensAsync(account);
 
             return Ok(authResponse);
@@ -151,30 +147,25 @@ public class AuthController : ControllerBase
     [HttpGet("me")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Authorize] // Cần authentication
+    [Authorize]
     public async Task<ActionResult<AccountResponse>> GetCurrentUser()
     {
         try
         {
-            // Lấy user ID từ token (ClaimTypes.NameIdentifier)
-            
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 return Unauthorized("Invalid token");
             }
 
-            // Lấy thông tin user
             var account = await _accountServices.GetByIdAsync(userId);
             if (account == null)
             {
                 return Unauthorized("User not found");
             }
 
-            // Lấy roles của user
             var roles = await _accountServices.GetUserRolesAsync(userId);
 
-            // Map sang response model
             var userResponse = new AccountResponse
             {
                 Id = account.Id,

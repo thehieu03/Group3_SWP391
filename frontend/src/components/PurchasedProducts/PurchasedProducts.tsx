@@ -13,7 +13,6 @@ const PurchasedProducts: React.FC = () => {
 
 
     useEffect(() => {
-        // Chỉ fetch orders khi user đã login
         if (!isLoggedIn) {
             setLoading(false);
             return;
@@ -23,7 +22,6 @@ const PurchasedProducts: React.FC = () => {
             try {
                 setLoading(true);
                 setError(null);
-                // Gọi API thực tế
                 const userOrders = await orderServices.getMyOrdersAsync();
                 setOrders(userOrders);
             } catch {
@@ -33,14 +31,13 @@ const PurchasedProducts: React.FC = () => {
             }
         };
 
-        fetchOrders();
+       void fetchOrders();
     }, [isLoggedIn]);
 
     const handleProductClick = (productId: number) => {
         window.location.href = routesConfig.getProductUrl(productId);
     };
 
-    // Nếu đang loading auth hoặc user chưa login thì không hiển thị component
     if (authLoading || !isLoggedIn) {
         return null;
     }
@@ -66,7 +63,7 @@ const PurchasedProducts: React.FC = () => {
                 <div className="flex items-center justify-center py-12">
                     <div className="text-center">
                         <p className="text-red-600 mb-4">{error}</p>
-                        <button 
+                        <button
                             onClick={() => window.location.reload()}
                             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
                         >
@@ -99,12 +96,10 @@ const PurchasedProducts: React.FC = () => {
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-8">
-            {/* Title */}
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
                 Lối tắt
             </h2>
-            
-            {/* Products Scrollable List */}
+
             <div className="relative">
                 <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                     {orders.map((order) => (
@@ -113,12 +108,10 @@ const PurchasedProducts: React.FC = () => {
                             className="flex-shrink-0 w-80 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer border border-gray-200"
                             onClick={() => handleProductClick(order.productId)}
                         >
-                            {/* Green Banner */}
                             <div className="bg-green-600 text-white text-center py-1 px-2 rounded-t-lg">
                                 <span className="text-sm font-medium">Sản phẩm đã mua</span>
                             </div>
 
-                            {/* Product Image */}
                             <div className="aspect-square p-4">
                                 <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
                                     <Image
@@ -129,9 +122,7 @@ const PurchasedProducts: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Product Info */}
                             <div className="p-4">
-                                {/* Rating */}
                                 <div className="flex items-center mb-2">
                                     <div className="flex text-yellow-400">
                                         {[...Array(5)].map((_, i) => (
@@ -145,32 +136,26 @@ const PurchasedProducts: React.FC = () => {
                                     </span>
                                 </div>
 
-                                {/* Order Info */}
                                 <div className="text-sm text-gray-600 mb-3">
                                     Số lượng: {order.quantity} | Tổng: {order.totalAmount.toLocaleString()} ₫
                                 </div>
 
-                                {/* Product Name */}
                                 <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">
                                     {order.productName}
                                 </h3>
 
-                                {/* Category */}
                                 <div className="text-xs text-gray-500 mb-1">
                                     <span className="font-medium">Sản phẩm:</span> {order.categoryName}
                                 </div>
 
-                                {/* Seller */}
                                 <div className="text-xs text-gray-500 mb-2">
                                     <span className="font-medium">Người bán:</span> {order.sellerName}
                                 </div>
 
-                                {/* Price */}
                                 <div className="text-sm font-bold text-green-600">
                                     {order.price.toLocaleString()} ₫
                                 </div>
 
-                                {/* Order Date */}
                                 <div className="text-xs text-gray-400 mt-2">
                                     Mua ngày: {new Date(order.orderDate).toLocaleDateString('vi-VN')}
                                 </div>
@@ -179,7 +164,6 @@ const PurchasedProducts: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Navigation Arrows */}
                 <button className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors">
                     <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

@@ -1,20 +1,23 @@
 import type { FC, ReactNode } from "react";
-import Home from "../pages/UserAndSeller/Home/Home.tsx";
-import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
-import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
-import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
-import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
-import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
-import AdminPanel from "../pages/Admin/AdminPanel.tsx";
-import PaymentHistory from "../pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
-import routesConfig from "../config/routesConfig.tsx";
-import type { User } from "../models/modelResponse/LoginResponse";
-import Products from "../pages/Products/Products.tsx";
+import Home from "@pages/UserAndSeller/Home/Home.tsx";
+import DefaultLayout from "@components/Layouts/DefaultLayout/DefaultLayout.tsx";
+import HeaderAndFooter from "@components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
+import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
+import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
+import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
+import AdminPanel from "@pages/Admin/AdminPanel.tsx";
+import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
+import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
+import routesConfig from "@config/routesConfig.tsx";
+import Products from "@pages/Products/Products.tsx";
+import type { User } from "@models/modelResponse/LoginResponse";
+
+
 type AppRoute = {
   path: string;
   element: ReactNode;
   layout: FC<{ children?: ReactNode }>;
-  requiredRoles?: string[]; // Thêm trường roles
+  requiredRoles?: string[];
 };
 const publicRoutes: AppRoute[] = [
   {

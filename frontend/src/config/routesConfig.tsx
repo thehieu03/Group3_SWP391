@@ -1,6 +1,7 @@
 const routesConfig  =  {
     home:'/',
     login:'/login',
+    products:'/products',
     productDetails:'/productDetails',
     categoryProducts:'/category',
     deposit:'/deposit',
@@ -16,7 +17,6 @@ const routesConfig  =  {
     forgotPassword:'/forgotPassword',
     infoAccount:'/infoAccount',
     userProfile:'/userProfile',
-    // Helper functions for dynamic routes
     getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
     getProductUrl: (id: number) => `/product/${id}`,
     getCategoryProductsUrl: (id: number) => `/category/${id}`

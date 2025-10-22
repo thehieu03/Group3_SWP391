@@ -49,6 +49,15 @@ public static class RegisterMiddleware
                         Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new Exception("Jwt Key not found")))
                 };
             });
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("ADMIN"));
+            
+            options.AddPolicy("UserOrAdmin", policy =>
+                policy.RequireRole("USER", "ADMIN"));
+        });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
         builder.Services.AddScoped<IAccountServices, AccountServices>();
@@ -70,6 +79,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ISystemsconfigServices, SystemsconfigServices>();
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
+        builder.Services.AddScoped<IDashboardServices, DashboardServices>();
 
         return builder;
     }
