@@ -8,6 +8,8 @@ using Mmo_Application.Services.Interface;
 using Mmo_Domain.IUnit;
 using Mmo_Domain.Models;
 using Mmo_Infrastructure.Unit;
+using MySqlConnector;
+using System.Data;
 
 namespace Mmo_Api.Boostraping;
 
@@ -79,6 +81,14 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
+        
+        // Đăng ký DapperService
+        builder.Services.AddScoped<IDbConnection>(provider =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            return new MySqlConnection(connectionString);
+        });
+        builder.Services.AddScoped<IDapperService, DapperService>();
 
         return builder;
     }

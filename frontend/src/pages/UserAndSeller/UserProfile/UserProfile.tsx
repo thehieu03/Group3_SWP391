@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import routesConfig from '../../../config/routesConfig';
-import { orderServices } from '../../../services/OrderServices';
-import { userServices } from '../../../services/UserServices';
-import type { OrderResponse } from '../../../models/modelResponse/OrderResponse';
-import Image from '../../../components/Image';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import routesConfig from "../../../config/routesConfig";
+import { orderServices } from "../../../services/OrderServices";
+import { userServices } from "../../../services/UserServices";
+import type { OrderResponse } from "../../../models/modelResponse/OrderResponse";
+import Image from "../../../components/Image";
+import Button from "../../../components/Button/Button.tsx";
 
 const UserProfile: React.FC = () => {
   const { user, isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    phone: ''
+    username: "",
+    email: "",
+    phone: "",
   });
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -32,9 +36,9 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        username: user.username || '',
-        email: user.email || '',
-        phone: user.phone || ''
+        username: user.username || "",
+        email: user.email || "",
+        phone: user.phone || "",
       });
     }
   }, [user]);
@@ -46,8 +50,7 @@ const UserProfile: React.FC = () => {
           setOrdersLoading(true);
           const userOrders = await orderServices.getMyOrdersAsync();
           setOrders(userOrders);
-        } catch (error) {
-          console.error('Error fetching orders:', error);
+        } catch {
           setOrders([]);
         } finally {
           setOrdersLoading(false);
@@ -58,35 +61,37 @@ const UserProfile: React.FC = () => {
     fetchOrders();
   }, [isLoggedIn]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         setSaveMessage({
-          type: 'error',
-          text: 'Vui lòng chọn file ảnh hợp lệ'
+          type: "error",
+          text: "Vui lòng chọn file ảnh hợp lệ",
         });
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
         setSaveMessage({
-          type: 'error',
-          text: 'Kích thước file không được vượt quá 5MB'
+          type: "error",
+          text: "Kích thước file không được vượt quá 5MB",
         });
         return;
       }
 
       setAvatarFile(file);
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setAvatar(e.target?.result as string);
@@ -99,52 +104,48 @@ const UserProfile: React.FC = () => {
     try {
       setIsSaving(true);
       setSaveMessage(null);
-      
+
       if (avatarFile) {
         try {
-          const avatarResponse = await userServices.uploadAvatarAsync(avatarFile);
-          console.log('Avatar uploaded:', avatarResponse.avatarUrl);
-        } catch (error) {
-          console.error('Error uploading avatar:', error);
+          await userServices.uploadAvatarAsync(avatarFile);
+        } catch {
           setSaveMessage({
-            type: 'error',
-            text: 'Có lỗi khi upload avatar. Vui lòng thử lại.'
+            type: "error",
+            text: "Có lỗi khi upload avatar. Vui lòng thử lại.",
           });
           return;
         }
       }
-      
+
       const updateData = {
         username: formData.username,
         email: formData.email,
-        phone: formData.phone
+        phone: formData.phone,
       };
 
       await userServices.updateProfileAsync(updateData);
-      
+
       setFormData({
         username: updateData.username || formData.username,
         email: updateData.email || formData.email,
-        phone: updateData.phone || formData.phone
+        phone: updateData.phone || formData.phone,
       });
-      
+
       setSaveMessage({
-        type: 'success',
-        text: 'Cập nhật thông tin thành công!'
+        type: "success",
+        text: "Cập nhật thông tin thành công!",
       });
 
       setAvatarFile(null);
       setIsEditing(false);
-      
+
       setTimeout(() => {
         setSaveMessage(null);
       }, 3000);
-      
-    } catch (error) {
-      console.error('Error updating profile:', error);
+    } catch {
       setSaveMessage({
-        type: 'error',
-        text: 'Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.'
+        type: "error",
+        text: "Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.",
       });
     } finally {
       setIsSaving(false);
@@ -154,9 +155,9 @@ const UserProfile: React.FC = () => {
   const handleCancel = () => {
     if (user) {
       setFormData({
-        username: user.username || '',
-        email: user.email || '',
-        phone: user.phone || ''
+        username: user.username || "",
+        email: user.email || "",
+        phone: user.phone || "",
       });
     }
     setAvatar(null);
@@ -166,13 +167,18 @@ const UserProfile: React.FC = () => {
 
   const calculateStats = () => {
     const totalOrders = orders.length;
-    const successfulOrders = orders.filter(order => order.status === 'completed' || order.status === 'success').length;
-    const totalSpent = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-    
+    const successfulOrders = orders.filter(
+      (order) => order.status === "completed" || order.status === "success"
+    ).length;
+    const totalSpent = orders.reduce(
+      (sum, order) => sum + order.totalAmount,
+      0
+    );
+
     return {
       totalOrders,
       successfulOrders,
-      totalSpent
+      totalSpent,
     };
   };
 
@@ -198,14 +204,16 @@ const UserProfile: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Thông tin cá nhân</h1>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Thông tin cá nhân
+            </h1>
             {!isEditing && (
-              <button
+              <Button
                 onClick={() => setIsEditing(true)}
                 className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
               >
                 Chỉnh sửa
-              </button>
+              </Button>
             )}
           </div>
 
@@ -214,21 +222,31 @@ const UserProfile: React.FC = () => {
               <div className="relative">
                 <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
                   {avatar ? (
-                    <Image 
-                      src={avatar} 
-                      alt="Avatar" 
+                    <Image
+                      src={avatar}
+                      alt="Avatar"
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-2xl font-bold text-gray-600">
-                      {formData.username?.charAt(0).toUpperCase() || 'U'}
+                      {formData.username?.charAt(0).toUpperCase() || "U"}
                     </span>
                   )}
                 </div>
                 {isEditing && (
                   <label className="absolute bottom-0 right-0 bg-green-500 text-white rounded-full p-2 cursor-pointer hover:bg-green-600 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
                     </svg>
                     <input
                       type="file"
@@ -240,10 +258,16 @@ const UserProfile: React.FC = () => {
                 )}
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">{formData.username || 'Chưa có tên'}</h2>
-                <p className="text-gray-600">{formData.email || 'Chưa có email'}</p>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {formData.username || "Chưa có tên"}
+                </h2>
+                <p className="text-gray-600">
+                  {formData.email || "Chưa có email"}
+                </p>
                 {isEditing && (
-                  <p className="text-sm text-gray-500 mt-1">Nhấn vào icon + để thay đổi avatar</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Nhấn vào icon + để thay đổi avatar
+                  </p>
                 )}
               </div>
             </div>
@@ -263,7 +287,9 @@ const UserProfile: React.FC = () => {
                     placeholder="Nhập tên đăng nhập"
                   />
                 ) : (
-                  <p className="text-gray-900 py-2">{formData.username || 'Chưa có thông tin'}</p>
+                  <p className="text-gray-900 py-2">
+                    {formData.username || "Chưa có thông tin"}
+                  </p>
                 )}
               </div>
 
@@ -281,7 +307,9 @@ const UserProfile: React.FC = () => {
                     placeholder="Nhập email"
                   />
                 ) : (
-                  <p className="text-gray-900 py-2">{formData.email || 'Chưa có thông tin'}</p>
+                  <p className="text-gray-900 py-2">
+                    {formData.email || "Chưa có thông tin"}
+                  </p>
                 )}
               </div>
 
@@ -299,48 +327,53 @@ const UserProfile: React.FC = () => {
                     placeholder="Nhập số điện thoại"
                   />
                 ) : (
-                  <p className="text-gray-900 py-2">{formData.phone || 'Chưa có thông tin'}</p>
+                  <p className="text-gray-900 py-2">
+                    {formData.phone || "Chưa có thông tin"}
+                  </p>
                 )}
               </div>
-
             </div>
 
             {saveMessage && (
-              <div className={`p-4 rounded-md ${
-                saveMessage.type === 'success' 
-                  ? 'bg-green-100 text-green-800 border border-green-200' 
-                  : 'bg-red-100 text-red-800 border border-red-200'
-              }`}>
+              <div
+                className={`p-4 rounded-md ${
+                  saveMessage.type === "success"
+                    ? "bg-green-100 text-green-800 border border-green-200"
+                    : "bg-red-100 text-red-800 border border-red-200"
+                }`}
+              >
                 {saveMessage.text}
               </div>
             )}
 
             {isEditing && (
               <div className="flex space-x-4 pt-6 border-t">
-                <button
+                <Button
                   onClick={handleSave}
                   disabled={isSaving}
                   className={`font-medium py-2 px-6 rounded-md transition-colors duration-200 ${
-                    isSaving 
-                      ? 'bg-gray-400 cursor-not-allowed text-white' 
-                      : 'bg-green-500 hover:bg-green-600 text-white'
+                    isSaving
+                      ? "bg-gray-400 cursor-not-allowed text-white"
+                      : "bg-green-500 hover:bg-green-600 text-white"
                   }`}
                 >
-                  {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
-                </button>
-                <button
+                  {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+                </Button>
+                <Button
                   onClick={handleCancel}
                   disabled={isSaving}
                   className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   Hủy
-                </button>
+                </Button>
               </div>
             )}
           </div>
 
           <div className="mt-8 pt-8 border-t">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Thống kê tài khoản</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Thống kê tài khoản
+            </h3>
             {ordersLoading ? (
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
@@ -349,16 +382,20 @@ const UserProfile: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Tổng đơn hàng</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.totalOrders}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.totalOrders}
+                  </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Đơn hàng thành công</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.successfulOrders}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.successfulOrders}
+                  </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-gray-600">Tổng chi tiêu</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {stats.totalSpent.toLocaleString('vi-VN')} VNĐ
+                    {stats.totalSpent.toLocaleString("vi-VN")} VNĐ
                   </p>
                 </div>
               </div>

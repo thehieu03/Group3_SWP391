@@ -10,4 +10,5 @@ public class ShopResponse
     public DateTime? UpdatedAt { get; set; }
     public string? OwnerUsername { get; set; }
     public int? ProductCount { get; set; }
+    public int? ComplaintCount { get; set; }
 }

@@ -29,26 +29,34 @@ const EditUserModal = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Ensure roles array is not empty
     if (formData.roles.length === 0) {
-      alert("Vui lòng chọn ít nhất một vai trò");
+      alert(
+        "Người dùng này chưa có vai trò gì trong hệ thống. Vui lòng chọn ít nhất một vai trò (Người bán hoặc Khách hàng)"
+      );
       return;
     }
 
-    console.log("Form data before submit:", formData);
-    onSave(formData);
+    const validRoles = formData.roles.filter(
+      (role) => role === "SELLER" || role === "CUSTOMER"
+    );
+
+    if (validRoles.length === 0) {
+      alert("Chỉ có thể chọn vai trò Người bán hoặc Khách hàng");
+      return;
+    }
+
+    onSave({
+      ...formData,
+      roles: formData.roles,
+    });
   };
 
   const handleRoleToggle = (role: string) => {
-    console.log("Toggling role:", role);
-    console.log("Current roles before toggle:", formData.roles);
-
     setFormData((prev) => {
       const newRoles = prev.roles.includes(role)
         ? prev.roles.filter((r) => r !== role)
         : [...prev.roles, role];
 
-      console.log("New roles after toggle:", newRoles);
       return {
         ...prev,
         roles: newRoles,
@@ -63,73 +71,11 @@ const EditUserModal = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tên đăng nhập
-            </label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, username: e.target.value }))
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, email: e.target.value }))
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Số điện thoại
-            </label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, phone: e.target.value }))
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Số dư (VNĐ)
-            </label>
-            <input
-              type="number"
-              value={formData.balance}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  balance: Number(e.target.value),
-                }))
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              min="0"
-            />
-          </div>
-
-          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Vai trò
             </label>
             <div className="space-y-2">
-              {["ADMIN", "SELLER", "CUSTOMER"].map((role) => (
+              {["SELLER", "CUSTOMER"].map((role) => (
                 <label key={role} className="flex items-center">
                   <input
                     type="checkbox"
@@ -138,33 +84,22 @@ const EditUserModal = ({
                     className="mr-2"
                   />
                   <span className="text-sm">
-                    {role === "ADMIN"
-                      ? "Quản trị viên"
-                      : role === "SELLER"
-                      ? "Người bán"
-                      : "Khách hàng"}
+                    {role === "SELLER" ? "Người bán" : "Khách hàng"}
                   </span>
                 </label>
               ))}
             </div>
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isActive"
-              checked={formData.isActive}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, isActive: e.target.checked }))
-              }
-              className="mr-2"
-            />
-            <label
-              htmlFor="isActive"
-              className="text-sm font-medium text-gray-700"
-            >
-              Tài khoản hoạt động
-            </label>
+            <p className="text-xs text-gray-500 mt-1">
+              Có thể chọn cả Người bán và Khách hàng
+            </p>
+            {formData.roles.length === 0 && (
+              <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+                <p className="text-xs text-yellow-800">
+                  ⚠️ Người dùng này chưa có vai trò gì trong hệ thống. Vui lòng
+                  chọn ít nhất một vai trò.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
@@ -179,7 +114,7 @@ const EditUserModal = ({
             <Button
               type="submit"
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
-              disabled={isLoading}
+              disabled={isLoading || formData.roles.length === 0}
             >
               {isLoading ? "Đang lưu..." : "Lưu"}
             </Button>

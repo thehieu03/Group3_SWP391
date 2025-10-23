@@ -1,0 +1,47 @@
+# Test Role Synchronization API with curl commands
+# Replace ADMIN_TOKEN with actual admin token
+
+# 1. Check current roles
+curl -X GET "https://localhost:7000/api/accounts/15/roles" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -k
+
+# 2. Set user to only have CUSTOMER role (ID: 3)
+curl -X PUT "https://localhost:7000/api/accounts/15/role" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId": 15, "roleIds": [3]}' \
+  -k
+
+# 3. Check roles after first update
+curl -X GET "https://localhost:7000/api/accounts/15/roles" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -k
+
+# 4. Set user to have CUSTOMER and SELLER roles
+curl -X PUT "https://localhost:7000/api/accounts/15/role" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId": 15, "roleIds": [3, 2]}' \
+  -k
+
+# 5. Check roles after second update
+curl -X GET "https://localhost:7000/api/accounts/15/roles" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -k
+
+# 6. Test with empty roles (should remove all roles)
+curl -X PUT "https://localhost:7000/api/accounts/15/role" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId": 15, "roleIds": []}' \
+  -k
+
+# 7. Check roles after removing all
+curl -X GET "https://localhost:7000/api/accounts/15/roles" \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -k

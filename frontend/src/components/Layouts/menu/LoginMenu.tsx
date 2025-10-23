@@ -55,7 +55,6 @@ const LoginMenu = () => {
         sameSite: "strict",
       });
       login(response.user);
-      console.log("login success");
 
       if (response.user.roles.includes("ADMIN")) {
         navigate("/admin/dashboard");
@@ -66,17 +65,14 @@ const LoginMenu = () => {
       } else {
         navigate(routesConfig.home);
       }
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch {
       setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    console.log("google login");
-  };
+  const handleGoogleLogin = () => {};
 
   return (
     <div className="bg-white shadow-md rounded-md p-4 w-[220px]">

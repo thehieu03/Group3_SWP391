@@ -14,4 +14,11 @@ public interface IAccountServices:IBaseServices<Account>
     Task<bool> UpdateProfileAsync(int accountId, ProfileUpdateRequest request);
     Task<bool> UpdateAccountAsync(int accountId, UserResponse request);
     Task<bool> DeleteAccountAsync(int accountId, int currentUserId);
+    Task<bool> UpdateAccountRolesAsync(int userId, List<int> roleIds);
+    Task<bool> UpdateAccountRolesAdvancedAsync(int userId, List<int> roleIds, bool replaceAll = false);
+    Task<bool> RemoveAccountRolesAsync(int userId, List<int> roleIds);
+    Task<List<int>> GetUserRoleIdsAsync(int accountId);
+    Task<bool> UpdateUserStatusAsync(int userId, bool isActive);
+    Task<bool> BanUserAsync(int userId);
+    Task<bool> UnbanUserAsync(int userId);
 }

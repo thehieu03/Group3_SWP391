@@ -23,9 +23,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const userData = await authServices.getCurrentUserAsync();
           setUser(userData);
           setIsLoggedIn(true);
-          console.log("User loaded from server");
         } catch (error) {
-          console.error("Error loading user from server:", error);
           logout();
         }
       }

@@ -5,6 +5,7 @@ import useDebounce from "@hooks/useDebounce.tsx";
 import Button from "@components/Button/Button.tsx";
 import EditUserModal from "./EditUserModal";
 import DeleteUserModal from "./DeleteUserModal";
+import ViewUserModal from "./ViewUserModal";
 
 interface ApiError {
   response?: {
@@ -28,22 +29,23 @@ const UserManagement = () => {
   const [editingUser, setEditingUser] = useState<UserForAdmin | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserForAdmin | null>(null);
+  const [viewingUser, setViewingUser] = useState<UserForAdmin | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showBannedUsers, setShowBannedUsers] = useState(false);
   const [isUnbanning, setIsUnbanning] = useState(false);
+  const [isBanning, setIsBanning] = useState(false);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [pageSize, setPageSize] = useState(5); // Dynamic page size
+  const [pageSize, setPageSize] = useState(5);
   const totalPages = Math.max(1, Math.ceil(totalUsers / pageSize));
 
   const debouncedUsernameSearch = useDebounce(usernameSearch, 500);
   const debouncedEmailSearch = useDebounce(emailSearch, 500);
 
-  // Reset to page 1 when search or filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [
@@ -62,7 +64,6 @@ const UserManagement = () => {
 
         let result;
         if (showBannedUsers) {
-          // Fetch banned users (isActive = false)
           result = await userServices.getUsersPagedAsync(
             currentPage,
             pageSize,
@@ -71,10 +72,9 @@ const UserManagement = () => {
             sortOrder,
             debouncedUsernameSearch,
             debouncedEmailSearch,
-            false // isActive = false for banned users
+            false
           );
         } else {
-          // Fetch active users (isActive = true)
           result = await userServices.getUsersPagedAsync(
             currentPage,
             pageSize,
@@ -83,14 +83,13 @@ const UserManagement = () => {
             sortOrder,
             debouncedUsernameSearch,
             debouncedEmailSearch,
-            true // isActive = true for active users
+            true
           );
         }
 
         setUsers(result.items);
         setTotalUsers(result.total);
-      } catch (err) {
-        console.error("Error fetching users:", err);
+      } catch {
         setError("Không thể tải danh sách người dùng");
       } finally {
         setIsSearching(false);
@@ -114,9 +113,9 @@ const UserManagement = () => {
     setShowEditModal(true);
   };
 
-  const handleDeleteUser = (user: UserForAdmin) => {
-    setUserToDelete(user);
-    setShowDeleteModal(true);
+  const handleViewUser = (user: UserForAdmin) => {
+    setViewingUser(user);
+    setShowViewModal(true);
   };
 
   const handleUpdateUser = async (updatedData: UpdateAccountRequest) => {
@@ -126,13 +125,11 @@ const UserManagement = () => {
       setIsUpdating(true);
       setError(null);
 
-      // Debug: Log the data being sent
-      console.log("Updating user with data:", updatedData);
-      console.log("Roles being sent:", updatedData.roles);
+      const selectedRoles = updatedData.roles;
+      const roleIds = selectedRoles.map((role) => (role === "SELLER" ? 2 : 3));
 
-      await userServices.updateAccountAsync(editingUser.id, updatedData);
+      await userServices.updateUserRolesAsync(editingUser.id, roleIds);
 
-      // Refresh the users list with pagination
       const result = await userServices.getUsersPagedAsync(
         currentPage,
         pageSize,
@@ -143,24 +140,13 @@ const UserManagement = () => {
         debouncedEmailSearch,
         showBannedUsers ? false : true
       );
+
       setUsers(result.items);
       setTotalUsers(result.total);
 
       setShowEditModal(false);
       setEditingUser(null);
     } catch (err: unknown) {
-      console.error("Error updating user:", err);
-
-      // More detailed error logging
-      if (err instanceof Error && "response" in err) {
-        const apiErr = err as ApiError;
-        console.error("API Error Details:", {
-          status: apiErr.response?.status,
-          data: apiErr.response?.data,
-          message: apiErr.response?.data?.message,
-        });
-      }
-
       const errorMessage =
         err instanceof Error && "response" in err
           ? (err as ApiError).response?.data?.message
@@ -198,7 +184,6 @@ const UserManagement = () => {
       setShowDeleteModal(false);
       setUserToDelete(null);
     } catch (err: unknown) {
-      console.error("Error deleting user:", err);
       const errorMessage =
         err instanceof Error && "response" in err
           ? (err as ApiError).response?.data?.message
@@ -209,18 +194,17 @@ const UserManagement = () => {
     }
   };
 
-  const handleUnbanUser = async (user: UserForAdmin) => {
+  const handleBanUser = async (user: UserForAdmin) => {
+    if (!confirm(`Bạn có chắc chắn muốn ban người dùng ${user.username}?`)) {
+      return;
+    }
+
     try {
-      setIsUnbanning(true);
+      setIsBanning(true);
       setError(null);
 
-      // Update user to active status
-      const updatedData: UpdateAccountRequest = {
-        ...user,
-        isActive: true,
-      };
+      await userServices.updateUserStatusAsync(user.id, false);
 
-      await userServices.updateAccountAsync(user.id, updatedData);
       const result = await userServices.getUsersPagedAsync(
         currentPage,
         pageSize,
@@ -228,14 +212,50 @@ const UserManagement = () => {
         filterRole,
         sortOrder,
         debouncedUsernameSearch,
-        debouncedEmailSearch
+        debouncedEmailSearch,
+        showBannedUsers ? false : true
       );
+
       setUsers(result.items);
       setTotalUsers(result.total);
-
-      alert(`Đã gỡ ban thành công cho người dùng ${user.username}`);
     } catch (err: unknown) {
-      console.error("Error unbanning user:", err);
+      const errorMessage =
+        err instanceof Error && "response" in err
+          ? (err as ApiError).response?.data?.message
+          : "Không thể ban người dùng";
+      setError(errorMessage || "Không thể ban người dùng");
+    } finally {
+      setIsBanning(false);
+    }
+  };
+
+  const handleUnbanUser = async (user: UserForAdmin) => {
+    if (
+      !confirm(`Bạn có chắc chắn muốn gỡ ban cho người dùng ${user.username}?`)
+    ) {
+      return;
+    }
+
+    try {
+      setIsUnbanning(true);
+      setError(null);
+
+      await userServices.updateUserStatusAsync(user.id, true);
+
+      const result = await userServices.getUsersPagedAsync(
+        currentPage,
+        pageSize,
+        undefined,
+        filterRole,
+        sortOrder,
+        debouncedUsernameSearch,
+        debouncedEmailSearch,
+        showBannedUsers ? false : true
+      );
+
+      setUsers(result.items);
+      setTotalUsers(result.total);
+    } catch (err: unknown) {
       const errorMessage =
         err instanceof Error && "response" in err
           ? (err as ApiError).response?.data?.message
@@ -285,12 +305,12 @@ const UserManagement = () => {
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
-          <button
+          <Button
             onClick={() => window.location.reload()}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
           >
             Thử lại
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -508,8 +528,7 @@ const UserManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         {showBannedUsers
-                          ? // Actions for banned users
-                            !user.roles.includes("ADMIN") && (
+                          ? !user.roles.includes("ADMIN") && (
                               <>
                                 <Button
                                   onClick={() => handleUnbanUser(user)}
@@ -534,9 +553,7 @@ const UserManagement = () => {
                                   {isUnbanning ? "Đang gỡ ban..." : "Gỡ ban"}
                                 </Button>
                                 <Button
-                                  onClick={() => {
-                                    /* Handle view details */
-                                  }}
+                                  onClick={() => handleViewUser(user)}
                                   leftIcon={
                                     <svg
                                       className="w-4 h-4"
@@ -564,8 +581,7 @@ const UserManagement = () => {
                                 </Button>
                               </>
                             )
-                          : // Actions for active users
-                            !user.roles.includes("ADMIN") && (
+                          : !user.roles.includes("ADMIN") && (
                               <>
                                 <Button
                                   onClick={() => handleEditUser(user)}
@@ -589,7 +605,8 @@ const UserManagement = () => {
                                   Sửa
                                 </Button>
                                 <Button
-                                  onClick={() => handleDeleteUser(user)}
+                                  onClick={() => handleBanUser(user)}
+                                  disabled={isBanning}
                                   leftIcon={
                                     <svg
                                       className="w-4 h-4"
@@ -605,14 +622,12 @@ const UserManagement = () => {
                                       />
                                     </svg>
                                   }
-                                  className="text-red-600 hover:text-red-900 bg-transparent border-0 p-0"
+                                  className="text-red-600 hover:text-red-900 disabled:opacity-50 bg-transparent border-0 p-0"
                                 >
-                                  Ban
+                                  {isBanning ? "Đang ban..." : "Ban"}
                                 </Button>
                                 <Button
-                                  onClick={() => {
-                                    /* Handle view details */
-                                  }}
+                                  onClick={() => handleViewUser(user)}
                                   leftIcon={
                                     <svg
                                       className="w-4 h-4"
@@ -655,18 +670,17 @@ const UserManagement = () => {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalUsers > 0 && (
         <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg shadow">
           <div className="flex-1 flex justify-between sm:hidden">
-            <button
+            <Button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Trước
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() =>
                 setCurrentPage(Math.min(totalPages, currentPage + 1))
               }
@@ -674,7 +688,7 @@ const UserManagement = () => {
               className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Sau
-            </button>
+            </Button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
@@ -697,7 +711,6 @@ const UserManagement = () => {
                   onChange={(e) => {
                     const newPageSize = Number(e.target.value);
                     setPageSize(newPageSize);
-                    // Reset to page 1 when changing page size
                     setCurrentPage(1);
                   }}
                   className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -762,7 +775,6 @@ const UserManagement = () => {
                   {/* Page numbers */}
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter((page) => {
-                      // Show first page, last page, current page, and pages around current page
                       return (
                         page === 1 ||
                         page === totalPages ||
@@ -822,7 +834,6 @@ const UserManagement = () => {
         </div>
       )}
 
-      {/* Edit User Modal */}
       {showEditModal && editingUser && (
         <EditUserModal
           user={editingUser}
@@ -835,7 +846,6 @@ const UserManagement = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && userToDelete && (
         <DeleteUserModal
           user={userToDelete}
@@ -847,6 +857,15 @@ const UserManagement = () => {
           isLoading={isDeleting}
         />
       )}
+
+      <ViewUserModal
+        isOpen={showViewModal}
+        onClose={() => {
+          setShowViewModal(false);
+          setViewingUser(null);
+        }}
+        user={viewingUser}
+      />
     </div>
   );
 };

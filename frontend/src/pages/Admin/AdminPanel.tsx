@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import AdminDashboard from './AdminDashboard';
 import UserManagement from './UserManagement/UserManagement.tsx';
-import ShopManagement from './ShopManagement';
+import ShopManagement from './ShopManagement/ShopManagement.tsx';
 import CategoryManagement from './CategoryManagement';
 import SystemSettings from './SystemSettings';
 import SupportTickets from './SupportTickets';

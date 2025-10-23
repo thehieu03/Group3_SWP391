@@ -201,4 +201,214 @@ public class AccountController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
+    [HttpPut("{userId}/role")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> UpdateAccountRoles(int userId, [FromBody] UpdateAccountRoleRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (request == null)
+            {
+                return BadRequest("Request body cannot be null");
+            }
+
+            if (userId <= 0)
+            {
+                return BadRequest("Invalid user ID");
+            }
+
+            if (request.UserId != userId)
+            {
+                return BadRequest("User ID in URL and request body must match");
+            }
+
+            // Kiểm tra nếu mảng role null thì không thực hiện gì
+            if (request.RoleIds == null)
+            {
+                return Ok(new { message = "No roles to update" });
+            }
+
+            // Nếu mảng role rỗng thì xóa tất cả roles
+            if (!request.RoleIds.Any())
+            {
+                // Lấy tất cả roleIds hiện tại để xóa
+                var currentRoleIds = await _accountServices.GetUserRoleIdsAsync(userId);
+                if (currentRoleIds.Any())
+                {
+                    await _accountServices.RemoveAccountRolesAsync(userId, currentRoleIds);
+                }
+                return Ok(new { message = "All roles removed successfully" });
+            }
+
+            var result = await _accountServices.UpdateAccountRolesAdvancedAsync(userId, request.RoleIds, request.ReplaceAll);
+
+            if (!result)
+            {
+                var account = await _accountServices.GetByIdAsync(userId);
+                if (account == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                return BadRequest("Failed to update account roles");
+            }
+
+            var message = request.ReplaceAll ? "Account roles replaced successfully" : "Account roles updated successfully";
+            return Ok(new { message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpDelete("{userId}/role")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> RemoveAccountRoles(int userId, [FromBody] UpdateAccountRoleRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (request == null)
+            {
+                return BadRequest("Request body cannot be null");
+            }
+
+            if (userId <= 0)
+            {
+                return BadRequest("Invalid user ID");
+            }
+
+            if (request.UserId != userId)
+            {
+                return BadRequest("User ID in URL and request body must match");
+            }
+
+            // Kiểm tra nếu mảng role rỗng thì không thực hiện gì
+            if (request.RoleIds == null || !request.RoleIds.Any())
+            {
+                return Ok(new { message = "No roles to remove" });
+            }
+
+            var result = await _accountServices.RemoveAccountRolesAsync(userId, request.RoleIds);
+
+            if (!result)
+            {
+                var account = await _accountServices.GetByIdAsync(userId);
+                if (account == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                return BadRequest("Failed to remove account roles");
+            }
+
+            return Ok(new { message = "Account roles removed successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpGet("{userId}/roles")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> GetUserRoles(int userId)
+    {
+        try
+        {
+            var roles = await _accountServices.GetUserRolesAsync(userId);
+            var roleIds = await _accountServices.GetUserRoleIdsAsync(userId);
+            
+            return Ok(new { 
+                roles = roles,
+                roleIds = roleIds
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpPut("{userId}/status")]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> UpdateUserStatus(int userId, [FromBody] UpdateUserStatusRequest request)
+    {
+        try
+        {
+            // Validate input
+            if (request == null)
+            {
+                return BadRequest(new { message = "Request body cannot be null" });
+            }
+
+            if (request.UserId != userId)
+            {
+                return BadRequest(new { message = "User ID in URL and request body must match" });
+            }
+
+            if (userId <= 0)
+            {
+                return BadRequest(new { message = "Invalid user ID" });
+            }
+
+            // Check if user exists
+            var account = await _accountServices.GetByIdAsync(userId);
+            if (account == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            // Update user status
+            var result = await _accountServices.UpdateUserStatusAsync(userId, request.IsActive);
+
+            if (!result)
+            {
+                return StatusCode(500, new { message = "Failed to update user status" });
+            }
+
+            var action = request.IsActive ? "unbanned" : "banned";
+            var message = $"User {action} successfully";
+
+            return Ok(new { message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+        }
+    }
 }

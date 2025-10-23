@@ -82,10 +82,8 @@ class UserServices {
   ): Promise<UserForAdmin[]> {
     const params = new URLSearchParams();
 
-    // OData filters
     let filter = "";
 
-    // Handle specific username and email search
     if (usernameSearch && usernameSearch.trim()) {
       filter = `contains(username, '${usernameSearch.trim()}')`;
     }
@@ -95,7 +93,6 @@ class UserServices {
       filter = filter ? `(${filter}) and (${emailFilter})` : emailFilter;
     }
 
-    // Fallback to general search term if no specific searches
     if (!filter && searchTerm && searchTerm.trim()) {
       filter = `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`;
     }
@@ -107,7 +104,6 @@ class UserServices {
         : roleFilterQuery;
     }
 
-    // Add isActive filter
     if (isActive !== undefined) {
       const activeFilter = `isActive eq ${isActive}`;
       filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
@@ -115,7 +111,6 @@ class UserServices {
 
     if (filter) params.set("$filter", filter);
 
-    // OData sorting
     if (sortOrder) {
       const sortDirection = sortOrder === "asc" ? "asc" : "desc";
       params.set("$orderby", `createdAt ${sortDirection}`);
@@ -139,16 +134,13 @@ class UserServices {
   ): Promise<PaginatedUsersResponse> {
     const params = new URLSearchParams();
 
-    // OData paging
     const skip = Math.max(0, (page - 1) * pageSize);
     params.set("$top", String(pageSize));
     params.set("$skip", String(skip));
     params.set("$count", "true");
 
-    // OData filters
     let filter = "";
 
-    // Handle specific username and email search
     if (usernameSearch && usernameSearch.trim()) {
       filter = `contains(username, '${usernameSearch.trim()}')`;
     }
@@ -158,7 +150,6 @@ class UserServices {
       filter = filter ? `(${filter}) and (${emailFilter})` : emailFilter;
     }
 
-    // Fallback to general search term if no specific searches
     if (!filter && searchTerm && searchTerm.trim()) {
       filter = `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`;
     }
@@ -170,7 +161,6 @@ class UserServices {
         : roleFilterQuery;
     }
 
-    // Add isActive filter
     if (isActive !== undefined) {
       const activeFilter = `isActive eq ${isActive}`;
       filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
@@ -178,7 +168,6 @@ class UserServices {
 
     if (filter) params.set("$filter", filter);
 
-    // OData sorting
     if (sortOrder) {
       const sortDirection = sortOrder === "asc" ? "asc" : "desc";
       params.set("$orderby", `createdAt ${sortDirection}`);
@@ -186,7 +175,6 @@ class UserServices {
 
     const query = params.toString() ? `?${params.toString()}` : "";
 
-    // Backend may return OData { value: [], @odata.count: n } or plain array
     const res = await httpGet<
       { value: UserForAdmin[]; "@odata.count": number } | UserForAdmin[]
     >(`accounts${query}`);
@@ -197,7 +185,6 @@ class UserServices {
       "value" in res &&
       Array.isArray(res.value)
     ) {
-      // OData response format
       const total = res["@odata.count"] ?? res.value.length;
       return {
         items: res.value,
@@ -205,7 +192,6 @@ class UserServices {
       };
     }
 
-    // If backend pagination doesn't work properly, use frontend pagination
     const allUsers = await this.getAllUsersForPaginationAsync(
       searchTerm,
       roleFilter,
@@ -229,19 +215,45 @@ class UserServices {
     accountId: number,
     accountData: UpdateAccountRequest
   ): Promise<UserForAdmin> {
-    console.log("Sending update request to:", `accounts/${accountId}`);
-    console.log("Request payload:", accountData);
-
     const response = await httpPut<UserForAdmin>(
       `accounts/${accountId}`,
       accountData
     );
-    console.log("Update response:", response);
     return response;
   }
 
   async deleteAccountAsync(accountId: number): Promise<void> {
     await httpDelete<void>(`accounts/${accountId}`);
+  }
+
+  async updateUserRoleAsync(userId: number, roleId: number): Promise<void> {
+    const response = await httpPut<void>(`accounts/${userId}/role`, {
+      userId,
+      roleIds: [roleId],
+    });
+
+    return response;
+  }
+
+  async updateUserRolesAsync(userId: number, roleIds: number[]): Promise<void> {
+    const response = await httpPut<void>(`accounts/${userId}/role`, {
+      userId,
+      roleIds,
+    });
+
+    return response;
+  }
+
+  async updateUserStatusAsync(
+    userId: number,
+    isActive: boolean
+  ): Promise<void> {
+    const response = await httpPut<void>(`accounts/${userId}/status`, {
+      userId,
+      isActive,
+    });
+
+    return response;
   }
 }
 
