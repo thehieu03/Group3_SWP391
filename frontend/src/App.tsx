@@ -7,7 +7,18 @@ const ProtectedRoute = ({ children, requiredRoles }: { children: React.ReactNode
   const { user, isLoggedIn, loading } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+      }}>
+        Loading...
+      </div>
+    );
   }
   
   if (!isLoggedIn) {
@@ -22,6 +33,27 @@ const ProtectedRoute = ({ children, requiredRoles }: { children: React.ReactNode
 };
 
 function App() {
+  const { loading } = useAuth();
+
+  // Show loading screen while checking auth
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: '10px' }}>🔄</div>
+          <div>Đang tải...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
         <div className="App">
@@ -69,6 +101,9 @@ function App() {
                         </ProtectedRoute>
                     }/>
                 })}
+                
+                {/* Catch all - redirect to home */}
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </div>
     </BrowserRouter>

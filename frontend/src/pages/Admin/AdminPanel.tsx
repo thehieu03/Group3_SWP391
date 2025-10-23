@@ -5,6 +5,7 @@ import ShopManagement from './ShopManagement';
 import CategoryManagement from './CategoryManagement';
 import SystemSettings from './SystemSettings';
 import SupportTickets from './SupportTickets';
+import ProductApproval from './ProductApproval';
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,6 +20,8 @@ const AdminPanel = () => {
         return <ShopManagement />;
       case 'categories':
         return <CategoryManagement />;
+      case 'products':
+        return <ProductApproval />;
       case 'transactions':
         return <div className="text-center py-12">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Lịch sử giao dịch</h2>
@@ -62,6 +65,7 @@ const AdminPanel = () => {
                 { id: 'users', label: 'Quản lý người dùng', icon: '👥' },
                 { id: 'shops', label: 'Quản lý shop', icon: '🏪' },
                 { id: 'categories', label: 'Quản lý danh mục', icon: '📁' },
+                { id: 'products', label: 'Cấp quyền sản phẩm', icon: '✅' },
                 { id: 'transactions', label: 'Lịch sử giao dịch', icon: '💰' },
                 { id: 'support', label: 'Hỗ trợ khách hàng', icon: '🎧' },
                 { id: 'settings', label: 'Cài đặt hệ thống', icon: '⚙️' },

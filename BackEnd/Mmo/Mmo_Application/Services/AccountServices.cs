@@ -171,55 +171,98 @@ public class AccountServices:BaseServices<Account>,IAccountServices
 
     public async Task<Account?> RegisterAsync(RegisterRequest registerRequest)
     {
-        // Kiểm tra username đã tồn tại chưa
-        var existingUsername = await GetByUsernameAsync(registerRequest.Username);
-        if (existingUsername != null)
+        try
         {
-            return null; // Username đã tồn tại
-        }
+            Console.WriteLine($"[REGISTER_SERVICE] Starting registration for: {registerRequest.Username}");
 
-        // Kiểm tra email đã tồn tại chưa
-        var existingEmail = await GetByEmailAsync(registerRequest.Email);
-        if (existingEmail != null)
-        {
-            return null; // Email đã tồn tại
-        }
+            // Kiểm tra username đã tồn tại chưa
+            var existingUsername = await GetByUsernameAsync(registerRequest.Username);
+            if (existingUsername != null)
+            {
+                Console.WriteLine($"[REGISTER_SERVICE] Username already exists: {registerRequest.Username}");
+                return null;
+            }
 
-        // Hash password với BCrypt
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
+            // Kiểm tra email đã tồn tại chưa
+            var existingEmail = await GetByEmailAsync(registerRequest.Email);
+            if (existingEmail != null)
+            {
+                Console.WriteLine($"[REGISTER_SERVICE] Email already exists: {registerRequest.Email}");
+                return null;
+            }
 
-        // Tạo account mới
-        var newAccount = new Account
-        {
-            Username = registerRequest.Username,
-            Email = registerRequest.Email,
-            Password = hashedPassword,
-            Phone = null,
-            Balance = 0,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+            // Hash password với BCrypt
+            Console.WriteLine("[REGISTER_SERVICE] Hashing password...");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
 
-        // Lưu vào database
-        await AddAsync(newAccount);
+            // Tạo account mới
+            var newAccount = new Account
+            {
+                Username = registerRequest.Username,
+                Email = registerRequest.Email,
+                Password = hashedPassword,
+                Phone = null,
+                Balance = 0,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-        // Gán role USER mặc định
-        var userRoleQuery = await _unitOfWork.GenericRepository<Role>()
-            .GetQuery(r => r.RoleName == "USER");
-        var userRole = userRoleQuery.FirstOrDefault();
+            Console.WriteLine("[REGISTER_SERVICE] Adding account to database...");
+            // Lưu account vào database và lấy ID
+            await AddAsync(newAccount);
+            
+            Console.WriteLine("[REGISTER_SERVICE] Saving account changes...");
+            await _unitOfWork.SaveChangeAsync();
+            Console.WriteLine($"[REGISTER_SERVICE] Account saved successfully. ID: {newAccount.Id}");
 
-        if (userRole != null)
-        {
+            // Gán role CUSTOMER mặc định (người dùng thường)
+            Console.WriteLine("[REGISTER_SERVICE] Looking for CUSTOMER role...");
+            var customerRoleQuery = await _unitOfWork.GenericRepository<Role>()
+                .GetQuery(r => r.RoleName == "CUSTOMER");
+            var customerRole = customerRoleQuery.FirstOrDefault();
+
+            if (customerRole == null)
+            {
+                Console.WriteLine("[REGISTER_SERVICE] ❌ ERROR: CUSTOMER role not found in database!");
+                throw new Exception("CUSTOMER role does not exist in the database. Please seed roles: CUSTOMER, ADMIN, SELLER");
+            }
+
+            Console.WriteLine($"[REGISTER_SERVICE] CUSTOMER role found. ID: {customerRole.Id}");
+
             var accountRole = new Accountrole
             {
                 AccountId = newAccount.Id,
-                RoleId = userRole.Id
+                RoleId = customerRole.Id
             };
-            await _unitOfWork.GenericRepository<Accountrole>().AddAsync(accountRole);
-            await _unitOfWork.SaveChangeAsync();
-        }
 
-        return newAccount;
+            Console.WriteLine($"[REGISTER_SERVICE] Adding AccountRole (AccountId: {newAccount.Id}, RoleId: {customerRole.Id})...");
+            await _unitOfWork.GenericRepository<Accountrole>().AddAsync(accountRole);
+            
+            Console.WriteLine("[REGISTER_SERVICE] Saving AccountRole changes...");
+            await _unitOfWork.SaveChangeAsync();
+            Console.WriteLine("[REGISTER_SERVICE] ✅ Registration completed successfully!");
+
+            return newAccount;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[REGISTER_SERVICE] ❌ EXCEPTION: {ex.Message}");
+            Console.WriteLine($"[REGISTER_SERVICE] ❌ EXCEPTION TYPE: {ex.GetType().FullName}");
+            
+            // Log tất cả inner exceptions
+            var innerEx = ex.InnerException;
+            var depth = 1;
+            while (innerEx != null)
+            {
+                Console.WriteLine($"[REGISTER_SERVICE] ❌ INNER EXCEPTION #{depth}: {innerEx.Message}");
+                Console.WriteLine($"[REGISTER_SERVICE] ❌ INNER EXCEPTION #{depth} TYPE: {innerEx.GetType().FullName}");
+                innerEx = innerEx.InnerException;
+                depth++;
+            }
+            
+            Console.WriteLine($"[REGISTER_SERVICE] ❌ STACK TRACE: {ex.StackTrace}");
+            throw;
+        }
     }
 }

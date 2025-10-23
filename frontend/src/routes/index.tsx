@@ -6,8 +6,10 @@ import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails
 import CategoryProducts from "../pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
 import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
+import Login from "../pages/UserAndSeller/Login/Login.tsx";
 import Register from "../pages/UserAndSeller/Register/Register.tsx";
 import AdminPanel from "../pages/Admin/AdminPanel.tsx";
+import ProductApproval from "../pages/Admin/ProductApproval.tsx";
 import routesConfig from "../config/routesConfig.tsx";
 import type { User } from "../models/modelResponse/LoginResponse";
 type AppRoute = {
@@ -23,7 +25,12 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
   {
-    path: routesConfig.register,
+    path: routesConfig.login,
+    element: <Login />,
+    layout: HeaderAndFooter,
+  },
+  {
+    path: routesConfig.registerShop,
     element: <Register />,
     layout: HeaderAndFooter,
   },
@@ -48,13 +55,13 @@ const privateRoutes: AppRoute[] = [
     path: routesConfig.userProfile,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['USER', 'SELLER', 'ADMIN'],
+    requiredRoles: ['BUYER', 'SELLER', 'ADMIN'],
   },
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['USER', 'SELLER', 'ADMIN'],
+    requiredRoles: ['BUYER', 'SELLER', 'ADMIN'],
   },
 ];
 
@@ -83,6 +90,12 @@ const adminRoutes: AppRoute[] = [
   {
     path: '/admin/dashboard',
     element: <AdminPanel />,
+    layout: DefaultLayout,
+    requiredRoles: ['ADMIN'],
+  },
+  {
+    path: routesConfig.productApproval,
+    element: <ProductApproval />,
     layout: DefaultLayout,
     requiredRoles: ['ADMIN'],
   },

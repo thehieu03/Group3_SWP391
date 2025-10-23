@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
@@ -347,6 +347,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("isActive");
+            entity.Property(e => e.IsApproved)
+                .HasDefaultValueSql("'0'")
+                .HasColumnName("isApproved");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
@@ -577,15 +580,16 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Systemsconfig>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("systemsconfig");
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
 
+            entity.ToTable("systemsconfig");
+
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .HasColumnName("email");
             entity.Property(e => e.Fee)
-                .HasPrecision(3, 2)
+                .HasPrecision(5, 2)
                 .HasDefaultValueSql("'0.50'")
                 .HasColumnName("fee");
             entity.Property(e => e.GoogleAppPassword)

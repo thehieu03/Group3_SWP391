@@ -1,55 +1,51 @@
-.login-register-container {
-  min-height: calc(100vh - 88px); /* Trừ đi chiều cao của Header (88px) */
+/* Auth Container */
+.auth-container {
+  min-height: calc(100vh - 88px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 60px 20px; /* Tăng padding trên dưới để tạo khoảng cách */
+  background: linear-gradient(135deg, #f5f6fa 0%, #f9f9fa 100%);
+  padding: 40px 20px;
 }
 
-.form-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  max-width: 1100px;
+.auth-wrapper {
   width: 100%;
+  max-width: 600px;
 }
 
-.form-box {
+.auth-box {
   background: white;
-  padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 40px;
 }
 
-.form-title {
+.auth-title {
   font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
+  font-weight: 700;
+  color: #2c3e50;
   text-align: center;
+  margin-bottom: 20px;
 }
 
+/* Notice */
 .notice {
-  background: #fff3cd;
+  background: #e8f5e9;
   padding: 12px;
   border-radius: 6px;
-  font-size: 13px;
   margin-bottom: 20px;
-  border-left: 4px solid #ffc107;
+  text-align: center;
 }
 
 .text-green {
   color: #28a745;
-}
-
-.text-red {
-  color: #dc3545;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .text-green-bold {
   color: #28a745;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -57,24 +53,25 @@
   text-decoration: underline;
 }
 
+/* Form Elements */
 label {
   display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
   font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 12px;
+  padding: 12px 15px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   margin-bottom: 15px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
   box-sizing: border-box;
 }
 
@@ -83,67 +80,62 @@ input[type="email"]:focus,
 input[type="password"]:focus {
   outline: none;
   border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
 }
 
+/* Grid Layout */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
-}
-
-.forgot-password {
-  text-align: right;
-  color: #28a745;
-  font-size: 13px;
-  cursor: pointer;
   margin-bottom: 15px;
 }
 
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.remember {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.remember input[type="checkbox"] {
-  margin: 0;
-  cursor: pointer;
-}
-
+/* Agree Checkbox */
 .agree {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 20px;
-  font-size: 14px;
 }
 
 .agree input[type="checkbox"] {
-  margin-top: 3px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+  margin: 0;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
+.agree label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Buttons */
 .btn-green {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: #28a745;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
 }
 
 .btn-green:hover:not(:disabled) {
   background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
 .btn-green:disabled {
@@ -152,58 +144,25 @@ input[type="password"]:focus {
   opacity: 0.6;
 }
 
-.or-text {
+/* Redirect Text */
+.redirect-text {
   text-align: center;
-  margin: 20px 0;
-  color: #999;
-  position: relative;
-}
-
-.or-text::before,
-.or-text::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 40%;
-  height: 1px;
-  background: #ddd;
-}
-
-.or-text::before {
-  left: 0;
-}
-
-.or-text::after {
-  right: 0;
-}
-
-.btn-google {
-  width: 100%;
-  padding: 12px;
-  background: white;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  margin-top: 20px;
   font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.3s;
+  color: #555;
 }
 
-.btn-google:hover {
-  background: #f8f9fa;
-  border-color: #28a745;
+.link-green {
+  color: #28a745;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.btn-google img {
-  width: 20px;
-  height: 20px;
+.link-green:hover {
+  text-decoration: underline;
 }
 
+/* Error & Success Messages */
 .error-message {
   background: #f8d7da;
   color: #721c24;
@@ -216,27 +175,32 @@ input[type="password"]:focus {
 
 .success-message {
   background: #d4edda;
-  color: #155724;
+  color: #0d6832;
   padding: 12px;
   border-radius: 6px;
   margin-bottom: 15px;
   font-size: 14px;
+  font-weight: 600;
   border-left: 4px solid #28a745;
+  text-align: center;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .form-wrapper {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
   .grid-2 {
     grid-template-columns: 1fr;
   }
 
-  .form-box {
+  .auth-container {
+    padding: 20px 15px;
+  }
+
+  .auth-box {
     padding: 30px 20px;
+  }
+
+  .auth-title {
+    font-size: 24px;
   }
 }
 

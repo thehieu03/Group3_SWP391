@@ -10,37 +10,62 @@ public class SystemsconfigServices: BaseServices<Systemsconfig>, ISystemsconfigS
 
     public async Task<Systemsconfig?> GetSystemConfigAsync()
     {
-        // Lấy config đầu tiên trong hệ thống (chỉ có 1 record)
         var configs = await GetAllAsync();
         return configs.FirstOrDefault();
     }
 
     public async Task<bool> UpdateSystemConfigAsync(UpdateSystemConfigRequest request)
     {
-        // Lấy config hiện tại
-        var existingConfig = await GetSystemConfigAsync();
-
-        if (existingConfig != null)
+        try
         {
-            // Update config hiện tại
-            existingConfig.Email = request.Email;
-            existingConfig.Fee = request.Fee;
-            existingConfig.GoogleAppPassword = request.GoogleAppPassword;
+            Console.WriteLine("[SYSTEMSCONFIG] Starting update...");
+            Console.WriteLine($"[SYSTEMSCONFIG] Email: {request.Email}, Fee: {request.Fee}");
 
-            return await UpdateAsync(existingConfig);
-        }
-        else
-        {
-            // Tạo config mới nếu chưa có
-            var newConfig = new Systemsconfig
+            // Lấy config hiện tại
+            var existingConfig = await GetSystemConfigAsync();
+
+            if (existingConfig != null)
             {
-                Email = request.Email,
-                Fee = request.Fee,
-                GoogleAppPassword = request.GoogleAppPassword
-            };
+                Console.WriteLine($"[SYSTEMSCONFIG] Found existing config with ID: {existingConfig.Id}");
+                
+                // Update config hiện tại
+                existingConfig.Email = request.Email;
+                existingConfig.Fee = request.Fee;
+                existingConfig.GoogleAppPassword = request.GoogleAppPassword;
 
-            await AddAsync(newConfig);
-            return true;
+                Console.WriteLine("[SYSTEMSCONFIG] Updating existing config...");
+                var result = await UpdateAsync(existingConfig);
+                Console.WriteLine($"[SYSTEMSCONFIG] Update result: {result}");
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("[SYSTEMSCONFIG] No existing config found. Creating new...");
+                
+                // Tạo config mới nếu chưa có
+                var newConfig = new Systemsconfig
+                {
+                    Email = request.Email,
+                    Fee = request.Fee,
+                    GoogleAppPassword = request.GoogleAppPassword
+                };
+
+                await AddAsync(newConfig);
+                Console.WriteLine("[SYSTEMSCONFIG] New config created successfully");
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SYSTEMSCONFIG] ❌ ERROR: {ex.Message}");
+            Console.WriteLine($"[SYSTEMSCONFIG] ❌ STACK TRACE: {ex.StackTrace}");
+            
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[SYSTEMSCONFIG] ❌ INNER EXCEPTION: {ex.InnerException.Message}");
+            }
+            
+            throw;
         }
     }
 }

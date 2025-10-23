@@ -30,15 +30,18 @@ public class AuthController : ControllerBase
     /// <param name="registerRequest">Thông tin đăng ký</param>
     /// <returns>Token và thông tin user</returns>
     [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest registerRequest)
     {
         try
         {
+            Console.WriteLine($"[REGISTER] Received request for username: {registerRequest.Username}");
+            
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("[REGISTER] ModelState invalid");
                 return BadRequest(ModelState);
             }
 
@@ -47,16 +50,32 @@ public class AuthController : ControllerBase
 
             if (newAccount == null)
             {
+                Console.WriteLine("[REGISTER] Account creation failed - Username or email already exists");
                 return Conflict("Username or email already exists");
             }
+
+            Console.WriteLine($"[REGISTER] Account created successfully. ID: {newAccount.Id}");
+
+            // Lấy roles của user mới tạo
+            var roles = await _accountServices.GetUserRolesAsync(newAccount.Id);
+            Console.WriteLine($"[REGISTER] Roles fetched: {string.Join(", ", roles)}");
 
             // Tạo token cho user mới
             var authResponse = await _tokenServices.GenerateTokensAsync(newAccount);
             
-            return CreatedAtAction(nameof(Register), new { id = newAccount.Id }, authResponse);
+            // Đảm bảo roles được trả về trong response
+            if (authResponse?.User != null)
+            {
+                authResponse.User.Roles = roles;
+                Console.WriteLine($"[REGISTER] AuthResponse created successfully for user: {authResponse.User.Username}");
+            }
+            
+            return Ok(authResponse);
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[REGISTER] Exception: {ex.Message}");
+            Console.WriteLine($"[REGISTER] StackTrace: {ex.StackTrace}");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }

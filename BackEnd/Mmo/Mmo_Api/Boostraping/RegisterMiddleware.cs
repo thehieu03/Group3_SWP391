@@ -17,6 +17,19 @@ public static class RegisterMiddleware
         IConfiguration configuration)
     {
         var connStr = configuration.GetConnectionString("DefaultConnection");
+        
+        // Thêm CORS
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173", "http://localhost:3000") // Vite dev server
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials();
+            });
+        });
+        
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddControllers().AddOData(options =>
@@ -89,6 +102,9 @@ public static class RegisterMiddleware
             app.UseSwaggerUI();
         }
 
+        // Sử dụng CORS (phải đặt TRƯỚC Authentication/Authorization)
+        app.UseCors("AllowFrontend");
+        
         app.MapControllers();
         app.UseHttpsRedirection();
         app.UseAuthentication();

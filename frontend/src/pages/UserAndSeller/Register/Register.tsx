@@ -1,20 +1,13 @@
-import { type ChangeEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { authServices } from "../../../services/AuthServices";
-import type { RegisterRequest } from "../../../models/modelRequest/RegisterRequest";
-import type { LoginRequest } from "../../../models/modelRequest/LoginRequest";
-import { useAuth } from "../../../hooks/useAuth.tsx";
-import Cookies from "js-cookie";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { authServices } from "../../../services/AuthServices.tsx";
+import type { RegisterRequest } from "../../../models/modelRequest/RegisterRequest.tsx";
 import routesConfig from "../../../config/routesConfig.tsx";
-import Header from "../../../components/Layouts/components/Header/Header.tsx";
-import Footer from "../../../components/Layouts/components/Footer/Footer.tsx";
 import "./Register.css";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
-  // State cho Register
   const [registerData, setRegisterData] = useState({
     username: "",
     email: "",
@@ -22,18 +15,23 @@ const Register = () => {
     confirmPassword: "",
   });
 
-  // State cho Login
-  const [loginData, setLoginData] = useState({
-    username: "",
-    password: "",
-  });
-
   const [isAgreed, setIsAgreed] = useState(false);
-  const [isLoadingRegister, setIsLoadingRegister] = useState(false);
-  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
-  const [errorRegister, setErrorRegister] = useState("");
-  const [errorLogin, setErrorLogin] = useState("");
-  const [successRegister, setSuccessRegister] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (countdown !== null && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      navigate(routesConfig.login);
+    }
+  }, [countdown, navigate]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -46,54 +44,53 @@ const Register = () => {
     return hasLetter && hasNumber;
   };
 
-  // Xử lý đăng ký
   const handleRegister = async () => {
-    setErrorRegister("");
-    setSuccessRegister("");
+    setError("");
+    setSuccess("");
 
     // Validation
     if (!registerData.username.trim() || !registerData.email.trim() || 
         !registerData.password.trim() || !registerData.confirmPassword.trim()) {
-      setErrorRegister("Vui lòng nhập đầy đủ thông tin");
+      setError("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
     if (registerData.username.length < 3 || registerData.username.length > 50) {
-      setErrorRegister("Tên đăng nhập phải từ 3-50 ký tự");
+      setError("Tên đăng nhập phải từ 3-50 ký tự");
       return;
     }
 
     if (!validateEmail(registerData.email)) {
-      setErrorRegister("Email không hợp lệ. Email phải có @ và đúng định dạng (vd: user@example.com)");
+      setError("Email không hợp lệ. Email phải có @ và đúng định dạng (vd: user@example.com)");
       return;
     }
 
     if (!registerData.email.includes("@")) {
-      setErrorRegister("Email phải chứa ký tự @");
+      setError("Email phải chứa ký tự @");
       return;
     }
 
     if (registerData.password.length < 6) {
-      setErrorRegister("Mật khẩu phải có ít nhất 6 ký tự");
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
     if (!validatePassword(registerData.password)) {
-      setErrorRegister("Mật khẩu phải bao gồm cả chữ và số");
+      setError("Mật khẩu phải bao gồm cả chữ và số");
       return;
     }
 
     if (registerData.password !== registerData.confirmPassword) {
-      setErrorRegister("Mật khẩu nhập lại không khớp");
+      setError("Mật khẩu nhập lại không khớp");
       return;
     }
 
     if (!isAgreed) {
-      setErrorRegister("Bạn phải đồng ý với điều khoản sử dụng");
+      setError("Bạn phải đồng ý với điều khoản sử dụng");
       return;
     }
 
-    setIsLoadingRegister(true);
+    setIsLoading(true);
 
     try {
       const requestData: RegisterRequest = {
@@ -103,163 +100,70 @@ const Register = () => {
         confirmPassword: registerData.confirmPassword,
       };
 
+      console.log("✅ [REGISTER] Sending request...", requestData);
       const response = await authServices.registerAsync(requestData);
+      console.log("✅ [REGISTER] Response received:", response);
+      console.log("✅ [REGISTER] User:", response.user);
+      console.log("✅ [REGISTER] Access Token:", response.accessToken ? "✓" : "✗");
+      console.log("✅ [REGISTER] Refresh Token:", response.refreshToken ? "✓" : "✗");
 
-      // Lưu tokens
-      Cookies.set("accessToken", response.accessToken, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
+      // Kiểm tra response có đầy đủ dữ liệu không
+      if (!response || !response.user) {
+        console.error("❌ [REGISTER] Invalid response structure");
+        throw new Error("Invalid response from server");
+      }
 
-      Cookies.set("refreshToken", response.refreshToken, {
-        expires: 30,
-        secure: true,
-        sameSite: "strict",
-      });
+      // Hiển thị thông báo thành công và bắt đầu countdown
+      setSuccess("✅ Đăng ký thành công! Bạn đã được gán vai trò CUSTOMER.");
+      setCountdown(3); // Đếm ngược từ 3 giây
+    } catch (error: any) {
+      console.error("❌ [REGISTER] Failed:", error);
+      console.error("❌ [REGISTER] Response:", error.response);
+      console.error("❌ [REGISTER] Data:", error.response?.data);
+      console.error("❌ [REGISTER] Status:", error.response?.status);
+      console.error("❌ [REGISTER] Headers:", error.response?.headers);
 
-      // Update Auth Context
-      login(response.user);
+      if (error.response) {
+        // Server trả về response (có status code)
+        const status = error.response.status;
+        const data = error.response.data;
 
-      setSuccessRegister("Đăng ký thành công! Đang chuyển hướng...");
-
-      // Redirect
-      setTimeout(() => {
-        if (response.user.roles.includes("ADMIN")) {
-          navigate("/admin/dashboard");
+        if (status === 409) {
+          setError("❌ Tên đăng nhập hoặc email đã tồn tại");
+        } else if (status === 400) {
+          // Bad Request - validation errors
+          if (data?.errors) {
+            const errorMessages = Object.values(data.errors).flat().join(", ");
+            setError(`❌ ${errorMessages}`);
+          } else if (typeof data === 'string') {
+            setError(`❌ ${data}`);
+          } else {
+            setError("❌ Thông tin đăng ký không hợp lệ");
+          }
+        } else if (status === 500) {
+          setError(`❌ Lỗi server: ${data?.message || data || "Internal Server Error"}`);
         } else {
-          navigate(routesConfig.home);
+          setError(`❌ Lỗi không xác định (${status}): ${data?.message || data || error.message}`);
         }
-      }, 1500);
-    } catch (error: any) {
-      console.error("Register failed:", error);
-
-      if (error.response?.status === 409) {
-        setErrorRegister("Tên đăng nhập hoặc email đã tồn tại");
-      } else if (error.response?.status === 400) {
-        setErrorRegister("Thông tin đăng ký không hợp lệ");
+      } else if (error.request) {
+        // Request đã được gửi nhưng không nhận được response
+        console.error("❌ [REGISTER] No response received:", error.request);
+        setError("❌ Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
       } else {
-        setErrorRegister("Đăng ký thất bại. Vui lòng thử lại sau.");
+        // Lỗi khác (khi setup request)
+        console.error("❌ [REGISTER] Request setup error:", error.message);
+        setError(`❌ ${error.message}`);
       }
     } finally {
-      setIsLoadingRegister(false);
+      setIsLoading(false);
     }
-  };
-
-  // Xử lý đăng nhập
-  const handleLogin = async () => {
-    setErrorLogin("");
-
-    if (!loginData.username.trim() || !loginData.password.trim()) {
-      setErrorLogin("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
-      return;
-    }
-
-    setIsLoadingLogin(true);
-
-    try {
-      const requestData: LoginRequest = {
-        username: loginData.username.trim(),
-        password: loginData.password,
-      };
-
-      const response = await authServices.loginAsync(requestData);
-
-      // Lưu tokens
-      Cookies.set("accessToken", response.accessToken, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
-
-      Cookies.set("refreshToken", response.refreshToken, {
-        expires: 30,
-        secure: true,
-        sameSite: "strict",
-      });
-
-      // Update Auth Context
-      login(response.user);
-
-      // Redirect
-      if (response.user.roles.includes("ADMIN")) {
-        navigate("/admin/dashboard");
-      } else {
-        navigate(routesConfig.home);
-      }
-    } catch (error: any) {
-      console.error("Login failed:", error);
-      setErrorLogin("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-    } finally {
-      setIsLoadingLogin(false);
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    console.log("Google login - Coming soon");
-    alert("Tính năng đăng nhập Google sẽ sớm được cập nhật!");
   };
 
   return (
-    <>
-      <Header />
-      <div className="login-register-container">
-        <div className="form-wrapper">
-          {/* FORM ĐĂNG NHẬP */}
-          <div className="form-box form-login">
-          <h2 className="form-title">Đăng nhập</h2>
-
-          {errorLogin && (
-            <div className="error-message">{errorLogin}</div>
-          )}
-
-          <label>Tên đăng nhập hoặc Email</label>
-          <input
-            type="text"
-            placeholder="Nhập tên đăng nhập hoặc email"
-            value={loginData.username}
-            onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
-            onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-          />
-
-          <label>Mật khẩu</label>
-          <input
-            type="password"
-            placeholder="Nhập mật khẩu"
-            value={loginData.password}
-            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-            onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-          />
-
-          <div className="forgot-password">Quên mật khẩu</div>
-
-          <div className="remember">
-            <input type="checkbox" id="remember" />
-            <label htmlFor="remember" style={{ marginBottom: 0 }}>Ghi nhớ đăng nhập</label>
-          </div>
-
-          <button 
-            className="btn-green" 
-            onClick={handleLogin}
-            disabled={isLoadingLogin}
-          >
-            {isLoadingLogin ? "Đang đăng nhập..." : "Đăng nhập"}
-          </button>
-
-          <div className="or-text">Or</div>
-
-          <button className="btn-google" onClick={handleGoogleLogin}>
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-            />
-            Login with Google
-          </button>
-        </div>
-
-        {/* FORM ĐĂNG KÝ */}
-        <div className="form-box form-register">
-          <h2 className="form-title">Đăng ký</h2>
+    <div className="auth-container">
+      <div className="auth-wrapper">
+        <div className="auth-box auth-box-register">
+          <h2 className="auth-title">Đăng ký tài khoản</h2>
 
           <p className="notice">
             <span className="text-green">
@@ -267,12 +171,19 @@ const Register = () => {
             </span>
           </p>
 
-          {errorRegister && (
-            <div className="error-message">{errorRegister}</div>
+          {error && (
+            <div className="error-message">{error}</div>
           )}
 
-          {successRegister && (
-            <div className="success-message">{successRegister}</div>
+          {success && (
+            <div className="success-message">
+              {success}
+              {countdown !== null && countdown > 0 && (
+                <div style={{ marginTop: "8px", fontSize: "13px" }}>
+                  Chuyển đến trang đăng nhập trong {countdown} giây...
+                </div>
+              )}
+            </div>
           )}
 
           <div className="grid-2">
@@ -343,16 +254,19 @@ const Register = () => {
           <button
             className="btn-green"
             onClick={handleRegister}
-            disabled={!isAgreed || isLoadingRegister}
+            disabled={!isAgreed || isLoading || countdown !== null}
           >
-            {isLoadingRegister ? "Đang đăng ký..." : "Đăng ký"}
+            {isLoading ? "Đang đăng ký..." : "Đăng ký"}
           </button>
+
+          <div className="redirect-text">
+            Đã có tài khoản? <Link to={routesConfig.login} className="link-green">Đăng nhập ngay</Link>
+          </div>
         </div>
       </div>
-      </div>
-      <Footer />
-    </>
+    </div>
   );
 };
 
 export default Register;
+

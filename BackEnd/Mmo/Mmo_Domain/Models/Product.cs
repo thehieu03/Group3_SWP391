@@ -21,6 +21,8 @@ public partial class Product
 
     public bool? IsActive { get; set; }
 
+    public bool? IsApproved { get; set; }
+
     public string? Details { get; set; }
 
     public decimal? Fee { get; set; }

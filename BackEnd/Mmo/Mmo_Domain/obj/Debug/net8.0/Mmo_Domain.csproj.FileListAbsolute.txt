@@ -1,0 +1,15 @@
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\bin\Debug\net8.0\Mmo_Domain.deps.json
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\bin\Debug\net8.0\Mmo_Domain.runtimeconfig.json
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\bin\Debug\net8.0\Mmo_Domain.dll
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\bin\Debug\net8.0\Mmo_Domain.pdb
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.csproj.AssemblyReference.cache
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.AssemblyInfoInputs.cache
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.AssemblyInfo.cs
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.csproj.CoreCompileInputs.cache
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.sourcelink.json
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.dll
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\refint\Mmo_Domain.dll
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.pdb
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\Mmo_Domain.genruntimeconfig.cache
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Domain\obj\Debug\net8.0\ref\Mmo_Domain.dll
