@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.20" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.20"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3"/>
     </ItemGroup>
     <ItemGroup>
-        <Using Include="System.Linq.Expressions" />
-        <Using Include="Mmo_Domain.IRepository" />
+        <Using Include="System.Linq.Expressions"/>
+        <Using Include="Mmo_Domain.IRepository"/>
     </ItemGroup>
 </Project>

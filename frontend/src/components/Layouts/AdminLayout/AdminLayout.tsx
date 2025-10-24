@@ -1,4 +1,14 @@
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChartBar,
+  faUsers,
+  faStore,
+  faBox,
+  faMoneyBillWave,
+  faHeadset,
+  faCog,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import routesConfig from "../../../config/routesConfig";
@@ -21,44 +31,49 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     {
       id: "dashboard",
       label: "Dashboard",
-      icon: "📊",
+      icon: <FontAwesomeIcon icon={faChartBar} className="text-lg" />,
       path: "/admin/dashboard",
     },
     {
       id: "users",
       label: "Quản lý người dùng",
-      icon: "👥",
+      icon: <FontAwesomeIcon icon={faUsers} className="text-lg" />,
       path: "/admin/users",
     },
-    { id: "shops", label: "Quản lý shop", icon: "🏪", path: "/admin/shops" },
+    {
+      id: "shops",
+      label: "Quản lý shop",
+      icon: <FontAwesomeIcon icon={faStore} className="text-lg" />,
+      path: "/admin/shops",
+    },
     {
       id: "categories",
       label: "Quản lý danh mục",
-      icon: "📁",
+      icon: <FontAwesomeIcon icon={faCog} className="text-lg" />,
       path: "/admin/categories",
     },
     {
       id: "products",
       label: "Quản lý sản phẩm",
-      icon: "📦",
+      icon: <FontAwesomeIcon icon={faBox} className="text-lg" />,
       path: "/admin/products",
     },
     {
       id: "transactions",
       label: "Lịch sử giao dịch",
-      icon: "💰",
+      icon: <FontAwesomeIcon icon={faMoneyBillWave} className="text-lg" />,
       path: "/admin/transactions",
     },
     {
       id: "support",
       label: "Hỗ trợ khách hàng",
-      icon: "🎧",
+      icon: <FontAwesomeIcon icon={faHeadset} className="text-lg" />,
       path: "/admin/support",
     },
     {
       id: "settings",
       label: "Cài đặt hệ thống",
-      icon: "⚙️",
+      icon: <FontAwesomeIcon icon={faCog} className="text-lg" />,
       path: "/admin/settings",
     },
   ];

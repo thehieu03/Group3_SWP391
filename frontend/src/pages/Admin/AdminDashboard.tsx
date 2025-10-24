@@ -1,4 +1,16 @@
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faStore,
+  faMoneyBillWave,
+  faHeadset,
+  faBox,
+  faChartBar,
+  faBell,
+  faUsers,
+  faShoppingCart,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 import { adminDashboardServices } from "@services/AdminDashboardServices";
 import type { DashboardResponse } from "@models/modelResponse/DashboardResponse";
 
@@ -47,17 +59,17 @@ const AdminDashboard = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "LatestShop":
-        return "🏪";
+        return <FontAwesomeIcon icon={faStore} className="text-lg" />;
       case "LatestTransaction":
-        return "💰";
+        return <FontAwesomeIcon icon={faMoneyBillWave} className="text-lg" />;
       case "LatestSupportTicket":
-        return "🎧";
+        return <FontAwesomeIcon icon={faHeadset} className="text-lg" />;
       case "NewOrder":
-        return "📦";
+        return <FontAwesomeIcon icon={faBox} className="text-lg" />;
       case "TodayRevenue":
-        return "📊";
+        return <FontAwesomeIcon icon={faChartBar} className="text-lg" />;
       default:
-        return "📢";
+        return <FontAwesomeIcon icon={faBell} className="text-lg" />;
     }
   };
 
@@ -117,25 +129,27 @@ const AdminDashboard = () => {
     {
       title: "Người dùng hoạt động",
       value: dashboardData.totalActiveUsers,
-      icon: "👥",
+      icon: <FontAwesomeIcon icon={faUsers} className="text-xl" />,
       color: "bg-blue-500",
     },
     {
       title: "Shop hoạt động",
       value: dashboardData.totalActiveShops,
-      icon: "🏪",
+      icon: <FontAwesomeIcon icon={faStore} className="text-xl" />,
       color: "bg-green-500",
     },
     {
       title: "Giao dịch",
       value: dashboardData.totalTransactions,
-      icon: "💰",
+      icon: <FontAwesomeIcon icon={faShoppingCart} className="text-xl" />,
       color: "bg-yellow-500",
     },
     {
       title: "Hỗ trợ chờ xử lý",
       value: dashboardData.totalPendingSupportTickets,
-      icon: "🎧",
+      icon: (
+        <FontAwesomeIcon icon={faExclamationTriangle} className="text-xl" />
+      ),
       color: "bg-red-500",
     },
   ];
@@ -148,9 +162,7 @@ const AdminDashboard = () => {
         {statCards.map((stat, index) => (
           <div key={index} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
-              <div
-                className={`p-3 rounded-full ${stat.color} text-white text-xl`}
-              >
+              <div className={`p-3 rounded-full ${stat.color} text-white`}>
                 {stat.icon}
               </div>
               <div className="ml-4">
@@ -191,7 +203,7 @@ const AdminDashboard = () => {
                     </p>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="text-lg">
+                    <span className="text-gray-600">
                       {getNotificationIcon(notification.type)}
                     </span>
                     <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
