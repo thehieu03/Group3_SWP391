@@ -3,6 +3,7 @@ using Mmo_Domain.ModelRequest;
 using Mmo_Domain.ModelResponse;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Mmo_Api.ApiController;
 
@@ -233,17 +234,12 @@ public class AccountController : ControllerBase
             {
                 return BadRequest("User ID in URL and request body must match");
             }
-
-            // Kiểm tra nếu mảng role null thì không thực hiện gì
             if (request.RoleIds == null)
             {
                 return Ok(new { message = "No roles to update" });
             }
-
-            // Nếu mảng role rỗng thì xóa tất cả roles
             if (!request.RoleIds.Any())
             {
-                // Lấy tất cả roleIds hiện tại để xóa
                 var currentRoleIds = await _accountServices.GetUserRoleIdsAsync(userId);
                 if (currentRoleIds.Any())
                 {
@@ -306,7 +302,6 @@ public class AccountController : ControllerBase
                 return BadRequest("User ID in URL and request body must match");
             }
 
-            // Kiểm tra nếu mảng role rỗng thì không thực hiện gì
             if (request.RoleIds == null || !request.RoleIds.Any())
             {
                 return Ok(new { message = "No roles to remove" });
@@ -370,7 +365,6 @@ public class AccountController : ControllerBase
     {
         try
         {
-            // Validate input
             if (request == null)
             {
                 return BadRequest(new { message = "Request body cannot be null" });
@@ -385,15 +379,11 @@ public class AccountController : ControllerBase
             {
                 return BadRequest(new { message = "Invalid user ID" });
             }
-
-            // Check if user exists
             var account = await _accountServices.GetByIdAsync(userId);
             if (account == null)
             {
                 return NotFound(new { message = "User not found" });
             }
-
-            // Update user status
             var result = await _accountServices.UpdateUserStatusAsync(userId, request.IsActive);
 
             if (!result)
@@ -410,5 +400,27 @@ public class AccountController : ControllerBase
         {
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
+
     }
+    //[HttpPut("change-password")]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    //[Authorize(Policy = "UserOrAdminSeller")]
+    //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    //{
+    //    var accountIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //    if (string.IsNullOrEmpty(accountIdClaim) || !int.TryParse(accountIdClaim, out int accountId))
+    //    {
+    //        return Unauthorized("Invalid token");
+    //    }
+    //    var getAccountById = await _accountServices.GetByIdAsync(accountId);
+    //    if (getAccountById == null)
+    //    {
+    //        return NotFound("Account not found");
+    //    }
+    //    var result = await _accountServices.ChangePasswordAsync(accountId, request.NewPassword);
+    //    return Ok();
+    //}
+
 }

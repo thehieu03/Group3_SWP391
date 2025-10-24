@@ -24,7 +24,7 @@ const AdminDashboard = () => {
       }
     };
 
-    loadDashboardData();
+    void loadDashboardData();
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -125,12 +125,6 @@ const AdminDashboard = () => {
       value: dashboardData.totalActiveShops,
       icon: "🏪",
       color: "bg-green-500",
-    },
-    {
-      title: "Danh mục con",
-      value: dashboardData.totalSubcategories,
-      icon: "📁",
-      color: "bg-purple-500",
     },
     {
       title: "Giao dịch",

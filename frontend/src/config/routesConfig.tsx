@@ -19,7 +19,8 @@ const routesConfig  =  {
     userProfile:'/userProfile',
     getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
     getProductUrl: (id: number) => `/product/${id}`,
-    getCategoryProductsUrl: (id: number) => `/category/${id}`
+    getCategoryProductsUrl: (id: number) => `/category/${id}`,
+    changePasswordUrl: '/changePassword',
 };
 
 

@@ -3,12 +3,32 @@
   "WorkspaceRootPath": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\shopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\shopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\accountrolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\accountrolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\accountrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\accountrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\shopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\shopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_application\\services\\dapperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -29,10 +49,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_application\\services\\dashboardservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -59,10 +75,6 @@
       "RelativeMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|solutionrelative:mmo_infrastructure\\unit\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\accountrolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\accountrolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\projectswpgroup3\\group3_swp391\\backend\\mmo\\mmo_api\\api\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -74,36 +86,47 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ProductsController.cs",
-              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\ProductsController.cs",
-              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\ProductsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAApAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "CategoriesController.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\CategoriesController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\CategoriesController.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\CategoriesController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\CategoriesController.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-22T23:35:01.772Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T04:41:43.604Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "ProductServices.cs",
-              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
-              "RelativeDocumentMoniker": "Mmo_Application\\Services\\ProductServices.cs",
-              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
-              "RelativeToolTip": "Mmo_Application\\Services\\ProductServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABCAAAAAAAAAA==",
+              "Title": "Accountrole.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Accountrole.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Accountrole.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Accountrole.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Accountrole.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-22T23:34:23.89Z"
+              "WhenOpened": "2025-10-23T04:41:35.036Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "RegisterMiddleware.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "RelativeToolTip": "Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAADwAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T04:37:29.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "GenericRepository.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Infrastructure\\Repository\\GenericRepository.cs",
               "RelativeDocumentMoniker": "Mmo_Infrastructure\\Repository\\GenericRepository.cs",
@@ -115,7 +138,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 6,
               "Title": "ShopController.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ShopController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\ShopController.cs",
@@ -123,25 +146,72 @@
               "RelativeToolTip": "Mmo_Api\\Api\\ShopController.cs",
               "ViewState": "AgIAAKMAAAAAAAAAAAAxwO8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-22T23:21:08.197Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-22T23:21:08.197Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "AccountController.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\AccountController.cs",
-              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\AccountController.cs",
-              "ViewState": "AgIAAGwBAAAAAAAAAAAxwHABAABjAAAAAAAAAA==",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountController.cs*",
+              "RelativeToolTip": "Mmo_Api\\Api\\AccountController.cs*",
+              "ViewState": "AgIAAI0BAAAAAAAAAAAAAJgBAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-22T20:23:11.197Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AccountRoleController.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountRoleController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AccountRoleController.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountRoleController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\AccountRoleController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-21T01:22:56.98Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AuthController.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\AuthController.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACAAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T08:33:46.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ProductServices.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\ProductServices.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\ProductServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T23:34:23.89Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\ProductsController.cs",
+              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\ProductsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T23:35:01.772Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "DapperService.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\DapperService.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\DapperService.cs",
@@ -149,12 +219,11 @@
               "RelativeToolTip": "Mmo_Application\\Services\\DapperService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-23T00:17:27.645Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T00:17:27.645Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 12,
               "Title": "DashboardServices.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\DashboardServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\DashboardServices.cs",
@@ -166,7 +235,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 11,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\appsettings.json",
               "RelativeDocumentMoniker": "Mmo_Api\\appsettings.json",
@@ -178,7 +247,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 13,
               "Title": "Shop.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Shop.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Shop.cs",
@@ -190,7 +259,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "DashboardController.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\DashboardController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\DashboardController.cs",
@@ -202,7 +271,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 15,
               "Title": "Order.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Order.cs",
               "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Order.cs",
@@ -214,7 +283,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 16,
               "Title": "OrderServices.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\OrderServices.cs",
               "RelativeDocumentMoniker": "Mmo_Application\\Services\\OrderServices.cs",
@@ -226,7 +295,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 17,
               "Title": "UnitOfWork.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
               "RelativeDocumentMoniker": "Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
@@ -238,7 +307,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "OrderController.cs",
               "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\OrderController.cs",
               "RelativeDocumentMoniker": "Mmo_Api\\Api\\OrderController.cs",
@@ -247,30 +316,6 @@
               "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-20T18:12:11.347Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AuthController.cs",
-              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\AuthController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAACAAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-20T08:33:46.256Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "AccountRoleController.cs",
-              "DocumentMoniker": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountRoleController.cs",
-              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AccountRoleController.cs",
-              "ToolTip": "D:\\ProjectSWPGroup3\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountRoleController.cs",
-              "RelativeToolTip": "Mmo_Api\\Api\\AccountRoleController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-21T01:22:56.98Z"
             }
           ]
         }

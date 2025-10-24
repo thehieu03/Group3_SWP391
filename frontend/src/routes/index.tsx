@@ -10,6 +10,7 @@ import AdminPanel from "@pages/Admin/AdminPanel.tsx";
 import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
 import routesConfig from "@config/routesConfig.tsx";
 import type { User } from "@models/modelResponse/LoginResponse";
+import ChangePassword from "@pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -45,6 +46,12 @@ const privateRoutes: AppRoute[] = [
     layout: DefaultLayout,
     requiredRoles: ["USER", "SELLER", "ADMIN"],
   },
+    {
+        path: routesConfig.changePassword,
+        element: <ChangePassword />,
+        layout: DefaultLayout,
+        requiredRoles: ["USER", "SELLER", "ADMIN"],
+    },
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,

@@ -4,6 +4,7 @@ export interface User {
     email: string;
     phone: string;
     balance: number;
+    avatarBase64?: string;
     isActive: boolean;
     createdAt: string;
     roles: string[];
