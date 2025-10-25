@@ -33,6 +33,7 @@ public class MapperClass : Profile
         CreateMap<Account, UserResponse>().ReverseMap();
         CreateMap<Shop, ShopResponse>().ReverseMap();
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
+        CreateMap<SubcategoryRequest, Subcategory>().ReverseMap();
         CreateMap<Order, OrderResponse>().ReverseMap();
         CreateMap<ProfileUpdateRequest, Account>().ReverseMap();
     }

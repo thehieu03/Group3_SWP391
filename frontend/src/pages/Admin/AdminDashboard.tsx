@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+    useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalShops: 0,

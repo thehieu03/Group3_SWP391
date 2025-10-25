@@ -40,6 +40,47 @@ class ProductServices {
         }
     }
 
+    async getProductsBySubcategories(params: {
+        categoryId: number;
+        subcategoryIds: number[];
+        searchTerm?: string;
+        sortBy?: string;
+        page?: number;
+        pageSize?: number;
+    }): Promise<PaginationResponse<ProductResponse>> {
+        const MAX_PAGE_SIZE = 1000;
+        const results = await Promise.all(
+            params.subcategoryIds.map(subcategoryId => 
+                this.getProductsByCategory({
+                    categoryId: params.categoryId,
+                    subcategoryId: subcategoryId,
+                    searchTerm: params.searchTerm,
+                    sortBy: params.sortBy,
+                    page: 1,
+                    pageSize: MAX_PAGE_SIZE
+                })
+            )
+        );
+
+        const allProducts = results.flatMap(result => result.data);
+        const uniqueProducts = allProducts.filter((product, index, self) => 
+            index === self.findIndex(p => p.id === product.id)
+        );
+        const startIndex = ((params.page || 1) - 1) * (params.pageSize || 8);
+        const endIndex = startIndex + (params.pageSize || 8);
+        const paginatedProducts = uniqueProducts.slice(startIndex, endIndex);
+
+        return {
+            data: paginatedProducts,
+            currentPage: params.page || 1,
+            totalPages: Math.ceil(uniqueProducts.length / (params.pageSize || 8)),
+            totalItems: uniqueProducts.length,
+            itemsPerPage: params.pageSize || 8,
+            hasNextPage: endIndex < uniqueProducts.length,
+            hasPreviousPage: (params.page || 1) > 1
+        };
+    }
+
     async getAllProductAsync():Promise<ProductResponse[]> {
         const response=await httpGet<ProductResponse[]>("products");
         return response;

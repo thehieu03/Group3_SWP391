@@ -22,10 +22,10 @@ const MENU_ITEM_CLASS =
   "h-full px-4 flex items-center text-white font-medium cursor-pointer hover:bg-emerald-600/90 transition-colors";
 
 const DROPDOWN_ITEM_CLASS =
-  "block w-full text-left py-2 text-[15px] text-gray-700 hover:text-emerald-600 cursor-pointer transition-colors";
+  "block w-full text-left py-1.5 px-2 text-sm text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded cursor-pointer transition-colors";
 
 const DROPDOWN_CONTAINER_CLASS =
-  "z-50 w-[300px] bg-white rounded-md shadow-xl ring-1 ring-black ring-black/5 p-6";
+  "z-50 w-[400px] bg-white rounded-md shadow-xl ring-1 ring-black ring-black/5 p-6 max-h-[500px] overflow-y-auto";
 
 const ChevronIcon = () => (
   <svg
@@ -46,12 +46,33 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
     []
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
+  // Function to refresh categories
+  const refreshCategories = async () => {
+    try {
       const data = await categoryServices.getAllCategoryAsync();
-      setCategoriesItems(data);
+      // Filter out inactive categories for the menu
+      const activeCategories = data.filter(category => category.isActive);
+      setCategoriesItems(activeCategories);
+    } catch (err) {
+      console.error('Error refreshing categories:', err);
+    }
+  };
+
+  useEffect(() => {
+    void refreshCategories();
+  }, []);
+
+  // Listen for category updates from admin page
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'categoryUpdated' && e.newValue) {
+        refreshCategories();
+        localStorage.removeItem('categoryUpdated');
+      }
     };
-    void fetchData();
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
   const mid = Math.ceil(categoriesItems.length / 2);
@@ -60,15 +81,18 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
 
   const DropdownContent = () => (
     <div className={DROPDOWN_CONTAINER_CLASS}>
-      <div className="grid grid-cols-2 gap-x-12 gap-y-3">
-        <div>
+      <div className="mb-2">
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">Danh mục sản phẩm</h3>
+      </div>
+      <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+        <div className="space-y-1">
           {firstCol.map((item) => (
             <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
               {item.name}
             </Button>
           ))}
         </div>
-        <div>
+        <div className="space-y-1">
           {secondCol.map((item) => (
             <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
               {item.name}
@@ -76,6 +100,11 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
           ))}
         </div>
       </div>
+      {categoriesItems.length === 0 && (
+        <div className="text-center text-gray-500 py-4">
+          <p className="text-sm">Đang tải danh mục...</p>
+        </div>
+      )}
     </div>
   );
 

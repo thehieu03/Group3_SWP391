@@ -10,5 +10,12 @@ export interface PaymentHistoryResponse {
 
 export interface PaymentHistorySummary {
     totalBalance: number;
+    moneyOnHold: number;
     transactions: PaymentHistoryResponse[];
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
 }

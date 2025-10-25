@@ -2,12 +2,22 @@ import React, { useEffect, useState } from "react";
 import { paymentHistoryServices } from "../../../services/PaymentHistoryServices";
 import { useAuth } from "../../../hooks/useAuth";
 import type { PaymentHistorySummary } from "../../../models/modelResponse/PaymentHistoryResponse";
+import Pagination from "../../../components/Pagination/Pagination";
 
 const PaymentHistory: React.FC = () => {
     const { user, isLoggedIn } = useAuth();
     const [paymentData, setPaymentData] = useState<PaymentHistorySummary | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    
+    // Filter states
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+    const [transactionType, setTransactionType] = useState<string>('');
+    
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const pageSize = 5;
 
 
     useEffect(() => {
@@ -22,7 +32,14 @@ const PaymentHistory: React.FC = () => {
                 setLoading(true);
                 setError(null);
                 
-                const data = await paymentHistoryServices.getPaymentHistory(user.id);
+                const data = await paymentHistoryServices.getPaymentHistory(
+                    user.id, 
+                    startDate || undefined, 
+                    endDate || undefined, 
+                    transactionType || undefined,
+                    currentPage,
+                    pageSize
+                );
                 setPaymentData(data);
             } catch (err) {
                 console.error('Error fetching payment history:', err);
@@ -33,7 +50,7 @@ const PaymentHistory: React.FC = () => {
         };
 
         fetchPaymentHistory();
-    }, [isLoggedIn, user]);
+    }, [isLoggedIn, user, startDate, endDate, transactionType, currentPage]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -111,17 +128,83 @@ const PaymentHistory: React.FC = () => {
         );
     }
 
+    const clearFilters = () => {
+        setStartDate('');
+        setEndDate('');
+        setTransactionType('');
+        setCurrentPage(1);
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4">
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <h2 className="text-2xl font-bold text-gray-800 mb-6">Lịch sử giao dịch</h2>
                     
-                    <div className="text-right mb-4">
-                        <span className="text-gray-600">Tổng tiền tạm giữ: </span>
-                        <span className="font-bold text-blue-600 text-lg">
-                            {formatAmount(paymentData?.totalBalance || 0)} VNĐ
-                        </span>
+                    {/* Filters */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Bộ lọc</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Từ ngày</label>
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Đến ngày</label>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Loại giao dịch</label>
+                                <select
+                                    value={transactionType}
+                                    onChange={(e) => setTransactionType(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Tất cả</option>
+                                    <option value="Nạp tiền">Nạp tiền</option>
+                                    <option value="Mua Hàng">Mua Hàng</option>
+                                    <option value="Rút tiền">Rút tiền</option>
+                                </select>
+                            </div>
+                            <div className="flex items-end">
+                                <button
+                                    onClick={clearFilters}
+                                    className="w-full px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                                >
+                                    Xóa bộ lọc
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Balance Information */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <div className="text-sm text-blue-600 mb-1">Số dư hiện tại</div>
+                            <div className="text-2xl font-bold text-blue-800">
+                                {formatAmount(paymentData?.totalBalance || 0)} VNĐ
+                            </div>
+                        </div>
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                            <div className="text-sm text-orange-600 mb-1">Tiền tạm giữ</div>
+                            <div className="text-2xl font-bold text-orange-800">
+                                {formatAmount(paymentData?.moneyOnHold || 0)} VNĐ
+                            </div>
+                        </div>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -164,6 +247,24 @@ const PaymentHistory: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
+                    
+                    {paymentData && paymentData.totalPages > 1 && (
+                        <div className="mt-6">
+                            <Pagination
+                                currentPage={paymentData.currentPage}
+                                totalPages={paymentData.totalPages}
+                                onPageChange={handlePageChange}
+                                className="mt-6"
+                            />
+                        </div>
+                    )}
+                    
+                    {/* Pagination Info */}
+                    {paymentData && (
+                        <div className="mt-4 text-center text-sm text-gray-600">
+                            Hiển thị {paymentData.transactions?.length || 0} trong tổng số {paymentData.totalItems || 0} giao dịch
+                        </div>
+                    )}
                 </div>
             </div>
 

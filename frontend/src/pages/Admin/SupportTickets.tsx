@@ -6,7 +6,6 @@ const SupportTickets = () => {
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketResponse | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('ALL');
 
   useEffect(() => {
     setTimeout(() => {

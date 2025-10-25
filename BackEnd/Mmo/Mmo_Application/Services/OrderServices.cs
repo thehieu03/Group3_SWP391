@@ -35,7 +35,7 @@ public class OrderServices:BaseServices<Order>,IOrderServices
             if (sellerAccount == null) continue;
 
             var feedbacks = product.Feedbacks?.ToList() ?? new List<Feedback>();
-            var rating = feedbacks.Any() ? (int)Math.Round(feedbacks.Average(f => (double)f.Rating)) : 5;
+            var rating = feedbacks.Any() ? (int)Math.Round(feedbacks.Average(f => (double)(f.Rating ?? 5))) : 5;
             var reviews = feedbacks.Count;
 
             var allProductOrders = await _unitOfWork.GenericRepository<Order>()

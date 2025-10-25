@@ -14,5 +14,12 @@ public class PaymentHistoryResponse
 public class PaymentHistorySummary
 {
     public decimal TotalBalance { get; set; }
+    public decimal MoneyOnHold { get; set; }
     public List<PaymentHistoryResponse> Transactions { get; set; } = new();
+    public int CurrentPage { get; set; }
+    public int TotalPages { get; set; }
+    public int TotalItems { get; set; }
+    public int ItemsPerPage { get; set; }
+    public bool HasNextPage { get; set; }
+    public bool HasPreviousPage { get; set; }
 }

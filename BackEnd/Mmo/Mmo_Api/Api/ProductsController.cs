@@ -32,21 +32,24 @@ public class ProductsController : ControllerBase
             return BadRequest("CategoryId is required and must be greater than 0");
         }
 
-        if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 8;
+        page = Math.Max(1, page);
+        pageSize = Math.Max(1, pageSize);
 
         var products = await _productServices.GetAllWithRelatedAsync();
 
-        // Filter by category (required)
         products = products.Where(p => p.CategoryId == (uint)categoryId);
 
-        // Filter by subcategory (optional)
         if (subcategoryId.HasValue)
         {
-            products = products.Where(p => p.SubcategoryId == (uint?)subcategoryId.Value);
+            products = products.Where(p => p.SubcategoryId == (uint?)subcategoryId.Value && 
+                                         p.Subcategory != null && 
+                                         p.Subcategory.IsActive == true);
+        }
+        else
+        {
+            products = products.Where(p => p.Subcategory == null || p.Subcategory.IsActive == true);
         }
 
-        //search filter
         if (!string.IsNullOrEmpty(searchTerm))
         {
             products = products.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
@@ -71,19 +74,16 @@ public class ProductsController : ControllerBase
 
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(products);
 
-        // Apply sorting
         if (!string.IsNullOrEmpty(sortBy))
         {
             switch (sortBy.ToLower())
             {
                 case "price_asc":
-                    // sort by minPrice, then default by name
                     resultResponse = resultResponse
                         .OrderBy(p => p.MinPrice ?? 0)
                         .ThenBy(p => p.Name);
                     break;
                 case "price_desc":
-                    // Sort by MaxPrice, then default by name
                     resultResponse = resultResponse
                         .OrderByDescending(p => p.MaxPrice ?? 0)
                         .ThenBy(p => p.Name);
@@ -100,7 +100,6 @@ public class ProductsController : ControllerBase
             }
         }
 
-        // Apply pagination
         var paginatedData = resultResponse
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

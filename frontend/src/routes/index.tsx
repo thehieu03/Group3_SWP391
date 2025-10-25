@@ -6,7 +6,7 @@ import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.t
 import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
 import AdminPanel from "@pages/Admin/AdminPanel.tsx";
-import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
+// import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
 import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
 import routesConfig from "@config/routesConfig.tsx";
 import Products from "@pages/Products/Products.tsx";
@@ -60,12 +60,6 @@ const privateRoutes: AppRoute[] = [
 
 // Seller routes - chỉ seller mới truy cập được
 const sellerRoutes: AppRoute[] = [
-  {
-    path: '/seller/dashboard',
-    element: <div>Seller Dashboard - Quản lý shop</div>, // Placeholder
-    layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
-  },
   {
     path: '/seller/products',
     element: <div>Quản lý sản phẩm</div>, // Placeholder

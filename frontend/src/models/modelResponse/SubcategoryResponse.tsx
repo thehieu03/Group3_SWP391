@@ -3,4 +3,5 @@ export interface SubcategoryResponse {
   categoryId: number;
   name: string;
   isActive: boolean | null;
+  createdAt: string;
 }

@@ -264,6 +264,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.TotalPrice)
                 .HasPrecision(15, 2)
                 .HasColumnName("totalPrice");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("createdAt");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.AccountId)

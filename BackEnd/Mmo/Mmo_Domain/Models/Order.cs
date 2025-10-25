@@ -17,6 +17,8 @@ public partial class Order
 
     public string? Status { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
     public virtual Account? Account { get; set; }
 
     public virtual Productvariant? ProductVariant { get; set; }
