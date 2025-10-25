@@ -7,19 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj" />
+        <ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.66" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
-        <PackageReference Include="MySqlConnector" Version="2.4.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
-		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Dapper" Version="2.1.66"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20"/>
+        <PackageReference Include="MySqlConnector" Version="2.4.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2"/>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0"/>
     </ItemGroup>
     <ItemGroup>
-        <Using Include="Mmo_Application.Services.Interface" />
-        <Using Include="Mmo_Domain.IUnit" />
-        <Using Include="Mmo_Domain.Models" />
+        <Using Include="Mmo_Application.Services.Interface"/>
+        <Using Include="Mmo_Domain.IUnit"/>
+        <Using Include="Mmo_Domain.Models"/>
+        <Using Include="Microsoft.EntityFrameworkCore"/>
     </ItemGroup>
 </Project>

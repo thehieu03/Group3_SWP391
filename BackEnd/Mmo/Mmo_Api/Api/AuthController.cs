@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.ModelRequest;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-using AutoMapper;
+﻿using Mmo_Application.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -23,6 +18,7 @@ public class AuthController : ControllerBase
         _tokenServices = tokenServices;
         _mapper = mapper;
     }
+
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -31,28 +27,17 @@ public class AuthController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var account = await _accountServices.GetByUsernameAsync(loginRequest.Username)
-                         ?? await _accountServices.GetByEmailAsync(loginRequest.Username);
+                          ?? await _accountServices.GetByEmailAsync(loginRequest.Username);
 
-            if (account == null)
-            {
-                return Unauthorized("Invalid username or password");
-            }
+            if (account == null) return Unauthorized("Invalid username or password");
 
-            if (account.IsActive != true)
-            {
-                return Unauthorized("Account is deactivated");
-            }
+            if (account.IsActive != true) return Unauthorized("Account is deactivated");
 
             if (!await _accountServices.VerifyPasswordAsync(account, loginRequest.Password))
-            {
                 return Unauthorized("Invalid username or password");
-            }
 
             var authResponse = await _tokenServices.GenerateTokensAsync(account);
 
@@ -63,6 +48,7 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,17 +57,11 @@ public class AuthController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var refreshResponse = await _tokenServices.RefreshTokenAsync(refreshRequest.RefreshToken);
 
-            if (refreshResponse == null)
-            {
-                return Unauthorized("Invalid or expired refresh token");
-            }
+            if (refreshResponse == null) return Unauthorized("Invalid or expired refresh token");
 
             return Ok(refreshResponse);
         }
@@ -90,6 +70,7 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -97,17 +78,11 @@ public class AuthController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _tokenServices.RevokeTokenAsync(refreshRequest.RefreshToken);
 
-            if (!result)
-            {
-                return BadRequest("Failed to revoke token");
-            }
+            if (!result) return BadRequest("Failed to revoke token");
 
             return Ok(new { message = "Logged out successfully" });
         }
@@ -116,6 +91,7 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpGet("validate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -125,17 +101,11 @@ public class AuthController : ControllerBase
         {
             var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("Token not provided");
-            }
+            if (string.IsNullOrEmpty(token)) return Unauthorized("Token not provided");
 
             var isValid = await _tokenServices.IsTokenValidAsync(token);
 
-            if (!isValid)
-            {
-                return Unauthorized("Invalid or expired token");
-            }
+            if (!isValid) return Unauthorized("Invalid or expired token");
 
             return Ok(new { message = "Token is valid" });
         }
@@ -144,6 +114,7 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpGet("me")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -153,16 +124,11 @@ public class AuthController : ControllerBase
         try
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid token");
-            }
 
             var account = await _accountServices.GetByIdAsync(userId);
-            if (account == null)
-            {
-                return Unauthorized("User not found");
-            }
+            if (account == null) return Unauthorized("User not found");
 
             var roles = await _accountServices.GetUserRolesAsync(userId);
 
@@ -185,5 +151,4 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-    
 }

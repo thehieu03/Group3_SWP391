@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Mmo_Domain.Models;
+﻿namespace Mmo_Domain.Models;
 
 public partial class Order
 {
@@ -16,6 +13,10 @@ public partial class Order
     public int Quantity { get; set; }
 
     public string? Status { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
 
     public virtual Account? Account { get; set; }
 

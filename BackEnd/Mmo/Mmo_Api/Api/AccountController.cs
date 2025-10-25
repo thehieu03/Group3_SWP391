@@ -14,11 +14,12 @@ public class AccountController : ControllerBase
     private readonly IAccountServices _accountServices;
     private readonly IMapper _mapper;
 
-    public AccountController(IAccountServices accountServices,IMapper mapper)
+    public AccountController(IAccountServices accountServices, IMapper mapper)
     {
         _accountServices = accountServices;
         _mapper = mapper;
     }
+
     [HttpGet]
     [Authorize(Policy = "AdminOnly")]
     [EnableQuery]
@@ -36,13 +37,13 @@ public class AccountController : ControllerBase
             foreach (var account in accounts)
             {
                 var userResponse = _mapper.Map<UserResponse>(account);
-                
+
                 var roles = await _accountServices.GetUserRolesAsync(account.Id);
                 userResponse.Roles = roles;
-                
+
                 userResponses.Add(userResponse);
             }
-            
+
             return Ok(userResponses);
         }
         catch (Exception ex)
@@ -50,6 +51,20 @@ public class AccountController : ControllerBase
             return StatusCode(500, $"Lỗi khi lấy danh sách accounts: {ex.Message}");
         }
     }
+
+    [HttpPost("registerDefault")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RegisterDefaultAccount([FromBody] RegisterRequest registerDefault)
+    {
+        if (!ModelState.IsValid) return BadRequest();
+        var passWordHard = await _accountServices.HashPasswordAsync(registerDefault.Password);
+        var account = _mapper.Map<Account>(registerDefault);
+        account.Password = passWordHard;
+        var result = await _accountServices.AddAsync(account);
+        return result > 0 ? Ok(result) : BadRequest();
+    }
+
 
     [HttpPut("profile")]
     [Authorize]
@@ -62,38 +77,25 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (request == null)
-            {
-                return BadRequest("Request body cannot be null");
-            }
+            if (request == null) return BadRequest("Request body cannot be null");
 
-            if (string.IsNullOrEmpty(request.Username) && 
-                string.IsNullOrEmpty(request.Email) && 
+            if (string.IsNullOrEmpty(request.Username) &&
+                string.IsNullOrEmpty(request.Email) &&
                 string.IsNullOrEmpty(request.Phone))
-            {
                 return BadRequest("At least one field must be provided for update");
-            }
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid token");
-            }
 
             var result = await _accountServices.UpdateProfileAsync(userId, request);
 
             if (!result)
             {
                 var account = await _accountServices.GetByIdAsync(userId);
-                if (account == null)
-                {
-                    return NotFound("User not found");
-                }
+                if (account == null) return NotFound("User not found");
 
                 return BadRequest("Update failed. Username or email may already exist");
             }
@@ -118,30 +120,18 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (request == null)
-            {
-                return BadRequest("Request body cannot be null");
-            }
+            if (request == null) return BadRequest("Request body cannot be null");
 
-            if (id <= 0)
-            {
-                return BadRequest("Invalid account ID");
-            }
+            if (id <= 0) return BadRequest("Invalid account ID");
 
             var result = await _accountServices.UpdateAccountAsync(id, request);
 
             if (!result)
             {
                 var account = await _accountServices.GetByIdAsync(id);
-                if (account == null)
-                {
-                    return NotFound("Account not found");
-                }
+                if (account == null) return NotFound("Account not found");
 
                 return BadRequest("Update failed. Username or email may already exist");
             }
@@ -166,31 +156,20 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid account ID");
-            }
+            if (id <= 0) return BadRequest("Invalid account ID");
 
             var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(currentUserIdClaim) || !int.TryParse(currentUserIdClaim, out int currentUserId))
-            {
+            if (string.IsNullOrEmpty(currentUserIdClaim) || !int.TryParse(currentUserIdClaim, out var currentUserId))
                 return Unauthorized("Invalid token");
-            }
 
             var result = await _accountServices.DeleteAccountAsync(id, currentUserId);
 
             if (!result)
             {
-                if (id == currentUserId)
-                {
-                    return BadRequest("Admin cannot delete their own account");
-                }
+                if (id == currentUserId) return BadRequest("Admin cannot delete their own account");
 
                 var account = await _accountServices.GetByIdAsync(id);
-                if (account == null)
-                {
-                    return NotFound("Account not found");
-                }
+                if (account == null) return NotFound("Account not found");
 
                 return BadRequest("Failed to delete account");
             }
@@ -215,53 +194,35 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (request == null)
-            {
-                return BadRequest("Request body cannot be null");
-            }
+            if (request == null) return BadRequest("Request body cannot be null");
 
-            if (userId <= 0)
-            {
-                return BadRequest("Invalid user ID");
-            }
+            if (userId <= 0) return BadRequest("Invalid user ID");
 
-            if (request.UserId != userId)
-            {
-                return BadRequest("User ID in URL and request body must match");
-            }
-            if (request.RoleIds == null)
-            {
-                return Ok(new { message = "No roles to update" });
-            }
+            if (request.UserId != userId) return BadRequest("User ID in URL and request body must match");
+            if (request.RoleIds == null) return Ok(new { message = "No roles to update" });
             if (!request.RoleIds.Any())
             {
                 var currentRoleIds = await _accountServices.GetUserRoleIdsAsync(userId);
-                if (currentRoleIds.Any())
-                {
-                    await _accountServices.RemoveAccountRolesAsync(userId, currentRoleIds);
-                }
+                if (currentRoleIds.Any()) await _accountServices.RemoveAccountRolesAsync(userId, currentRoleIds);
                 return Ok(new { message = "All roles removed successfully" });
             }
 
-            var result = await _accountServices.UpdateAccountRolesAdvancedAsync(userId, request.RoleIds, request.ReplaceAll);
+            var result =
+                await _accountServices.UpdateAccountRolesAdvancedAsync(userId, request.RoleIds, request.ReplaceAll);
 
             if (!result)
             {
                 var account = await _accountServices.GetByIdAsync(userId);
-                if (account == null)
-                {
-                    return NotFound("User not found");
-                }
+                if (account == null) return NotFound("User not found");
 
                 return BadRequest("Failed to update account roles");
             }
 
-            var message = request.ReplaceAll ? "Account roles replaced successfully" : "Account roles updated successfully";
+            var message = request.ReplaceAll
+                ? "Account roles replaced successfully"
+                : "Account roles updated successfully";
             return Ok(new { message });
         }
         catch (Exception ex)
@@ -282,40 +243,22 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (request == null)
-            {
-                return BadRequest("Request body cannot be null");
-            }
+            if (request == null) return BadRequest("Request body cannot be null");
 
-            if (userId <= 0)
-            {
-                return BadRequest("Invalid user ID");
-            }
+            if (userId <= 0) return BadRequest("Invalid user ID");
 
-            if (request.UserId != userId)
-            {
-                return BadRequest("User ID in URL and request body must match");
-            }
+            if (request.UserId != userId) return BadRequest("User ID in URL and request body must match");
 
-            if (request.RoleIds == null || !request.RoleIds.Any())
-            {
-                return Ok(new { message = "No roles to remove" });
-            }
+            if (request.RoleIds == null || !request.RoleIds.Any()) return Ok(new { message = "No roles to remove" });
 
             var result = await _accountServices.RemoveAccountRolesAsync(userId, request.RoleIds);
 
             if (!result)
             {
                 var account = await _accountServices.GetByIdAsync(userId);
-                if (account == null)
-                {
-                    return NotFound("User not found");
-                }
+                if (account == null) return NotFound("User not found");
 
                 return BadRequest("Failed to remove account roles");
             }
@@ -341,8 +284,9 @@ public class AccountController : ControllerBase
         {
             var roles = await _accountServices.GetUserRolesAsync(userId);
             var roleIds = await _accountServices.GetUserRoleIdsAsync(userId);
-            
-            return Ok(new { 
+
+            return Ok(new
+            {
                 roles = roles,
                 roleIds = roleIds
             });
@@ -365,31 +309,17 @@ public class AccountController : ControllerBase
     {
         try
         {
-            if (request == null)
-            {
-                return BadRequest(new { message = "Request body cannot be null" });
-            }
+            if (request == null) return BadRequest(new { message = "Request body cannot be null" });
 
             if (request.UserId != userId)
-            {
                 return BadRequest(new { message = "User ID in URL and request body must match" });
-            }
 
-            if (userId <= 0)
-            {
-                return BadRequest(new { message = "Invalid user ID" });
-            }
+            if (userId <= 0) return BadRequest(new { message = "Invalid user ID" });
             var account = await _accountServices.GetByIdAsync(userId);
-            if (account == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
+            if (account == null) return NotFound(new { message = "User not found" });
             var result = await _accountServices.UpdateUserStatusAsync(userId, request.IsActive);
 
-            if (!result)
-            {
-                return StatusCode(500, new { message = "Failed to update user status" });
-            }
+            if (!result) return StatusCode(500, new { message = "Failed to update user status" });
 
             var action = request.IsActive ? "unbanned" : "banned";
             var message = $"User {action} successfully";
@@ -400,27 +330,5 @@ public class AccountController : ControllerBase
         {
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
-
     }
-    //[HttpPut("change-password")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    //[Authorize(Policy = "UserOrAdminSeller")]
-    //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
-    //{
-    //    var accountIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    //    if (string.IsNullOrEmpty(accountIdClaim) || !int.TryParse(accountIdClaim, out int accountId))
-    //    {
-    //        return Unauthorized("Invalid token");
-    //    }
-    //    var getAccountById = await _accountServices.GetByIdAsync(accountId);
-    //    if (getAccountById == null)
-    //    {
-    //        return NotFound("Account not found");
-    //    }
-    //    var result = await _accountServices.ChangePasswordAsync(accountId, request.NewPassword);
-    //    return Ok();
-    //}
-
 }

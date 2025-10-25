@@ -34,6 +34,11 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         return Task.FromResult(BCrypt.Net.BCrypt.Verify(password, account.Password));
     }
 
+    public Task<string> HashPasswordAsync(string password)
+    {
+        return Task.FromResult(BCrypt.Net.BCrypt.HashPassword(password));
+    }
+
     public async Task<bool> IsAccountActiveAsync(int accountId)
     {
         var account = await GetByIdAsync(accountId);
@@ -232,17 +237,10 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     {
         try
         {
-            // Kiểm tra account có tồn tại không
             var account = await GetByIdAsync(userId);
             if (account == null) return false;
-
-            // Cập nhật trạng thái isActive
             account.IsActive = isActive;
-
-            // Lưu thay đổi
             await _unitOfWork.SaveChangeAsync();
-
-            // Log thay đổi trạng thái
             var action = isActive ? "UNBANNED" : "BANNED";
             Console.WriteLine($"[AUDIT] User {userId} {action} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
 
