@@ -16,4 +16,14 @@ public class OrderServices : BaseServices<Order>, IOrderServices
             ).ToListAsync();
         return orders;
     }
+
+    public async Task<IEnumerable<Order>> AdminGetAllOrderAsync()
+    {
+        var orders = await _unitOfWork.GenericRepository<Order>()
+            .Get(
+                includeProperties:
+                "ProductVariant.Product.Shop.Account,ProductVariant.Product.Category,ProductVariant.Product.Subcategory"
+            ).ToListAsync();
+        return orders;
+    }
 }
