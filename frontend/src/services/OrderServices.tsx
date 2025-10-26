@@ -1,15 +1,10 @@
 import { httpGet } from "@utils/http";
-import type { OrderResponse } from "@models/modelResponse/OrderResponse";
+import type {OrderUserResponse} from "@models/modelResponse/OrderUserResponse.ts";
 
 class OrderServices {
-  async getMyOrdersAsync(): Promise<OrderResponse[]> {
-    const response = await httpGet<OrderResponse[]>("orders/my-orders");
-    return response;
-  }
-
-  async getUserOrdersAsync(userId: number): Promise<OrderResponse[]> {
-    const response = await httpGet<OrderResponse[]>(`orders/user/${userId}`);
-    return response;
+  async getOrdersUserAsync():Promise<OrderUserResponse[]>{
+      const response = await httpGet<OrderUserResponse[]>("orders/my-orders");
+      return response;
   }
 }
 

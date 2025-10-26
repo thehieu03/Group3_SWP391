@@ -1,6 +1,11 @@
 import { type FC } from "react";
 import type { ShopForAdmin } from "../../../services/ShopServices";
 import Button from "@components/Button/Button.tsx";
+import {
+  formatDate,
+  getActiveStatusTextColor,
+  getActiveStatusText,
+} from "@/helpers";
 
 interface ViewShopModalProps {
   isOpen: boolean;
@@ -10,18 +15,6 @@ interface ViewShopModalProps {
 
 const ViewShopModal: FC<ViewShopModalProps> = ({ isOpen, onClose, shop }) => {
   if (!isOpen || !shop) return null;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("vi-VN");
-  };
-
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? "text-green-600" : "text-red-600";
-  };
-
-  const getStatusDisplay = (isActive: boolean) => {
-    return isActive ? "Hoạt động" : "Không hoạt động";
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -92,11 +85,11 @@ const ViewShopModal: FC<ViewShopModalProps> = ({ isOpen, onClose, shop }) => {
                   Trạng thái tài khoản
                 </label>
                 <p
-                  className={`mt-1 text-sm font-semibold ${getStatusColor(
+                  className={`mt-1 text-sm font-semibold ${getActiveStatusTextColor(
                     shop.isActive
                   )}`}
                 >
-                  {getStatusDisplay(shop.isActive)}
+                  {getActiveStatusText(shop.isActive)}
                 </p>
               </div>
             </div>

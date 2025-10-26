@@ -331,4 +331,12 @@ public class AccountController : ControllerBase
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
+
+    [HttpPost("loginOrRegisterGoogle")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public IActionResult LoginOrRegisterGoogle()
+    {
+        return Ok();
+    }
 }

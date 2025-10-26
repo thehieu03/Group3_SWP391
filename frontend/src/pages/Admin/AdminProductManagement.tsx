@@ -3,7 +3,7 @@ import { adminProductServices } from "../../services/AdminProductServices";
 import type {
   AdminProductResponse,
   AdminProductListResponse,
-} from "../../models/modelResponse/AdminProductResponse";
+} from "@/models/modelResponse/AdminProductResponse";
 import type { ProductListRequest } from "../../models/modelRequest/ProductRequest";
 
 const AdminProductManagement = () => {
@@ -56,9 +56,8 @@ const AdminProductManagement = () => {
       setProducts(response.products);
       setTotalPages(response.totalPages);
       setTotal(response.total);
-    } catch (err) {
+    } catch {
       setError("Không thể tải danh sách sản phẩm");
-      console.error("Error loading products:", err);
     } finally {
       setLoading(false);
     }
@@ -73,8 +72,8 @@ const AdminProductManagement = () => {
       ]);
       setCategories(categoriesData);
       setShops(shopsData);
-    } catch (err) {
-      console.error("Error loading filter options:", err);
+    } catch {
+      // Failed to load filter options
     }
   };
 
@@ -99,8 +98,8 @@ const AdminProductManagement = () => {
     try {
       await adminProductServices.toggleProductStatusAsync(id, !currentStatus);
       loadProducts(); // Reload data
-    } catch (err) {
-      console.error("Error toggling product status:", err);
+    } catch {
+      // Failed to toggle product status
     }
   };
 
@@ -109,8 +108,8 @@ const AdminProductManagement = () => {
       try {
         await adminProductServices.deleteProductAsync(id);
         loadProducts(); // Reload data
-      } catch (err) {
-        console.error("Error deleting product:", err);
+      } catch {
+        // Failed to delete product
       }
     }
   };
@@ -227,7 +226,11 @@ const AdminProductManagement = () => {
             </label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) =>
+                setSortBy(
+                  e.target.value as "name" | "price" | "createdAt" | "updatedAt"
+                )
+              }
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="name">Tên</option>
@@ -242,7 +245,7 @@ const AdminProductManagement = () => {
             </label>
             <select
               value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value as any)}
+              onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="asc">Tăng dần</option>

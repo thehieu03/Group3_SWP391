@@ -20,6 +20,19 @@ public class OrderController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpGet]
+    [Authorize(Policy = "AdminOnly")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [EnableQuery]
+    [ProducesResponseType<IEnumerable<OrderAdminResponse>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<OrderAdminResponse>>> GetAllOrders()
+    {
+        var result = await _orderServices.AdminGetAllOrderAsync();
+        var response = _mapper.Map<IEnumerable<OrderAdminResponse>>(result);
+        return response == null ? NotFound() : Ok(response);
+    }
+
     [HttpGet("my-orders")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -37,28 +50,6 @@ public class OrderController : ControllerBase
             var listOrderUserResponse = _mapper.Map<List<OrderUserResponse>>(orders);
 
             return Ok(listOrderUserResponse);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    [HttpGet("user/{accountId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetUserOrders(int accountId)
-    {
-        try
-        {
-            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(currentUserIdClaim) || !int.TryParse(currentUserIdClaim, out var currentUserId))
-                return Unauthorized("Invalid token");
-            if (currentUserId != accountId) return Forbid("You can only view your own orders");
-
-            var orders = await _orderServices.GetUserOrdersAsync(accountId);
-            return Ok(orders);
         }
         catch (Exception ex)
         {

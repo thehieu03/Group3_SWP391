@@ -26,12 +26,12 @@ const UserMenu = () => {
           <Button to={routesConfig.infoAccount}>Thông tin tài khoản</Button>
         </li>
         <li>
-          <Button to={routesConfig.orders}>Đơn hàng đã mua</Button>
+          <Button to={routesConfig.userOrder}>Đơn hàng đã mua</Button>
         </li>
         <li>
           <Button to={routesConfig.paymentHistory}>Lịch sử thanh toán</Button>
         </li>
-        {user?.roles.includes('SELLER') && (
+        {user?.roles.includes("SELLER") && (
           <li>
             <Button to="/seller/dashboard">Quản lý shop</Button>
           </li>

@@ -13,6 +13,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { adminDashboardServices } from "@services/AdminDashboardServices";
 import type { DashboardResponse } from "@models/modelResponse/DashboardResponse";
+import {
+  formatDate,
+  formatPrice,
+  getNotificationColor,
+  getNotificationIcon,
+} from "@/helpers";
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(
@@ -28,9 +34,8 @@ const AdminDashboard = () => {
         setError(null);
         const data = await adminDashboardServices.getDashboardOverviewAsync();
         setDashboardData(data);
-      } catch (err) {
+      } catch {
         setError("Không thể tải dữ liệu dashboard");
-        console.error("Error loading dashboard:", err);
       } finally {
         setLoading(false);
       }
@@ -39,55 +44,15 @@ const AdminDashboard = () => {
     void loadDashboardData();
   }, []);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+  const getNotificationIconWrapper = (type: string) => {
+    return getNotificationIcon(type, {
+      faStore,
+      faMoneyBillWave,
+      faHeadset,
+      faBox,
+      faChartBar,
+      faBell,
     });
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "LatestShop":
-        return <FontAwesomeIcon icon={faStore} className="text-lg" />;
-      case "LatestTransaction":
-        return <FontAwesomeIcon icon={faMoneyBillWave} className="text-lg" />;
-      case "LatestSupportTicket":
-        return <FontAwesomeIcon icon={faHeadset} className="text-lg" />;
-      case "NewOrder":
-        return <FontAwesomeIcon icon={faBox} className="text-lg" />;
-      case "TodayRevenue":
-        return <FontAwesomeIcon icon={faChartBar} className="text-lg" />;
-      default:
-        return <FontAwesomeIcon icon={faBell} className="text-lg" />;
-    }
-  };
-
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case "LatestShop":
-        return "bg-green-400";
-      case "LatestTransaction":
-        return "bg-blue-400";
-      case "LatestSupportTicket":
-        return "bg-yellow-400";
-      case "NewOrder":
-        return "bg-purple-400";
-      case "TodayRevenue":
-        return "bg-indigo-400";
-      default:
-        return "bg-gray-400";
-    }
   };
 
   if (loading) {
@@ -204,7 +169,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="flex items-center space-x-1">
                     <span className="text-gray-600">
-                      {getNotificationIcon(notification.type)}
+                      {getNotificationIconWrapper(notification.type)}
                     </span>
                     <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
                       {notification.count}

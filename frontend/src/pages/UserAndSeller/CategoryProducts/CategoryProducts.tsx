@@ -31,8 +31,7 @@ const CategoryProducts: React.FC = () => {
         const categoryProducts =
           await productServices.getProductsByCategoryAsync(parseInt(id));
         setProducts(categoryProducts);
-      } catch (err) {
-        console.error("Error fetching data:", err);
+      } catch {
         setError("Không thể tải dữ liệu sản phẩm");
       } finally {
         setLoading(false);
