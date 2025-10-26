@@ -1,4 +1,4 @@
-﻿namespace Mmo_Api.Helper;
+namespace Mmo_Api.Helper;
 
 public class MapperClass : Profile
 {
@@ -64,5 +64,6 @@ public class MapperClass : Profile
             .ForMember(d => d.TotalPrice, o => o.MapFrom(src => src.TotalPrice))
             .ForMember(d => d.BuyerName, o => o.MapFrom(src => src.Account!.Username))
             .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity));
+        CreateMap<Feedback, FeedbackRequest>().ReverseMap();
     }
 }

@@ -1,5 +1,5 @@
 import { httpGet } from "@utils/http";
-import type { OrderUserResponse } from "@models/modelResponse/OrderUserResponse.ts";
+import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse";
 
 // Interface for count API response
 interface CountResponse {
@@ -9,29 +9,36 @@ interface CountResponse {
   TotalCount?: number;
 }
 
-class OrderServices {
-  async getOrdersUserAsync(
-    productNameSearch?: string,
+class AdminOrderServices {
+  async getOrdersAdminAsync(
     shopNameSearch?: string,
+    buyerNameSearch?: string,
     sellerNameSearch?: string,
     statusFilter?: string,
     sortOrder?: "asc" | "desc",
+    sortField?: "orderDate" | "totalPrice" | "orderId",
     page?: number,
     pageSize?: number
-  ): Promise<OrderUserResponse[]> {
+  ): Promise<OrderAdminResponse[]> {
     const params = new URLSearchParams();
     const filters: string[] = [];
 
-    if (productNameSearch && productNameSearch.trim()) {
-      filters.push(`contains(productName, '${productNameSearch.trim()}')`);
+    if (shopNameSearch && shopNameSearch.trim()) {
+      filters.push(
+        `contains(tolower(shopName), tolower('${shopNameSearch.trim()}'))`
+      );
     }
 
-    if (shopNameSearch && shopNameSearch.trim()) {
-      filters.push(`contains(shopName, '${shopNameSearch.trim()}')`);
+    if (buyerNameSearch && buyerNameSearch.trim()) {
+      filters.push(
+        `contains(tolower(buyerName), tolower('${buyerNameSearch.trim()}'))`
+      );
     }
 
     if (sellerNameSearch && sellerNameSearch.trim()) {
-      filters.push(`contains(sellerName, '${sellerNameSearch.trim()}')`);
+      filters.push(
+        `contains(tolower(sellerName), tolower('${sellerNameSearch.trim()}'))`
+      );
     }
 
     // Combine filters with 'and' operator
@@ -51,7 +58,9 @@ class OrderServices {
     }
 
     // Sorting
-    if (sortOrder) {
+    if (sortOrder && sortField) {
+      params.set("$orderby", `${sortField} ${sortOrder}`);
+    } else if (sortOrder) {
       params.set("$orderby", `orderDate ${sortOrder}`);
     }
 
@@ -65,15 +74,13 @@ class OrderServices {
     }
 
     const query = params.toString() ? `?${params.toString()}` : "";
-    const response = await httpGet<OrderUserResponse[]>(
-      `orders/my-orders${query}`
-    );
+    const response = await httpGet<OrderAdminResponse[]>(`orders${query}`);
     return response;
   }
 
-  async getOrdersUserCountAsync(
-    productNameSearch?: string,
+  async getOrdersAdminCountAsync(
     shopNameSearch?: string,
+    buyerNameSearch?: string,
     sellerNameSearch?: string,
     statusFilter?: string
   ): Promise<number> {
@@ -83,16 +90,22 @@ class OrderServices {
     // Build filter queries for each search field
     const filters: string[] = [];
 
-    if (productNameSearch && productNameSearch.trim()) {
-      filters.push(`contains(productName, '${productNameSearch.trim()}')`);
+    if (shopNameSearch && shopNameSearch.trim()) {
+      filters.push(
+        `contains(tolower(shopName), tolower('${shopNameSearch.trim()}'))`
+      );
     }
 
-    if (shopNameSearch && shopNameSearch.trim()) {
-      filters.push(`contains(shopName, '${shopNameSearch.trim()}')`);
+    if (buyerNameSearch && buyerNameSearch.trim()) {
+      filters.push(
+        `contains(tolower(buyerName), tolower('${buyerNameSearch.trim()}'))`
+      );
     }
 
     if (sellerNameSearch && sellerNameSearch.trim()) {
-      filters.push(`contains(sellerName, '${sellerNameSearch.trim()}')`);
+      filters.push(
+        `contains(tolower(sellerName), tolower('${sellerNameSearch.trim()}'))`
+      );
     }
 
     // Combine filters with 'and' operator
@@ -112,9 +125,10 @@ class OrderServices {
 
     const query = params.toString() ? `?${params.toString()}` : "";
     const response = await httpGet<
-      CountResponse | number | OrderUserResponse[]
-    >(`orders/my-orders${query}`);
-    // If response is an array of OrderUserResponse, return its length
+      CountResponse | number | OrderAdminResponse[]
+    >(`orders${query}`);
+
+    // If response is an array of OrderAdminResponse, return its length
     if (Array.isArray(response)) {
       return response.length;
     }
@@ -140,4 +154,4 @@ class OrderServices {
   }
 }
 
-export const orderServices = new OrderServices();
+export const adminOrderServices = new AdminOrderServices();

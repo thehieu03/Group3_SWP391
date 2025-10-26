@@ -1,4 +1,4 @@
-﻿using Mmo_Application.Services.Interface;
+using Mmo_Application.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 

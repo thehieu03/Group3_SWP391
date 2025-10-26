@@ -1,4 +1,4 @@
-﻿namespace Mmo_Application.Services;
+namespace Mmo_Application.Services;
 
 public class BaseServices<T> : IBaseServices<T> where T : class
 {

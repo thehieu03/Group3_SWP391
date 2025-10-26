@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -83,7 +83,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ITokenServices, TokenServices>();
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
         
-        // Đăng ký DapperService
+
         builder.Services.AddScoped<IDbConnection>(provider =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");

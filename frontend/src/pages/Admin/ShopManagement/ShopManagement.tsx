@@ -58,28 +58,6 @@ const ShopManagement = () => {
             debouncedOwnerSearch,
             undefined
           );
-        } else if (filterStatus === "active") {
-          result = await shopServices.getShopsPagedAsync(
-            currentPage,
-            pageSize,
-            undefined,
-            filterStatus,
-            sortOrder,
-            debouncedShopNameSearch,
-            debouncedOwnerSearch,
-            true
-          );
-        } else if (filterStatus === "inactive") {
-          result = await shopServices.getShopsPagedAsync(
-            currentPage,
-            pageSize,
-            undefined,
-            filterStatus,
-            sortOrder,
-            debouncedShopNameSearch,
-            debouncedOwnerSearch,
-            false
-          );
         } else {
           result = await shopServices.getShopsPagedAsync(
             currentPage,
@@ -89,7 +67,7 @@ const ShopManagement = () => {
             sortOrder,
             debouncedShopNameSearch,
             debouncedOwnerSearch,
-            true
+            filterStatus.toUpperCase() as "PENDING" | "APPROVED" | "BANNED"
           );
         }
 
@@ -119,7 +97,7 @@ const ShopManagement = () => {
   };
 
   const handleApproveShop = async (shop: ShopForAdmin) => {
-    if (!confirm(`Bạn có chắc chắn muốn gỡ ban cho shop ${shop.name}?`)) {
+    if (!confirm(`Bạn có chắc chắn muốn duyệt shop ${shop.name}?`)) {
       return;
     }
 
@@ -127,7 +105,7 @@ const ShopManagement = () => {
       setIsApproving(true);
       setError(null);
 
-      await shopServices.updateShopStatusAsync(shop.id, true);
+      await shopServices.approveShopAsync(shop.id);
 
       let result;
       if (filterStatus === "ALL") {
@@ -141,28 +119,6 @@ const ShopManagement = () => {
           debouncedOwnerSearch,
           undefined
         );
-      } else if (filterStatus === "active") {
-        result = await shopServices.getShopsPagedAsync(
-          currentPage,
-          pageSize,
-          undefined,
-          filterStatus,
-          sortOrder,
-          debouncedShopNameSearch,
-          debouncedOwnerSearch,
-          true
-        );
-      } else if (filterStatus === "inactive") {
-        result = await shopServices.getShopsPagedAsync(
-          currentPage,
-          pageSize,
-          undefined,
-          filterStatus,
-          sortOrder,
-          debouncedShopNameSearch,
-          debouncedOwnerSearch,
-          false
-        );
       } else {
         result = await shopServices.getShopsPagedAsync(
           currentPage,
@@ -172,7 +128,7 @@ const ShopManagement = () => {
           sortOrder,
           debouncedShopNameSearch,
           debouncedOwnerSearch,
-          true
+          filterStatus.toUpperCase() as "PENDING" | "APPROVED" | "BANNED"
         );
       }
 
@@ -182,8 +138,8 @@ const ShopManagement = () => {
       const errorMessage =
         err instanceof Error && "response" in err
           ? (err as ApiError).response?.data?.message
-          : "Không thể gỡ ban shop";
-      setError(errorMessage || "Không thể gỡ ban shop");
+          : "Không thể duyệt shop";
+      setError(errorMessage || "Không thể duyệt shop");
     } finally {
       setIsApproving(false);
     }
@@ -198,7 +154,7 @@ const ShopManagement = () => {
       setIsBanning(true);
       setError(null);
 
-      await shopServices.updateShopStatusAsync(shop.id, false);
+      await shopServices.banShopAsync(shop.id);
 
       let result;
       if (filterStatus === "ALL") {
@@ -212,28 +168,6 @@ const ShopManagement = () => {
           debouncedOwnerSearch,
           undefined
         );
-      } else if (filterStatus === "active") {
-        result = await shopServices.getShopsPagedAsync(
-          currentPage,
-          pageSize,
-          undefined,
-          filterStatus,
-          sortOrder,
-          debouncedShopNameSearch,
-          debouncedOwnerSearch,
-          true
-        );
-      } else if (filterStatus === "inactive") {
-        result = await shopServices.getShopsPagedAsync(
-          currentPage,
-          pageSize,
-          undefined,
-          filterStatus,
-          sortOrder,
-          debouncedShopNameSearch,
-          debouncedOwnerSearch,
-          false
-        );
       } else {
         result = await shopServices.getShopsPagedAsync(
           currentPage,
@@ -243,7 +177,7 @@ const ShopManagement = () => {
           sortOrder,
           debouncedShopNameSearch,
           debouncedOwnerSearch,
-          true
+          filterStatus.toUpperCase() as "PENDING" | "APPROVED" | "BANNED"
         );
       }
 
@@ -260,12 +194,30 @@ const ShopManagement = () => {
     }
   };
 
-  const getStatusBadgeColor = (isActive: boolean) => {
-    return isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+  const getStatusBadgeColor = (status: "PENDING" | "APPROVED" | "BANNED") => {
+    switch (status) {
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800";
+      case "APPROVED":
+        return "bg-green-100 text-green-800";
+      case "BANNED":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
   };
 
-  const getStatusDisplayName = (isActive: boolean) => {
-    return isActive ? "Hoạt động" : "Không hoạt động";
+  const getStatusDisplayName = (status: "PENDING" | "APPROVED" | "BANNED") => {
+    switch (status) {
+      case "PENDING":
+        return "Chờ duyệt";
+      case "APPROVED":
+        return "Đã duyệt";
+      case "BANNED":
+        return "Đã ban";
+      default:
+        return "Không xác định";
+    }
   };
 
   if (loading) {
@@ -350,8 +302,9 @@ const ShopManagement = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="ALL">Tất cả</option>
-              <option value="active">Hoạt động</option>
-              <option value="inactive">Không hoạt động</option>
+              <option value="PENDING">Chờ duyệt</option>
+              <option value="APPROVED">Đã duyệt</option>
+              <option value="BANNED">Đã ban</option>
             </select>
           </div>
           <div>
@@ -454,10 +407,10 @@ const ShopManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeColor(
-                          shop.isActive
+                          shop.status
                         )}`}
                       >
-                        {getStatusDisplayName(shop.isActive)}
+                        {getStatusDisplayName(shop.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -492,7 +445,31 @@ const ShopManagement = () => {
                         >
                           Xem
                         </Button>
-                        {shop.isActive && (
+                        {shop.status === "PENDING" && (
+                          <Button
+                            onClick={() => handleApproveShop(shop)}
+                            disabled={isApproving}
+                            leftIcon={
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            }
+                            className="text-green-600 hover:text-green-900 disabled:opacity-50 bg-transparent border-0 p-0"
+                          >
+                            {isApproving ? "Đang duyệt..." : "Duyệt"}
+                          </Button>
+                        )}
+                        {shop.status === "APPROVED" && (
                           <Button
                             onClick={() => handleBanShop(shop)}
                             disabled={isBanning}
@@ -516,7 +493,7 @@ const ShopManagement = () => {
                             {isBanning ? "Đang ban..." : "Ban"}
                           </Button>
                         )}
-                        {!shop.isActive && (
+                        {shop.status === "BANNED" && (
                           <Button
                             onClick={() => handleApproveShop(shop)}
                             disabled={isApproving}
@@ -537,7 +514,7 @@ const ShopManagement = () => {
                             }
                             className="text-green-600 hover:text-green-900 disabled:opacity-50 bg-transparent border-0 p-0"
                           >
-                            {isApproving ? "Đang duyệt..." : "Duyệt"}
+                            {isApproving ? "Đang gỡ ban..." : "Gỡ ban"}
                           </Button>
                         )}
                       </div>

@@ -13,6 +13,7 @@ import AdminDashboard from "./AdminDashboard";
 import UserManagement from "./UserManagement/UserManagement.tsx";
 import ShopManagement from "./ShopManagement/ShopManagement.tsx";
 import CategoryManagement from "./CategoryManagement";
+import AdminOrderManagement from "./AdminOrderManagement";
 import SystemSettings from "./SystemSettings";
 import SupportTickets from "./SupportTickets";
 
@@ -30,14 +31,7 @@ const AdminPanel = () => {
       case "categories":
         return <CategoryManagement />;
       case "transactions":
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Lịch sử giao dịch
-            </h2>
-            <p className="text-gray-600">Tính năng đang được phát triển...</p>
-          </div>
-        );
+        return <AdminOrderManagement />;
       case "support":
         return <SupportTickets />;
       case "settings":

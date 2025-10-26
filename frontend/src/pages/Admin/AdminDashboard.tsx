@@ -104,6 +104,12 @@ const AdminDashboard = () => {
       color: "bg-green-500",
     },
     {
+      title: "Danh mục con",
+      value: dashboardData.totalSubcategories,
+      icon: <FontAwesomeIcon icon={faBox} className="text-xl" />,
+      color: "bg-purple-500",
+    },
+    {
       title: "Giao dịch",
       value: dashboardData.totalTransactions,
       icon: <FontAwesomeIcon icon={faShoppingCart} className="text-xl" />,
@@ -191,7 +197,10 @@ const AdminDashboard = () => {
             <div className="space-y-4">
               {dashboardData.notifications
                 .filter(
-                  (n) => n.type === "TodayRevenue" || n.type === "NewOrder"
+                  (n) =>
+                    n.type === "TodayRevenue" ||
+                    n.type === "NewOrder" ||
+                    n.type === "SuccessfulTransactions"
                 )
                 .map((notification, index) => (
                   <div
@@ -201,13 +210,17 @@ const AdminDashboard = () => {
                     <span className="text-sm text-gray-600">
                       {notification.type === "TodayRevenue"
                         ? "Doanh thu hôm nay"
-                        : "Đơn hàng mới"}
+                        : notification.type === "NewOrder"
+                        ? "Đơn hàng thành công hôm nay"
+                        : "Giao dịch thành công hôm nay"}
                     </span>
                     <span
                       className={`text-sm font-medium ${
                         notification.type === "TodayRevenue"
                           ? "text-blue-600"
-                          : "text-purple-600"
+                          : notification.type === "NewOrder"
+                          ? "text-purple-600"
+                          : "text-green-600"
                       }`}
                     >
                       {notification.type === "TodayRevenue"

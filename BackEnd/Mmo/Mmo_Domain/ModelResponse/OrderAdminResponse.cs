@@ -1,4 +1,4 @@
-﻿namespace Mmo_Domain.ModelResponse;
+namespace Mmo_Domain.ModelResponse;
 
 public class OrderAdminResponse
 {

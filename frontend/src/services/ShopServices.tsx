@@ -4,7 +4,7 @@ export interface Shop {
   id: number;
   name: string;
   description: string;
-  isActive: boolean;
+  status: "PENDING" | "APPROVED" | "BANNED";
   createdAt: string;
   updatedAt: string;
   ownerUsername: string | null;
@@ -21,7 +21,7 @@ export interface ShopForAdmin {
   id: number;
   name: string;
   description: string;
-  isActive: boolean;
+  status: "PENDING" | "APPROVED" | "BANNED";
   createdAt: string;
   updatedAt: string;
   ownerUsername: string | null;
@@ -43,7 +43,7 @@ class ShopServices {
     sortOrder?: "asc" | "desc",
     shopNameSearch?: string,
     ownerSearch?: string,
-    isActive?: boolean
+    status?: "PENDING" | "APPROVED" | "BANNED"
   ): Promise<PaginatedShopsResponse> {
     const params = new URLSearchParams();
 
@@ -68,16 +68,15 @@ class ShopServices {
     }
 
     if (statusFilter && statusFilter !== "ALL") {
-      const statusFilterQuery =
-        statusFilter === "active" ? "isActive eq true" : "isActive eq false";
+      const statusFilterQuery = `status eq '${statusFilter.toUpperCase()}'`;
       filter = filter
         ? `(${filter}) and (${statusFilterQuery})`
         : statusFilterQuery;
     }
 
-    if (isActive !== undefined) {
-      const activeFilter = `isActive eq ${isActive}`;
-      filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
+    if (status !== undefined) {
+      const statusFilter = `status eq '${status}'`;
+      filter = filter ? `(${filter}) and (${statusFilter})` : statusFilter;
     }
 
     if (filter) params.set("$filter", filter);
@@ -112,7 +111,7 @@ class ShopServices {
       sortOrder,
       shopNameSearch,
       ownerSearch,
-      isActive
+      status
     );
 
     const startIndex = (page - 1) * pageSize;
@@ -131,7 +130,7 @@ class ShopServices {
     sortOrder?: "asc" | "desc",
     shopNameSearch?: string,
     ownerSearch?: string,
-    isActive?: boolean
+    status?: "PENDING" | "APPROVED" | "BANNED"
   ): Promise<ShopForAdmin[]> {
     const params = new URLSearchParams();
 
@@ -151,16 +150,15 @@ class ShopServices {
     }
 
     if (statusFilter && statusFilter !== "ALL") {
-      const statusFilterQuery =
-        statusFilter === "active" ? "isActive eq true" : "isActive eq false";
+      const statusFilterQuery = `status eq '${statusFilter.toUpperCase()}'`;
       filter = filter
         ? `(${filter}) and (${statusFilterQuery})`
         : statusFilterQuery;
     }
 
-    if (isActive !== undefined) {
-      const activeFilter = `isActive eq ${isActive}`;
-      filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
+    if (status !== undefined) {
+      const statusFilter = `status eq '${status}'`;
+      filter = filter ? `(${filter}) and (${statusFilter})` : statusFilter;
     }
 
     if (filter) params.set("$filter", filter);
@@ -178,19 +176,22 @@ class ShopServices {
 
   async updateShopStatusAsync(
     shopId: number,
-    isActive: boolean
+    status: "PENDING" | "APPROVED" | "BANNED"
   ): Promise<void> {
     const response = await httpPut<void>(`shops/${shopId}/status`, {
       shopId,
-      isActive,
+      status,
     });
     return response;
   }
 
   async approveShopAsync(shopId: number): Promise<void> {
-    const response = await httpPut<void>(`shops/${shopId}/approve`, {
-      shopId,
-    });
+    const response = await httpPut<void>(`shops/${shopId}/approve`);
+    return response;
+  }
+
+  async banShopAsync(shopId: number): Promise<void> {
+    const response = await httpPut<void>(`shops/${shopId}/ban`);
     return response;
   }
 

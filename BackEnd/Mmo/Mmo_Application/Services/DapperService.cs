@@ -52,7 +52,7 @@ public class DapperService : IDapperService
         if (!roleIds.Any())
             return true;
 
-        // Tạo parameters cho bulk insert
+
         var parameters = roleIds.Select(roleId => new { accountId, roleId }).ToList();
         
         var sql = @"
@@ -73,13 +73,13 @@ public class DapperService : IDapperService
         if (!roleIds.Any())
             return true;
 
-        // Tạo placeholders cho IN clause
+
         var placeholders = string.Join(",", roleIds.Select((_, index) => $"@roleId{index}"));
         var sql = $@"
             DELETE FROM accountroles 
             WHERE accountId = @accountId AND roleId IN ({placeholders})";
 
-        // Tạo parameters object
+
         var parameters = new DynamicParameters();
         parameters.Add("@accountId", accountId);
         for (int i = 0; i < roleIds.Count; i++)
@@ -98,11 +98,11 @@ public class DapperService : IDapperService
 
     public async Task<bool> ReplaceAccountRolesAsync(int accountId, List<int> newRoleIds)
     {
-        // Xóa tất cả roles hiện tại
+
         var deleteSql = "DELETE FROM accountroles WHERE accountId = @accountId";
         await _connection.ExecuteAsync(deleteSql, new { accountId });
 
-        // Thêm roles mới
+
         if (newRoleIds.Any())
         {
             return await InsertAccountRolesAsync(accountId, newRoleIds);

@@ -1,4 +1,4 @@
-﻿namespace Mmo_Application.Services;
+namespace Mmo_Application.Services;
 
 public class OrderServices : BaseServices<Order>, IOrderServices
 {
@@ -22,8 +22,17 @@ public class OrderServices : BaseServices<Order>, IOrderServices
         var orders = await _unitOfWork.GenericRepository<Order>()
             .Get(
                 includeProperties:
-                "ProductVariant.Product.Shop.Account,ProductVariant.Product.Category,ProductVariant.Product.Subcategory"
+                "Account,ProductVariant.Product.Shop.Account,ProductVariant.Product.Category,ProductVariant.Product.Subcategory"
             ).ToListAsync();
         return orders;
+    }
+
+    public async Task<bool> HasFeedbackAsync(int orderId)
+    {
+        var feedback = await _unitOfWork.GenericRepository<Feedback>()
+            .Get(f => f.OrderId == orderId)
+            .FirstOrDefaultAsync();
+        
+        return feedback != null;
     }
 }

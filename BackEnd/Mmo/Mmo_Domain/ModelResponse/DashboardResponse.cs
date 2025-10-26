@@ -2,14 +2,14 @@ namespace Mmo_Domain.ModelResponse;
 
 public class DashboardResponse
 {
-    // Thống kê tổng quan
+
     public int TotalActiveUsers { get; set; }
     public int TotalActiveShops { get; set; }
     public int TotalSubcategories { get; set; }
     public int TotalTransactions { get; set; }
     public int TotalPendingSupportTickets { get; set; }
 
-    // Thông báo
+
     public List<NotificationItem> Notifications { get; set; } = new List<NotificationItem>();
 }
 

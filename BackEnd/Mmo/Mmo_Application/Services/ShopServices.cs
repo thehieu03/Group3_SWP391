@@ -1,4 +1,4 @@
-﻿using Mmo_Application.Services.Interface;
+using Mmo_Application.Services.Interface;
 using Mmo_Domain.IUnit;
 using Mmo_Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,27 +18,40 @@ public class ShopServices : BaseServices<Shop>, IShopServices
             .ToListAsync();
     }
 
-    public async Task<bool> UpdateShopStatusAsync(int shopId, bool isActive)
+    public async Task<bool> UpdateShopStatusAsync(int shopId, string status)
     {
         try
         {
-            // Kiểm tra shop có tồn tại không
+            if (!IsValidStatus(status))
+            {
+                return false;
+            }
+
             var shop = await GetByIdAsync(shopId);
             if (shop == null)
             {
                 return false;
             }
 
-            // Cập nhật trạng thái isActive
-            shop.IsActive = isActive;
+            shop.Status = status;
             shop.UpdatedAt = DateTime.Now;
 
-            // Lưu thay đổi
+            var products = await _unitOfWork.GenericRepository<Product>()
+                .Get(p => p.ShopId == shopId)
+                .ToListAsync();
+
+            bool shouldActivateProducts = status == "APPROVED";
+            
+            foreach (var product in products)
+            {
+                product.IsActive = shouldActivateProducts;
+                product.UpdatedAt = DateTime.Now;
+            }
+
             await _unitOfWork.SaveChangeAsync();
 
-            // Log thay đổi trạng thái
-            var action = isActive ? "UNBANNED" : "BANNED";
-            Console.WriteLine($"[AUDIT] Shop {shopId} ({shop.Name}) {action} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            Console.WriteLine($"[AUDIT] Shop {shopId} ({shop.Name}) status changed to {status} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            Console.WriteLine($"[AUDIT] {products.Count} products of shop {shopId} isActive set to {shouldActivateProducts}");
 
             return true;
         }
@@ -49,13 +62,23 @@ public class ShopServices : BaseServices<Shop>, IShopServices
         }
     }
 
-    public async Task<bool> BanShopAsync(int shopId)
+    public async Task<bool> ApproveShopAsync(int shopId)
     {
-        return await UpdateShopStatusAsync(shopId, false);
+        return await UpdateShopStatusAsync(shopId, "APPROVED");
     }
 
-    public async Task<bool> UnbanShopAsync(int shopId)
+    public async Task<bool> BanShopAsync(int shopId)
     {
-        return await UpdateShopStatusAsync(shopId, true);
+        return await UpdateShopStatusAsync(shopId, "BANNED");
+    }
+
+    public async Task<bool> PendingShopAsync(int shopId)
+    {
+        return await UpdateShopStatusAsync(shopId, "PENDING");
+    }
+
+    private bool IsValidStatus(string status)
+    {
+        return status == "PENDING" || status == "APPROVED" || status == "BANNED";
     }
 }

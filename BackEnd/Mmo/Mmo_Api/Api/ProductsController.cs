@@ -27,19 +27,19 @@ public class ProductsController : ControllerBase
     {
         var products = await _productServices.GetAllWithRelatedAsync();
 
-        //category filter
+
         if (categoryId.HasValue)
         {
             products = products.Where(p => p.CategoryId == (uint?)categoryId.Value);
         }
 
-        //subcategory filter
+
         if (subcategoryId.HasValue)
         {
             products = products.Where(p => p.SubcategoryId == (uint?)subcategoryId.Value);
         }
 
-        //search filter
+
         if (!string.IsNullOrEmpty(searchTerm))
         {
             products = products.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
@@ -57,13 +57,13 @@ public class ProductsController : ControllerBase
             switch (sortBy.ToLower())
             {
                 case "price_asc":
-                    // sort by minPrice, then default by name
+
                     resultResponse = resultResponse
                         .OrderBy(p => p.MinPrice ?? 0)
                         .ThenBy(p => p.Name);
                     break;
                 case "price_desc":
-                    // Sort by MaxPrice, then default by name
+
                     resultResponse = resultResponse
                         .OrderByDescending(p => p.MaxPrice ?? 0)
                         .ThenBy(p => p.Name);

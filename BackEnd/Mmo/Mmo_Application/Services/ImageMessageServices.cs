@@ -1,4 +1,4 @@
-﻿namespace Mmo_Application.Services;
+namespace Mmo_Application.Services;
 
 public class ImageMessageServices :BaseServices<Imagemessage>,IImageMessageServices
 {

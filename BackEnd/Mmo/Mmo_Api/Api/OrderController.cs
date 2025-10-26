@@ -49,6 +49,12 @@ public class OrderController : ControllerBase
             var orders = await _orderServices.GetUserOrdersAsync(userId);
             var listOrderUserResponse = _mapper.Map<List<OrderUserResponse>>(orders);
 
+
+            foreach (var orderResponse in listOrderUserResponse)
+            {
+                orderResponse.hasFeedback = await _orderServices.HasFeedbackAsync(orderResponse.OrderId);
+            }
+
             return Ok(listOrderUserResponse);
         }
         catch (Exception ex)

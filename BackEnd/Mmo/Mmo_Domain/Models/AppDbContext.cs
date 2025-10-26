@@ -58,7 +58,7 @@ public partial class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
+        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456;sslmode=none;allowpublickeyretrieval=true", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -289,7 +289,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Status)
                 .HasDefaultValueSql("'PENDING'")
-                .HasColumnType("enum('PENDING','CONFIRMED')")
+                .HasColumnType("enum('PENDING','CONFIRMED','CANCELLED')")
                 .HasColumnName("status");
             entity.Property(e => e.TotalPrice)
                 .HasPrecision(15, 2)
@@ -523,15 +523,16 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("description")
                 .UseCollation("utf8mb3_general_ci")
                 .HasCharSet("utf8mb3");
-            entity.Property(e => e.IsActive)
-                .HasDefaultValueSql("'0'")
-                .HasColumnName("isActive");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
             entity.Property(e => e.ReportCount)
                 .HasDefaultValueSql("'0'")
                 .HasColumnName("reportCount");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'PENDING'")
+                .HasColumnType("enum('PENDING','APPROVED','BANNED')")
+                .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
