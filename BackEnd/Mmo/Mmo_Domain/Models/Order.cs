@@ -1,4 +1,7 @@
-﻿namespace Mmo_Domain.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Mmo_Domain.Models;
 
 public partial class Order
 {
@@ -19,6 +22,8 @@ public partial class Order
     public DateTime? UpdatedAt { get; set; }
 
     public virtual Account? Account { get; set; }
+
+    public virtual Feedback? Feedback { get; set; }
 
     public virtual Productvariant? ProductVariant { get; set; }
 }

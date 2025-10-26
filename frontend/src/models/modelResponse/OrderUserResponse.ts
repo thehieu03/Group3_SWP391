@@ -8,4 +8,5 @@ export interface OrderUserResponse {
   quantity: number;
   totalPrice: number;
   status: string;
+  hasFeedback?: boolean;
 }

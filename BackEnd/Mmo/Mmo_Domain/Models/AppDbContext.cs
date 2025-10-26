@@ -58,7 +58,7 @@ public partial class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456;sslmode=none;allowpublickeyretrieval=true", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
+        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -189,6 +189,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.ProductId, "productId");
 
+            entity.HasIndex(e => e.OrderId, "unique_order_feedback").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
             entity.Property(e => e.Comment)
@@ -200,12 +202,18 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp")
                 .HasColumnName("createdAt");
+            entity.Property(e => e.OrderId).HasColumnName("orderId");
             entity.Property(e => e.ProductId).HasColumnName("productId");
             entity.Property(e => e.Rating).HasColumnName("rating");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.AccountId)
                 .HasConstraintName("feedbacks_ibfk_1");
+
+            entity.HasOne(d => d.Order).WithOne(p => p.Feedback)
+                .HasForeignKey<Feedback>(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("feedbacks_ibfk_3");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.ProductId)
