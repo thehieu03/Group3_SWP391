@@ -11,6 +11,8 @@ export {
   formatNumber,
   getStatusColor,
   getStatusText,
+  getRoleBadgeColor,
+  getRoleDisplayName,
   getActiveStatusColor,
   getActiveStatusText,
   getActiveStatusTextColor,

@@ -199,6 +199,29 @@ class ShopServices {
     const response = await httpGet<ShopForAdmin>(`shops/${shopId}`);
     return response;
   }
+
+  async getShopsAsync(): Promise<{
+    shops: ShopForAdmin[];
+    statistics: ShopStatistics;
+  }> {
+    const response = await httpGet<{
+      shops: ShopForAdmin[];
+      statistics: ShopStatistics;
+    }>("shops");
+    return response;
+  }
+
+  async getShopStatisticsAsync(): Promise<ShopStatistics> {
+    const response = await httpGet<ShopStatistics>("shops/statistics");
+    return response;
+  }
+}
+
+export interface ShopStatistics {
+  totalShops: number;
+  pendingShops: number;
+  approvedShops: number;
+  bannedShops: number;
 }
 
 export const shopServices = new ShopServices();

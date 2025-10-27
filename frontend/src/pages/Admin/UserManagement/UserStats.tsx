@@ -44,7 +44,7 @@ const UserStats = ({
           </div>
           <div className="ml-4">
             <div className="text-2xl font-bold text-blue-600">{totalUsers}</div>
-            <div className="text-sm text-gray-600">Tổng người dùng</div>
+            <div className="text-sm text-gray-600">Tổng tài khoản</div>
           </div>
         </div>
       </div>

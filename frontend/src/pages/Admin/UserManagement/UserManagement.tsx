@@ -3,10 +3,11 @@ import { userServices } from "@services/UserServices.ts";
 import type { UserForAdmin, UpdateAccountRequest } from "@/models";
 import useDebounce from "@hooks/useDebounce.tsx";
 import Button from "@components/Button/Button.tsx";
+import { getRoleBadgeColor, getRoleDisplayName } from "@/helpers";
 import EditUserModal from "./EditUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import ViewUserModal from "./ViewUserModal";
-import UserStats from "@components/Admin/UserStats";
+import UserStats from "@pages/Admin/UserManagement/UserStats.tsx";
 
 interface ApiError {
   response?: {
@@ -177,8 +178,6 @@ const UserManagement = () => {
 
       await userServices.updateUserRolesAsync(editingUser.id, roleIds);
 
-      console.log("Roles updated successfully, refreshing data...");
-
       // Refresh statistics
       const stats = await userServices.getUserStatisticsAsync();
       setStatistics(stats);
@@ -197,23 +196,13 @@ const UserManagement = () => {
       setUsers(result.items);
       setTotalUsers(result.total);
 
-      console.log("User list refreshed successfully");
-
       setShowEditModal(false);
       setEditingUser(null);
     } catch (err: unknown) {
-      console.error("Error updating user:", err);
-
       const apiError = err as ApiError;
       const errorMessage =
         apiError?.response?.data?.message ||
         (err instanceof Error ? err.message : "Không thể cập nhật người dùng");
-
-      console.error("Error details:", {
-        status: apiError?.response?.status,
-        data: apiError?.response?.data,
-        message: errorMessage,
-      });
 
       setError(errorMessage);
     } finally {
@@ -335,32 +324,6 @@ const UserManagement = () => {
       setError(errorMessage || "Không thể gỡ ban người dùng");
     } finally {
       setIsUnbanning(false);
-    }
-  };
-
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case "ADMIN":
-        return "bg-red-100 text-red-800";
-      case "SELLER":
-        return "bg-blue-100 text-blue-800";
-      case "CUSTOMER":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getRoleDisplayName = (role: string) => {
-    switch (role) {
-      case "ADMIN":
-        return "Quản trị viên";
-      case "SELLER":
-        return "Người bán";
-      case "CUSTOMER":
-        return "Khách hàng";
-      default:
-        return role;
     }
   };
 

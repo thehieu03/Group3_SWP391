@@ -1,4 +1,4 @@
-import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse";
+import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse.ts";
 import { formatPrice } from "@/helpers";
 
 interface OrderStatsProps {

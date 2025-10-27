@@ -13,7 +13,7 @@ import AdminDashboard from "./AdminDashboard";
 import UserManagement from "./UserManagement/UserManagement.tsx";
 import ShopManagement from "./ShopManagement/ShopManagement.tsx";
 import CategoryManagement from "./CategoryManagement";
-import AdminOrderManagement from "./AdminOrderManagement";
+import AdminOrderManagement from "./OrderManagement/AdminOrderManagement.tsx";
 import SystemSettings from "./SystemSettings";
 import SupportTickets from "./SupportTickets";
 

@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import useDebounce from "@hooks/useDebounce";
-import { adminOrderServices } from "@services/AdminOrderServices";
-import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse";
-import OrderFilters from "@components/Admin/OrderFilters";
-import OrderTable from "@components/Admin/OrderTable";
-import OrderModal from "@components/Admin/OrderModal";
-import OrderPagination from "@components/Admin/OrderPagination";
-import OrderStats from "@components/Admin/OrderStats";
+import useDebounce from "@hooks/useDebounce.tsx";
+import { adminOrderServices } from "@services/AdminOrderServices.ts";
+import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse.ts";
+import OrderFilters from "@pages/Admin/OrderManagement/OrderFilters.tsx";
+import OrderTable from "@pages/Admin/OrderManagement/OrderTable.tsx";
+import OrderModal from "@pages/Admin/OrderManagement/OrderModal.tsx";
+import OrderPagination from "@pages/Admin/OrderManagement/OrderPagination.tsx";
+import OrderStats from "@pages/Admin/OrderManagement/OrderStats.tsx";
 
 const AdminOrderManagement = () => {
   const [orders, setOrders] = useState<OrderAdminResponse[]>([]);

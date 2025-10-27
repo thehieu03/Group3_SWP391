@@ -1,4 +1,5 @@
 using Mmo_Domain.Models;
+using Mmo_Domain.ModelResponse;
 
 namespace Mmo_Application.Services.Interface;
 
@@ -9,4 +10,5 @@ public interface IShopServices : IBaseServices<Shop>
     Task<bool> ApproveShopAsync(int shopId);
     Task<bool> BanShopAsync(int shopId);
     Task<bool> PendingShopAsync(int shopId);
+    Task<ShopStatistics> GetShopStatisticsAsync();
 }

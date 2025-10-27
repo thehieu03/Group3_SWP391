@@ -1,5 +1,10 @@
-import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse";
-import { formatDate, formatPrice } from "@/helpers";
+import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse.ts";
+import {
+  formatDate,
+  formatPrice,
+  getStatusColor,
+  getStatusText,
+} from "@/helpers";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -9,32 +14,6 @@ interface OrderModalProps {
 
 const OrderModal = ({ isOpen, order, onClose }: OrderModalProps) => {
   if (!isOpen || !order) return null;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
-      case "CONFIRMED":
-        return "bg-green-100 text-green-800";
-      case "CANCELLED":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return "Chờ xác nhận";
-      case "CONFIRMED":
-        return "Đã xác nhận";
-      case "CANCELLED":
-        return "Đã hủy";
-      default:
-        return status;
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -114,7 +93,7 @@ const OrderModal = ({ isOpen, order, onClose }: OrderModalProps) => {
                     order.status
                   )}`}
                 >
-                  {getStatusLabel(order.status)}
+                  {getStatusText(order.status)}
                 </span>
               </div>
             </div>

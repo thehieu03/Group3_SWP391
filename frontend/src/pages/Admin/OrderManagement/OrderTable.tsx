@@ -1,7 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
-import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse";
-import { formatDate, formatPrice } from "@/helpers";
+import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse.ts";
+import {
+  formatDate,
+  formatPrice,
+  getStatusColor,
+  getStatusText,
+} from "@/helpers";
 
 interface OrderTableProps {
   orders: OrderAdminResponse[];
@@ -9,32 +14,6 @@ interface OrderTableProps {
 }
 
 const OrderTable = ({ orders, onViewOrder }: OrderTableProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
-      case "CONFIRMED":
-        return "bg-green-100 text-green-800";
-      case "CANCELLED":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return "Chờ xác nhận";
-      case "CONFIRMED":
-        return "Đã xác nhận";
-      case "CANCELLED":
-        return "Đã hủy";
-      default:
-        return status;
-    }
-  };
-
   if (orders.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -111,7 +90,7 @@ const OrderTable = ({ orders, onViewOrder }: OrderTableProps) => {
                       order.status
                     )}`}
                   >
-                    {getStatusLabel(order.status)}
+                    {getStatusText(order.status)}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

@@ -1,6 +1,11 @@
 import React from "react";
-import type { UserForAdmin } from "../../../models/modelResponse/UserResponse";
+import type { UserForAdmin } from "@/models/modelResponse/UserResponse";
 import Button from "@components/Button/Button.tsx";
+import {
+  getRoleDisplayName,
+  getActiveStatusTextColor,
+  getActiveStatusText,
+} from "@/helpers";
 
 interface ViewUserModalProps {
   isOpen: boolean;
@@ -30,27 +35,6 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const getRoleDisplayName = (role: string) => {
-    switch (role) {
-      case "ADMIN":
-        return "Quản trị viên";
-      case "SELLER":
-        return "Người bán";
-      case "CUSTOMER":
-        return "Khách hàng";
-      default:
-        return role;
-    }
-  };
-
-  const getStatusDisplay = (isActive: boolean) => {
-    return isActive ? "Hoạt động" : "Bị khóa";
-  };
-
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? "text-green-600" : "text-red-600";
   };
 
   return (
@@ -121,11 +105,11 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
                   Trạng thái tài khoản
                 </label>
                 <p
-                  className={`mt-1 text-sm font-semibold ${getStatusColor(
+                  className={`mt-1 text-sm font-semibold ${getActiveStatusTextColor(
                     user.isActive
                   )}`}
                 >
-                  {getStatusDisplay(user.isActive)}
+                  {getActiveStatusText(user.isActive)}
                 </p>
               </div>
             </div>

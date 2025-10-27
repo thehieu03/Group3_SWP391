@@ -29,7 +29,7 @@ public class ShopController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<ShopResponse>>> GetAll()
+    public async Task<ActionResult<ShopListResponse>> GetAll()
     {
         try
         {
@@ -46,7 +46,15 @@ public class ShopController : ControllerBase
                 shopResponses.Add(shopResponse);
             }
 
-            return Ok(shopResponses);
+            var statistics = await _shopServices.GetShopStatisticsAsync();
+
+            var response = new ShopListResponse
+            {
+                Shops = shopResponses,
+                Statistics = statistics
+            };
+
+            return Ok(response);
         }
         catch (Exception ex)
         {

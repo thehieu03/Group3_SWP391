@@ -2,6 +2,7 @@ using Mmo_Application.Services.Interface;
 using Mmo_Domain.IUnit;
 using Mmo_Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Mmo_Domain.ModelResponse;
 
 namespace Mmo_Application.Services;
 
@@ -80,5 +81,24 @@ public class ShopServices : BaseServices<Shop>, IShopServices
     private bool IsValidStatus(string status)
     {
         return status == "PENDING" || status == "APPROVED" || status == "BANNED";
+    }
+
+    public async Task<ShopStatistics> GetShopStatisticsAsync()
+    {
+        var allShops = await GetAllAsync();
+        var shops = allShops.ToList();
+
+        var totalShops = shops.Count;
+        var pendingShops = shops.Count(s => s.Status == "PENDING");
+        var approvedShops = shops.Count(s => s.Status == "APPROVED");
+        var bannedShops = shops.Count(s => s.Status == "BANNED");
+
+        return new ShopStatistics
+        {
+            TotalShops = totalShops,
+            PendingShops = pendingShops,
+            ApprovedShops = approvedShops,
+            BannedShops = bannedShops
+        };
     }
 }
