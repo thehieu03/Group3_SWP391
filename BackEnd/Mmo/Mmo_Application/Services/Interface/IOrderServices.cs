@@ -1,6 +1,10 @@
-﻿namespace Mmo_Application.Services.Interface;
+﻿using Mmo_Domain.ModelResponse;
 
-public interface IOrderServices:IBaseServices<Order>
+namespace Mmo_Application.Services.Interface;
+
+public interface IOrderServices : IBaseServices<Order>
 {
-    
+    Task<IEnumerable<Order>> GetUserOrdersAsync(int accountId);
+    Task<IEnumerable<Order>> AdminGetAllOrderAsync();
+    Task<bool> HasFeedbackAsync(int orderId);
 }
