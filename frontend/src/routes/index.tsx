@@ -10,11 +10,12 @@ import PaymentHistory from "../pages/UserAndSeller/PaymentHistory/PaymentHistory
 import routesConfig from "../config/routesConfig.tsx";
 import type { User } from "../models/modelResponse/LoginResponse";
 import Products from "../pages/Products/Products.tsx";
+import OrderUser from "../pages/UserAndSeller/OrderUser/OrderUser.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
   layout: FC<{ children?: ReactNode }>;
-  requiredRoles?: string[]; // Thêm trường roles
+  requiredRoles?: string[];
 };
 const publicRoutes: AppRoute[] = [
   {
@@ -22,12 +23,12 @@ const publicRoutes: AppRoute[] = [
     element: <Home />,
     layout: DefaultLayout,
   },
-  { path: "/category/:id", element: <Products />, layout: HeaderAndFooter },
   {
     path: routesConfig.productDetails,
     element: <ProductDetails />,
     layout: HeaderAndFooter,
   },
+
   {
     path: routesConfig.deposit,
     element: <Deposit />,
@@ -39,76 +40,81 @@ const privateRoutes: AppRoute[] = [
     path: routesConfig.userProfile,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'], // User và Seller có thể truy cập
+    requiredRoles: ["USER", "SELLER", "ADMIN"],
   },
+
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["USER", "SELLER", "ADMIN"],
   },
   {
-    path: routesConfig.paymentHistory,
-    element: <PaymentHistory />,
+    path: routesConfig.userOrder,
+    element: <OrderUser />,
     layout: DefaultLayout,
-    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
 ];
 
-// Seller routes - chỉ seller mới truy cập được
 const sellerRoutes: AppRoute[] = [
   {
-    path: '/seller/dashboard',
-    element: <div>Seller Dashboard - Quản lý shop</div>, // Placeholder
+    path: "/seller/dashboard",
+    element: <div>Seller Dashboard - Quản lý shop</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: '/seller/products',
-    element: <div>Quản lý sản phẩm</div>, // Placeholder
+    path: "/seller/products",
+    element: <div>Quản lý sản phẩm</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: '/seller/orders',
-    element: <div>Quản lý đơn hàng</div>, // Placeholder
+    path: "/seller/orders",
+    element: <div>Quản lý đơn hàng</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
 ];
 
-// Admin routes - chỉ admin mới truy cập được
 const adminRoutes: AppRoute[] = [
   {
-    path: '/admin/dashboard',
+    path: "/admin/dashboard",
     element: <AdminPanel />,
     layout: DefaultLayout,
-    requiredRoles: ['ADMIN'],
+    requiredRoles: ["ADMIN"],
   },
+
 ];
-// Helper function để check quyền truy cập
-export const hasRequiredRole = (user: User | null, requiredRoles?: string[]): boolean => {
+export const hasRequiredRole = (
+  user: User | null,
+  requiredRoles?: string[]
+): boolean => {
   if (!requiredRoles || requiredRoles.length === 0) {
-    return true; // Không yêu cầu role cụ thể
+    return true;
   }
-  
+
   if (!user || !user.roles || user.roles.length === 0) {
-    return false; // User không có role
+    return false;
   }
-  
-  // Kiểm tra xem user có ít nhất 1 role trong danh sách required không
-  return requiredRoles.some(role => user.roles.includes(role));
+
+  return requiredRoles.some((role) => user.roles.includes(role));
 };
 
-// Helper function để lấy routes dựa trên role
 export const getAccessibleRoutes = (user: User | null): AppRoute[] => {
-  const allRoutes = [...publicRoutes, ...privateRoutes, ...sellerRoutes, ...adminRoutes];
-  
-  return allRoutes.filter(route => {
+  const allRoutes = [
+    ...publicRoutes,
+    ...privateRoutes,
+    ...sellerRoutes,
+    ...adminRoutes,
+  ];
+
+  return allRoutes.filter((route) => {
     if (!route.requiredRoles) {
-      return true; // Public routes
+      return true;
     }
-    
+
     return hasRequiredRole(user, route.requiredRoles);
   });
 };

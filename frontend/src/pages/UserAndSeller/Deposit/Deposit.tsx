@@ -1,205 +1,131 @@
-import React, { useState } from "react";
+import React from 'react';
 
 const Deposit = () => {
-  const [amount, setAmount] = useState("");
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
+    return (
+        <div style={{ padding: '30px', maxWidth: '1000px', margin: '0 auto' }}>
+            <h2>Redeem gift-code</h2>
 
-  // Cấu hình tài khoản
-  const BANK_CODE = "MB";
-  const ACCOUNT_NO = "0868430273";
-  const ACCOUNT_NAME = "GORNER ROBIN";
-  const FIXED_ADD_INFO = "THANHTOANMMO";
-
-  // Tạo QR link
-  const handleGenerate = () => {
-    const cleanAmount = Number(amount.replace(/[^0-9]/g, ""));
-    if (!cleanAmount || cleanAmount < 50000) {
-      alert("Vui lòng nhập số tiền hợp lệ (tối thiểu 50.000 VNĐ)");
-      return;
-    }
-
-    const qrLink = `https://img.vietqr.io/image/${BANK_CODE}-${ACCOUNT_NO}-print.png?amount=${cleanAmount}&addInfo=${encodeURIComponent(
-      FIXED_ADD_INFO
-    )}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
-
-    setQrUrl(qrLink);
-    setShowPopup(true);
-  };
-
-  const handleReset = () => {
-    setAmount("");
-    setQrUrl(null);
-    setShowPopup(false);
-  };
-
-  return (
-    <div
-      style={{
-        maxWidth: 420,
-        margin: "0 auto",
-        fontFamily: "Arial, sans-serif",
-        padding: 24,
-        border: "1px solid #ddd",
-        borderRadius: 10,
-        boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-        backgroundColor: "white",
-      }}
-    >
-      <h3 style={{ textAlign: "center", color: "#1ba857", marginBottom: 20 }}>
-        💵 Tạo mã QR thanh toán
-      </h3>
-
-      <div>
-        <label style={{ display: "block", fontWeight: 600 }}>Số tiền:</label>
-        <div style={{ marginTop: 4 }}>
-          <input
-            type="text"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Nhập số tiền, VD: 50000"
-            style={{
-              width: "72%",
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              padding: "8px 10px",
-              marginRight: 6,
-              fontSize: 15,
-            }}
-          />
-          <span style={{ fontWeight: 600 }}>VNĐ</span>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-        <button
-          onClick={handleGenerate}
-          style={{
-            flex: 1,
-            backgroundColor: "#1ba857",
-            color: "white",
-            padding: "10px 16px",
-            border: "none",
-            borderRadius: 6,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Tạo QR
-        </button>
-        <button
-          onClick={handleReset}
-          style={{
-            flex: 1,
-            backgroundColor: "#ccc",
-            padding: "10px 16px",
-            border: "none",
-            borderRadius: 6,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Reset
-        </button>
-      </div>
-
-      <p
-        style={{
-          fontSize: 13,
-          color: "#555",
-          marginTop: 14,
-          lineHeight: 1.6,
-          textAlign: "center",
-        }}
-      >
-        • Tối thiểu: 50.000 VNĐ <br />
-        • Chỉ nhập số nguyên (không có phần thập phân)
-      </p>
-
-      {showPopup && qrUrl && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(0,0,0,0.6)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-            animation: "fadeIn 0.3s ease-in-out",
-          }}
-          onClick={() => setShowPopup(false)}
-        >
-          <div
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: 16,
-              textAlign: "center",
-              padding: 32,
-              boxShadow: "0 10px 35px rgba(0,0,0,0.3)",
-              maxWidth: 640,
-              width: "90%",
-              animation: "zoomIn 0.25s ease-in-out",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3
-              style={{
-                color: "#333",
-                marginBottom: 20,
-                fontSize: 20,
-                fontWeight: 700,
-              }}
-            >
-              Mã QR thanh toán
-            </h3>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
-              <img
-                src={qrUrl}
-                alt="QR VietQR"
-                style={{
-                  width: 320,
-                  height: 640,
-                  borderRadius: 10,
-                  objectFit: "contain",
-                  border: "1px solid #eee",
-                }}
-              />
+            {/* Nhập mã gift */}
+            <div style={{ margin: '20px 0' }}>
+                <input
+                    type="text"
+                    placeholder="Nhập vào mã gift *"
+                    style={{
+                        padding: '10px',
+                        width: '60%',
+                        marginRight: '10px',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                    }}
+                />
+                <button
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: 'green',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Redeem
+                </button>
             </div>
 
-            <p style={{ color: "#444", fontSize: 15, lineHeight: 1.5 }}>
-              Quét mã bằng ứng dụng ngân hàng để thanh toán
-            </p>
+            {/* Thông tin & QR */}
+            <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+                {/* Bên trái: Thông tin chuyển khoản */}
+                <div style={{ flex: 1 }}>
+                    <p><strong>STK:</strong> <span style={{ fontWeight: 'bold' }}>36806937</span></p>
+                    <p><strong>Người nhận:</strong> Đào Quang Huy</p>
+                    <p>
+                        <strong>Nội dung chuyển khoản:</strong>{' '}
+                        <span style={{ color: 'green', fontWeight: 'bold' }}>KOVQR9784578</span>{' '}
+                        <button
+                            style={{
+                                marginLeft: '10px',
+                                padding: '4px 10px',
+                                backgroundColor: '#d9534f',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            Copy
+                        </button>
+                    </p>
+                    <p style={{ color: 'red', fontWeight: 'bold' }}>
+                        Quét mã QR Code để nội dung chuyển khoản chính xác
+                    </p>
+                </div>
 
-            <button
-              onClick={() => setShowPopup(false)}
-              style={{
-                marginTop: 18,
-                backgroundColor: "#1ba857",
-                color: "white",
-                border: "none",
-                borderRadius: 6,
-                padding: "10px 20px",
-                fontWeight: 600,
-                fontSize: 15,
-                cursor: "pointer",
-                boxShadow: "0 3px 6px rgba(0,0,0,0.15)",
-              }}
-            >
-              Đóng
-            </button>
-          </div>
+                {/* Bên phải: Tạo QR */}
+                <div style={{ flex: 1 }}>
+                    <h4 style={{ color: 'green' }}>🟩 Tạo QR Code thanh toán</h4>
+                    <div style={{ marginBottom: '10px' }}>
+                        <label>
+                            Số tiền:{' '}
+                            <input
+                                type="text"
+                                placeholder="50,000"
+                                style={{
+                                    padding: '5px',
+                                    width: '100px',
+                                    marginLeft: '10px',
+                                    marginRight: '5px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px',
+                                }}
+                            />
+                            VND
+                        </label>
+                    </div>
+                    <button
+                        style={{
+                            padding: '8px 15px',
+                            backgroundColor: 'green',
+                            color: 'white',
+                            marginRight: '10px',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Tạo QR
+                    </button>
+                    <button
+                        style={{
+                            padding: '8px 15px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Reset
+                    </button>
+
+                    <p style={{ fontSize: '12px', marginTop: '10px' }}>
+                        <strong>Lưu ý:</strong><br />
+                        • Tối thiểu: 50,000 VND<br />
+                        • Chỉ nhập số nguyên (không có phần thập phân)
+                    </p>
+                </div>
+            </div>
+
+            {/* Ghi chú */}
+            <div style={{ marginTop: '30px', fontSize: '14px' }}>
+                <p style={{ color: 'red' }}>
+                    <strong>Lưu ý:</strong><br />
+                    • Vui lòng điền chính xác nội dung chuyển khoản để thực hiện nạp tiền tự động.<br />
+                    • Không chấp nhận giao dịch nạp tiền từ tài khoản công ty. Chỉ các giao dịch từ tài khoản cá nhân, đúng với thông tin đã đăng ký với ngân hàng, mới được xử lý.<br />
+                    • Nạp tiền bằng ví điện tử USDT hoặc Paypal, vui lòng liên hệ hỗ trợ viên: <span style={{ color: 'green' }}>Tại đây</span>.<br />
+                    • Vietcombank trong khoảng 23-3h không thể kiểm tra lịch sử giao dịch.<br />
+                    • Nếu quá lâu không thấy tiền vào, vui lòng liên hệ hỗ trợ viên: <span style={{ color: 'green' }}>Tại đây</span>.
+                </p>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default Deposit;
