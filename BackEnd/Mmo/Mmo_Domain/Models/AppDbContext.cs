@@ -44,6 +44,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Shop> Shops { get; set; }
 
+    public virtual DbSet<Subcategory> Subcategories { get; set; }
+
     public virtual DbSet<Supportticket> Supporttickets { get; set; }
 
     public virtual DbSet<Systemsconfig> Systemsconfigs { get; set; }
@@ -51,7 +53,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Textmessage> Textmessages { get; set; }
 
     public virtual DbSet<Token> Tokens { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,10 +86,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("email");
             entity.Property(e => e.GoogleId).HasColumnName("googleId");
             entity.Property(e => e.IdentificationB)
-                .HasColumnType("mediumint")
+                .HasColumnType("mediumblob")
                 .HasColumnName("identificationB");
             entity.Property(e => e.IdentificationF)
-                .HasColumnType("mediumint")
+                .HasColumnType("mediumblob")
                 .HasColumnName("identificationF");
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
@@ -294,6 +295,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("paymentDescription")
                 .UseCollation("utf8mb3_general_ci")
                 .HasCharSet("utf8mb3");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'PENDING'")
+                .HasColumnType("enum('PENDING','SUCCESS','FAILED','CANCELLED')")
+                .HasColumnName("status");
             entity.Property(e => e.Type)
                 .HasColumnType("enum('Mua Hàng','Nạp tiền','Chia sẻ')")
                 .HasColumnName("type");
@@ -313,6 +318,8 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.CategoryId, "categoryId");
 
             entity.HasIndex(e => e.ShopId, "shopId");
+
+            entity.HasIndex(e => e.SubcategoryId, "subcategoryId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CategoryId).HasColumnName("categoryId");
@@ -344,6 +351,7 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("name");
             entity.Property(e => e.ShopId).HasColumnName("shopId");
+            entity.Property(e => e.SubcategoryId).HasColumnName("subcategoryId");
             entity.Property(e => e.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -357,6 +365,11 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Shop).WithMany(p => p.Products)
                 .HasForeignKey(d => d.ShopId)
                 .HasConstraintName("products_ibfk_1");
+
+            entity.HasOne(d => d.Subcategory).WithMany(p => p.Products)
+                .HasForeignKey(d => d.SubcategoryId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("products_ibfk_3");
         });
 
         modelBuilder.Entity<Productstorage>(entity =>
@@ -497,6 +510,37 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Account).WithMany(p => p.Shops)
                 .HasForeignKey(d => d.AccountId)
                 .HasConstraintName("shops_ibfk_1");
+        });
+
+        modelBuilder.Entity<Subcategory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("subcategories");
+
+            entity.HasIndex(e => e.CategoryId, "categoryId");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CategoryId).HasColumnName("categoryId");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("createdAt");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("isActive");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.UpdatedAt)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("updatedAt");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.Subcategories)
+                .HasForeignKey(d => d.CategoryId)
+                .HasConstraintName("subcategories_ibfk_1");
         });
 
         modelBuilder.Entity<Supportticket>(entity =>

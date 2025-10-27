@@ -4,3 +4,29 @@
 :root{
     --green-color: rgb(33, 191, 115);
 }
+html *::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 0;
+}
+
+html *::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+html *::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+@layer components{
+    .categoryHeader{
+        @apply h-full px-4 flex items-center text-white font-medium cursor-pointer hover:bg-emerald-600/90 transition-colors;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}

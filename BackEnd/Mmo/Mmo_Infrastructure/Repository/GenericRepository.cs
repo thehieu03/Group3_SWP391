@@ -60,10 +60,30 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await _dbSet.ToListAsync();
     }
 
+    public async Task<IEnumerable<T>> GetAllWithRelatedAsync()
+    {
+        // For Product entities, include all related entities
+        if (typeof(T) == typeof(Product))
+        {
+            var products = await _dbSet
+                .Include("Shop")
+                .Include("Category")
+                .Include("Subcategory")
+                .Include("Productvariants")
+                .Include("Feedbacks")
+                .ToListAsync();
+            return products as IEnumerable<T>;
+        }
+        
+        // For other entities, just return all
+        return await _dbSet.ToListAsync();
+    }
+
     public T? GetById(int id)
     {
         return _dbSet.Find(id);
     }
+
 
     public async Task<T?> GetByIdAsync(int id)
     {

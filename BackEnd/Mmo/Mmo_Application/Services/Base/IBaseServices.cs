@@ -7,6 +7,6 @@ public interface  IBaseServices<T> where T : class
     bool Delete(int id);
     Task<bool> DeleteAsync(int id);
     Task<bool> DeleteAsync(T entity);
-    Task<T?> GetByIdAsync(int id);
+    Task<T?> GetByIdAsync(int? id);
     Task<IEnumerable<T>> GetAllAsync();
 }

@@ -5,9 +5,9 @@ namespace Mmo_Domain.Models;
 
 public partial class Supportticket
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? AccountId { get; set; }
+    public int? AccountId { get; set; }
 
     public string Email { get; set; } = null!;
 

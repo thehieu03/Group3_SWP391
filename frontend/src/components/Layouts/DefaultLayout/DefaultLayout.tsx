@@ -1,21 +1,19 @@
 
 import Header from "../components/Header/Header.tsx";
-import type {FC} from "react";
-import Sidebar from "./Sidebar/Sidebar.tsx";
+import type {FC, ReactNode} from "react";
 import Footer from "../components/Footer/Footer.tsx";
 type DefaultLayoutProps = {
-    children?: React.ReactNode
+    children?: ReactNode
 }
+
 const DefaultLayout:FC<DefaultLayoutProps> = ({children}) => {
     return (
         <div>
             <Header/>
 
             <div>
-                <Sidebar/>
                 <div>{children}</div>
                 <Footer/>
-                <Sidebar/>
             </div>
         </div>
     );

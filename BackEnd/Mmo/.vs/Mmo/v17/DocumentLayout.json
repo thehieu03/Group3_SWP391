@@ -1,14 +1,70 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\1\\Group3_SWP391\\BackEnd\\Mmo\\",
+  "WorkspaceRootPath": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\1\\group3_swp391\\backend\\mmo\\mmo_domain\\modelresponse\\orderuserresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelresponse\\orderuserresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\api\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\ordercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\1\\group3_swp391\\backend\\mmo\\mmo_domain\\modelrequest\\rolerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\modelrequest\\rolerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_application\\services\\orderservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\orderservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\api\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\api\\accountrolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\accountrolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\boostraping\\registermiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_application\\services\\dapperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\dapperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\api\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_application\\services\\productservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\productservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_application\\services\\dashboardservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC299F20-8676-4619-B287-814F928CC788}|Mmo_Application\\Mmo_Application.csproj|solutionrelative:mmo_application\\services\\dashboardservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_api\\api\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E32FBB92-A790-43A3-8B46-CA4BD64A8771}|Mmo_Api\\Mmo_Api.csproj|solutionrelative:mmo_api\\api\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_infrastructure\\unit\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0E8C48B-BD85-45F3-B9A5-CE0CD4908BBF}|Mmo_Infrastructure\\Mmo_Infrastructure.csproj|solutionrelative:mmo_infrastructure\\unit\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\accountrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\accountrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\shop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\shop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|d:\\group3_swp391\\group3_swp391\\backend\\mmo\\mmo_domain\\models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1AFE383-F01B-41FE-AEC4-F0C48C97B2E0}|Mmo_Domain\\Mmo_Domain.csproj|solutionrelative:mmo_domain\\models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,28 +79,196 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "OrderUserResponse.cs",
-              "DocumentMoniker": "D:\\1\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\OrderUserResponse.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelResponse\\OrderUserResponse.cs",
-              "ToolTip": "D:\\1\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelResponse\\OrderUserResponse.cs",
-              "RelativeToolTip": "Mmo_Domain\\ModelResponse\\OrderUserResponse.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "OrderController.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\OrderController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\OrderController.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\OrderController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\OrderController.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAswDgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-26T14:52:12.365Z",
+              "WhenOpened": "2025-10-20T18:12:11.347Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "RoleRequest.cs",
-              "DocumentMoniker": "D:\\1\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\RoleRequest.cs",
-              "RelativeDocumentMoniker": "Mmo_Domain\\ModelRequest\\RoleRequest.cs",
-              "ToolTip": "D:\\1\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\ModelRequest\\RoleRequest.cs",
-              "RelativeToolTip": "Mmo_Domain\\ModelRequest\\RoleRequest.cs",
+              "Title": "OrderServices.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\OrderServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\OrderServices.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\OrderServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\OrderServices.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAA0wBsAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T12:05:20.95Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "RegisterMiddleware.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "RelativeToolTip": "Mmo_Api\\Boostraping\\RegisterMiddleware.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAADwAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T04:37:29.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Accountrole.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Accountrole.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Accountrole.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Accountrole.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Accountrole.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-26T14:52:06.186Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T04:41:35.036Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CategoriesController.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\CategoriesController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\CategoriesController.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\CategoriesController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\CategoriesController.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T04:41:43.604Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AccountRoleController.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountRoleController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AccountRoleController.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AccountRoleController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\AccountRoleController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-21T01:22:56.98Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\AuthController.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\AuthController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\AuthController.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACAAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-20T08:33:46.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ProductServices.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\ProductServices.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\ProductServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\ProductServices.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T23:34:23.89Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\ProductsController.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\ProductsController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\ProductsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T23:35:01.772Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DapperService.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\DapperService.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\DapperService.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\DapperService.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\DapperService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T00:17:27.645Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DashboardServices.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\DashboardServices.cs",
+              "RelativeDocumentMoniker": "Mmo_Application\\Services\\DashboardServices.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Application\\Services\\DashboardServices.cs",
+              "RelativeToolTip": "Mmo_Application\\Services\\DashboardServices.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAAwHoAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T18:42:47.407Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\appsettings.json",
+              "RelativeDocumentMoniker": "Mmo_Api\\appsettings.json",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\appsettings.json",
+              "RelativeToolTip": "Mmo_Api\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-10-22T18:28:22.493Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Shop.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Shop.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Shop.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Shop.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Shop.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T14:51:03.967Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DashboardController.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\DashboardController.cs",
+              "RelativeDocumentMoniker": "Mmo_Api\\Api\\DashboardController.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Api\\Api\\DashboardController.cs",
+              "RelativeToolTip": "Mmo_Api\\Api\\DashboardController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABMAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T14:38:23.757Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Order.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Order.cs",
+              "RelativeDocumentMoniker": "Mmo_Domain\\Models\\Order.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Domain\\Models\\Order.cs",
+              "RelativeToolTip": "Mmo_Domain\\Models\\Order.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T12:05:30.552Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "UnitOfWork.cs",
+              "DocumentMoniker": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
+              "RelativeDocumentMoniker": "Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
+              "ToolTip": "D:\\Group3_SWP391\\Group3_SWP391\\BackEnd\\Mmo\\Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
+              "RelativeToolTip": "Mmo_Infrastructure\\Unit\\UnitOfWork.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-22T12:05:04.421Z"
             }
           ]
         }

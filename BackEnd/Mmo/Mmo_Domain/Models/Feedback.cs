@@ -5,11 +5,13 @@ namespace Mmo_Domain.Models;
 
 public partial class Feedback
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? AccountId { get; set; }
+    public int? AccountId { get; set; }
 
-    public uint? ProductId { get; set; }
+    public int? OrderId { get; set; }
+
+    public int? ProductId { get; set; }
 
     public int? Rating { get; set; }
 
@@ -18,6 +20,8 @@ public partial class Feedback
     public DateTime? CreatedAt { get; set; }
 
     public virtual Account? Account { get; set; }
+
+    public virtual Order? Order { get; set; }
 
     public virtual Product? Product { get; set; }
 
