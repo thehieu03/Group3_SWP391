@@ -27,7 +27,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAllAccounts()
+    public async Task<ActionResult<UserListResponse>> GetAllAccounts()
     {
         try
         {
@@ -44,7 +44,15 @@ public class AccountController : ControllerBase
                 userResponses.Add(userResponse);
             }
 
-            return Ok(userResponses);
+            var statistics = await _accountServices.GetUserStatisticsAsync();
+
+            var response = new UserListResponse
+            {
+                Users = userResponses,
+                Statistics = statistics
+            };
+
+            return Ok(response);
         }
         catch (Exception ex)
         {

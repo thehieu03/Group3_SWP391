@@ -1,4 +1,4 @@
-import { httpGet, httpPost, httpPut, httpDelete } from "../utils/http";
+import { httpGet, httpPost, httpPut, httpDelete } from "@utils/http.ts";
 import type {
   ProductRequest,
   ProductUpdateRequest,

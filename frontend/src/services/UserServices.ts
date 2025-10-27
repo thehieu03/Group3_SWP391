@@ -1,4 +1,4 @@
-import { httpPut, httpGet, httpPost, httpDelete } from "@utils/http";
+import { httpPut, httpGet, httpPost, httpDelete } from "@utils/http.ts";
 import type {
   UpdateProfileRequest,
   UpdateAccountRequest,
@@ -43,30 +43,27 @@ class UserServices {
     searchTerm?: string,
     roleFilter?: string
   ): Promise<UserForAdmin[]> {
-    let queryParams = "";
-    const params = new URLSearchParams();
+    const queryParts: string[] = [];
 
     if (searchTerm && searchTerm.trim()) {
-      params.append(
-        "$filter",
-        `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`
-      );
+      const filter = `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`;
+      queryParts.push(`$filter=${encodeURIComponent(filter)}`);
     }
 
     if (roleFilter && roleFilter !== "ALL") {
-      const existingFilter = params.get("$filter");
       const roleFilterQuery = `roles/any(r: r eq '${roleFilter}')`;
-
-      if (existingFilter) {
-        params.set("$filter", `(${existingFilter}) and (${roleFilterQuery})`);
+      if (queryParts.length > 0 && queryParts[0].startsWith("$filter=")) {
+        // Append to existing filter
+        const existingFilter = queryParts[0].substring(8); // Remove '$filter='
+        queryParts[0] = `$filter=${encodeURIComponent(
+          `(${decodeURIComponent(existingFilter)}) and (${roleFilterQuery})`
+        )}`;
       } else {
-        params.append("$filter", roleFilterQuery);
+        queryParts.push(`$filter=${encodeURIComponent(roleFilterQuery)}`);
       }
     }
 
-    if (params.toString()) {
-      queryParams = "?" + params.toString();
-    }
+    const queryParams = queryParts.length > 0 ? `?${queryParts.join("&")}` : "";
 
     const response = await httpGet<UserForAdmin[]>(`accounts${queryParams}`);
     return response;
@@ -80,7 +77,7 @@ class UserServices {
     emailSearch?: string,
     isActive?: boolean
   ): Promise<UserForAdmin[]> {
-    const params = new URLSearchParams();
+    const queryParts: string[] = [];
 
     let filter = "";
 
@@ -109,14 +106,16 @@ class UserServices {
       filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
     }
 
-    if (filter) params.set("$filter", filter);
+    if (filter) {
+      queryParts.push(`$filter=${encodeURIComponent(filter)}`);
+    }
 
     if (sortOrder) {
       const sortDirection = sortOrder === "asc" ? "asc" : "desc";
-      params.set("$orderby", `createdAt ${sortDirection}`);
+      queryParts.push(`$orderby=createdAt ${sortDirection}`);
     }
 
-    const query = params.toString() ? `?${params.toString()}` : "";
+    const query = queryParts.length > 0 ? `?${queryParts.join("&")}` : "";
 
     const res = await httpGet<UserForAdmin[]>(`accounts${query}`);
     return Array.isArray(res) ? res : [];
@@ -132,82 +131,70 @@ class UserServices {
     emailSearch?: string,
     isActive?: boolean
   ): Promise<PaginatedUsersResponse> {
-    const params = new URLSearchParams();
+    // Fetch all users from backend (since OData is not properly supported)
+    const res = await httpGet<{
+      users: UserForAdmin[];
+      statistics: {
+        totalUsers: number;
+        activeUsers: number;
+        inactiveUsers: number;
+        customers: number;
+        sellers: number;
+      };
+    }>("accounts");
 
-    const skip = Math.max(0, (page - 1) * pageSize);
-    params.set("$top", String(pageSize));
-    params.set("$skip", String(skip));
-    params.set("$count", "true");
+    let allUsers = res.users || [];
 
-    let filter = "";
-
+    // Client-side filtering
     if (usernameSearch && usernameSearch.trim()) {
-      filter = `contains(username, '${usernameSearch.trim()}')`;
+      allUsers = allUsers.filter((user) =>
+        user.username
+          .toLowerCase()
+          .includes(usernameSearch.trim().toLowerCase())
+      );
     }
 
     if (emailSearch && emailSearch.trim()) {
-      const emailFilter = `contains(email, '${emailSearch.trim()}')`;
-      filter = filter ? `(${filter}) and (${emailFilter})` : emailFilter;
+      allUsers = allUsers.filter((user) =>
+        user.email.toLowerCase().includes(emailSearch.trim().toLowerCase())
+      );
     }
 
-    if (!filter && searchTerm && searchTerm.trim()) {
-      filter = `contains(username, '${searchTerm}') or contains(email, '${searchTerm}')`;
+    if (!usernameSearch && !emailSearch && searchTerm && searchTerm.trim()) {
+      allUsers = allUsers.filter(
+        (user) =>
+          user.username
+            .toLowerCase()
+            .includes(searchTerm.trim().toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.trim().toLowerCase())
+      );
     }
 
     if (roleFilter && roleFilter !== "ALL") {
-      const roleFilterQuery = `roles/any(r: r eq '${roleFilter}')`;
-      filter = filter
-        ? `(${filter}) and (${roleFilterQuery})`
-        : roleFilterQuery;
+      allUsers = allUsers.filter((user) => user.roles.includes(roleFilter));
     }
 
     if (isActive !== undefined) {
-      const activeFilter = `isActive eq ${isActive}`;
-      filter = filter ? `(${filter}) and (${activeFilter})` : activeFilter;
+      allUsers = allUsers.filter((user) => user.isActive === isActive);
     }
 
-    if (filter) params.set("$filter", filter);
-
+    // Client-side sorting
     if (sortOrder) {
-      const sortDirection = sortOrder === "asc" ? "asc" : "desc";
-      params.set("$orderby", `createdAt ${sortDirection}`);
+      allUsers = [...allUsers].sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      });
     }
 
-    const query = params.toString() ? `?${params.toString()}` : "";
-
-    const res = await httpGet<
-      { value: UserForAdmin[]; "@odata.count": number } | UserForAdmin[]
-    >(`accounts${query}`);
-
-    if (
-      res &&
-      typeof res === "object" &&
-      "value" in res &&
-      Array.isArray(res.value)
-    ) {
-      const total = res["@odata.count"] ?? res.value.length;
-      return {
-        items: res.value,
-        total: total,
-      };
-    }
-
-    const allUsers = await this.getAllUsersForPaginationAsync(
-      searchTerm,
-      roleFilter,
-      sortOrder,
-      usernameSearch,
-      emailSearch,
-      isActive
-    );
-
+    const total = allUsers.length;
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedUsers = allUsers.slice(startIndex, endIndex);
 
     return {
       items: paginatedUsers,
-      total: allUsers.length,
+      total: total,
     };
   }
 
@@ -236,10 +223,20 @@ class UserServices {
   }
 
   async updateUserRolesAsync(userId: number, roleIds: number[]): Promise<void> {
-    const response = await httpPut<void>(`accounts/${userId}/role`, {
+    const requestBody: {
+      userId: number;
+      roleIds: number[];
+      replaceAll?: boolean;
+    } = {
       userId,
       roleIds,
-    });
+      replaceAll: true, // Replace all roles instead of adding/removing
+    };
+
+    const response = await httpPut<void>(
+      `accounts/${userId}/role`,
+      requestBody
+    );
 
     return response;
   }
@@ -254,6 +251,36 @@ class UserServices {
     });
 
     return response;
+  }
+
+  async getUserStatisticsAsync(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    inactiveUsers: number;
+    customers: number;
+    sellers: number;
+  }> {
+    // API returns users array and statistics object
+    const response = await httpGet<{
+      users: UserForAdmin[];
+      statistics: {
+        totalUsers: number;
+        activeUsers: number;
+        inactiveUsers: number;
+        customers: number;
+        sellers: number;
+      };
+    }>("accounts");
+
+    return (
+      response.statistics || {
+        totalUsers: 0,
+        activeUsers: 0,
+        inactiveUsers: 0,
+        customers: 0,
+        sellers: 0,
+      }
+    );
   }
 }
 

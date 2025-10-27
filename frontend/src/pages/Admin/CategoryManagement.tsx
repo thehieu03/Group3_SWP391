@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { CategoriesResponse } from '../../models/modelResponse/CategoriesResponse';
 import type { SubcategoryResponse } from '../../models/modelResponse/SubcategoryResponse';
-import { categoryServices } from '../../services/CategoryServices';
+import { categoryServices } from '@services/CategoryServices.ts';
 
 interface ApiError {
   response?: {

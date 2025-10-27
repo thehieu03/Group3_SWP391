@@ -1,6 +1,6 @@
 import { type FC, useEffect, useState } from "react";
 import type { CategoriesResponse } from "../../../models/modelResponse/CategoriesResponse";
-import { categoryServices } from "../../../services/CategoryServices";
+import { categoryServices } from "@services/CategoryServices.ts";
 import TippyHeadless from "@tippyjs/react/headless";
 import Tippy from "@tippyjs/react";
 import type { Tools } from "../../../models/Tools.tsx";

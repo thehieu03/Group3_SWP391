@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import type { ShopForAdmin } from "../../../services/ShopServices";
+import type { ShopForAdmin } from "@services/ShopServices.ts";
 import Button from "@components/Button/Button.tsx";
 import {
   formatDate,

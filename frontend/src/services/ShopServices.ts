@@ -1,4 +1,4 @@
-import { httpGet, httpPut } from "../utils/http";
+import { httpGet, httpPut } from "@utils/http.ts";
 
 export interface Shop {
   id: number;

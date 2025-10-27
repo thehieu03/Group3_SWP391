@@ -1,4 +1,4 @@
-import { httpGet } from "@utils/http";
+import { httpGet } from "@utils/http.ts";
 import type { DashboardResponse } from "@models/modelResponse/DashboardResponse";
 
 class AdminDashboardServices {

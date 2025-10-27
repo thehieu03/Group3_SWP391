@@ -1,4 +1,4 @@
-import { httpGet } from "@utils/http";
+import { httpGet } from "@utils/http.ts";
 import type { OrderUserResponse } from "@models/modelResponse/OrderUserResponse.ts";
 
 // Interface for count API response

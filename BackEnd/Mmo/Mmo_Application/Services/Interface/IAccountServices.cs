@@ -22,4 +22,5 @@ public interface IAccountServices : IBaseServices<Account>
     Task<bool> UpdateUserStatusAsync(int userId, bool isActive);
     Task<bool> BanUserAsync(int userId);
     Task<bool> UnbanUserAsync(int userId);
+    Task<UserStatistics> GetUserStatisticsAsync();
 }

@@ -1,5 +1,5 @@
 import type { CategoriesResponse } from "@models/modelResponse/CategoriesResponse.tsx";
-import { httpGet } from "@utils/http.tsx";
+import { httpGet } from "@utils/http.ts";
 
 class CategoryServices {
   async getAllCategoryAsync(): Promise<CategoriesResponse[]> {

@@ -8,9 +8,9 @@ import type { ProductCardData } from "../../components/ProductCard/ProductCard";
 import type {CategoriesResponse} from "../../models/modelResponse/CategoriesResponse.tsx";
 import type {ProductResponse} from "../../models/modelResponse/ProductResponse.tsx";
 import type {SubcategoryResponse} from "../../models/modelResponse/SubcategoryResponse.tsx";
-import {categoryServices} from "../../services/CategoryServices.tsx";
-import {productServices} from "../../services/ProductServices.tsx";
-import {subcategoryServices} from "../../services/SubcategoryServices.tsx";
+import {categoryServices} from "@services/CategoryServices.ts";
+import {productServices} from "@services/ProductServices.ts";
+import {subcategoryServices} from "@services/SubcategoryServices.ts";
 
 
 const Products: FC = () => {

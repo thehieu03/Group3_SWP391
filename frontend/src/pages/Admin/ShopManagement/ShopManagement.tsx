@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { shopServices, type ShopForAdmin } from "@services/ShopServices.tsx";
+import { shopServices, type ShopForAdmin } from "@services/ShopServices.ts";
 import useDebounce from "@hooks/useDebounce.tsx";
 import Button from "@components/Button/Button.tsx";
 import ViewShopModal from "./ViewShopModal";

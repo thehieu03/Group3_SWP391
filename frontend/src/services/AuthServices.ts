@@ -1,4 +1,4 @@
-import { httpGet, httpPost } from "@utils/http.tsx";
+import { httpGet, httpPost } from "@utils/http.ts";
 import type { LoginRequest } from "@models/modelRequest/LoginRequest";
 import type { LoginResponse, User } from "@models/modelResponse/LoginResponse";
 

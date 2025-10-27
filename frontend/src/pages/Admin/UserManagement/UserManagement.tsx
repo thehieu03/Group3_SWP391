@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { userServices } from "@services/UserServices.tsx";
+import { userServices } from "@services/UserServices.ts";
 import type { UserForAdmin, UpdateAccountRequest } from "@/models";
 import useDebounce from "@hooks/useDebounce.tsx";
 import Button from "@components/Button/Button.tsx";
 import EditUserModal from "./EditUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import ViewUserModal from "./ViewUserModal";
+import UserStats from "@components/Admin/UserStats";
 
 interface ApiError {
   response?: {
@@ -43,8 +44,31 @@ const UserManagement = () => {
   const [pageSize, setPageSize] = useState(5);
   const totalPages = Math.max(1, Math.ceil(totalUsers / pageSize));
 
+  // Statistics state
+  const [statistics, setStatistics] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    inactiveUsers: 0,
+    customers: 0,
+    sellers: 0,
+  });
+
   const debouncedUsernameSearch = useDebounce(usernameSearch, 500);
   const debouncedEmailSearch = useDebounce(emailSearch, 500);
+
+  // Load statistics on component mount
+  useEffect(() => {
+    const loadStatistics = async () => {
+      try {
+        const stats = await userServices.getUserStatisticsAsync();
+        setStatistics(stats);
+      } catch (err) {
+        console.error("Error loading statistics:", err);
+      }
+    };
+
+    void loadStatistics();
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -126,9 +150,38 @@ const UserManagement = () => {
       setError(null);
 
       const selectedRoles = updatedData.roles;
-      const roleIds = selectedRoles.map((role) => (role === "SELLER" ? 2 : 3));
+
+      // Filter valid roles and map to role IDs
+      const validRoles = selectedRoles.filter(
+        (role) => role === "SELLER" || role === "CUSTOMER"
+      );
+
+      if (validRoles.length === 0) {
+        alert(
+          "Vui lòng chọn ít nhất một vai trò hợp lệ (Người bán hoặc Khách hàng)"
+        );
+        setIsUpdating(false);
+        return;
+      }
+
+      const roleIds = validRoles.map((role) => (role === "SELLER" ? 2 : 3));
+
+      // Don't allow sending empty roleIds - it causes backend errors
+      if (roleIds.length === 0) {
+        alert(
+          "Không thể xóa tất cả vai trò của người dùng. Vui lòng giữ ít nhất một vai trò."
+        );
+        setIsUpdating(false);
+        return;
+      }
 
       await userServices.updateUserRolesAsync(editingUser.id, roleIds);
+
+      console.log("Roles updated successfully, refreshing data...");
+
+      // Refresh statistics
+      const stats = await userServices.getUserStatisticsAsync();
+      setStatistics(stats);
 
       const result = await userServices.getUsersPagedAsync(
         currentPage,
@@ -144,14 +197,25 @@ const UserManagement = () => {
       setUsers(result.items);
       setTotalUsers(result.total);
 
+      console.log("User list refreshed successfully");
+
       setShowEditModal(false);
       setEditingUser(null);
     } catch (err: unknown) {
+      console.error("Error updating user:", err);
+
+      const apiError = err as ApiError;
       const errorMessage =
-        err instanceof Error && "response" in err
-          ? (err as ApiError).response?.data?.message
-          : "Không thể cập nhật người dùng";
-      setError(errorMessage || "Không thể cập nhật người dùng");
+        apiError?.response?.data?.message ||
+        (err instanceof Error ? err.message : "Không thể cập nhật người dùng");
+
+      console.error("Error details:", {
+        status: apiError?.response?.status,
+        data: apiError?.response?.data,
+        message: errorMessage,
+      });
+
+      setError(errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -205,6 +269,10 @@ const UserManagement = () => {
 
       await userServices.updateUserStatusAsync(user.id, false);
 
+      // Refresh statistics
+      const stats = await userServices.getUserStatisticsAsync();
+      setStatistics(stats);
+
       const result = await userServices.getUsersPagedAsync(
         currentPage,
         pageSize,
@@ -241,6 +309,10 @@ const UserManagement = () => {
       setError(null);
 
       await userServices.updateUserStatusAsync(user.id, true);
+
+      // Refresh statistics
+      const stats = await userServices.getUserStatisticsAsync();
+      setStatistics(stats);
 
       const result = await userServices.getUsersPagedAsync(
         currentPage,
@@ -355,6 +427,15 @@ const UserManagement = () => {
           </Button>
         </div>
       </div>
+
+      {/* User Statistics */}
+      <UserStats
+        totalUsers={statistics.totalUsers}
+        activeUsers={statistics.activeUsers}
+        inactiveUsers={statistics.inactiveUsers}
+        customers={statistics.customers}
+        sellers={statistics.sellers}
+      />
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

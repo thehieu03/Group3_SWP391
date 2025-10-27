@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import HomeSearch from "@/components/HomeSearch/HomeSearch.tsx";
 import CategoryList from "@/components/CategoryHomeList/CategoryList";
 import PurchasedProducts from "@/components/PurchasedProducts/PurchasedProducts.tsx";
-import { categoryServices } from "@/services/CategoryServices.tsx";
+import { categoryServices } from "@services/CategoryServices.ts";
 import type { CategoriesResponse } from "@/models/modelResponse/CategoriesResponse";
 
 const Home = () => {

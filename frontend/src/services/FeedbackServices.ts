@@ -1,4 +1,4 @@
-import { httpPost } from "@utils/http";
+import { httpPost } from "@utils/http.ts";
 import type { FeedbackRequest } from "@models/modelRequest";
 
 class FeedbackServices {

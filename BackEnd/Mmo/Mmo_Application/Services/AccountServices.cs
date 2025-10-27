@@ -262,4 +262,35 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     {
         return await UpdateUserStatusAsync(userId, true);
     }
+
+    public async Task<UserStatistics> GetUserStatisticsAsync()
+    {
+        var allUsers = await GetAllAsync();
+        var users = allUsers.ToList();
+
+        var totalUsers = users.Count;
+        var activeUsers = users.Count(u => u.IsActive == true);
+        var inactiveUsers = users.Count(u => u.IsActive == false);
+
+        var customers = 0;
+        var sellers = 0;
+
+        foreach (var user in users)
+        {
+            var roles = await GetUserRolesAsync(user.Id);
+            if (roles.Contains("SELLER"))
+                sellers++;
+            if (roles.Contains("CUSTOMER"))
+                customers++;
+        }
+
+        return new UserStatistics
+        {
+            TotalUsers = totalUsers,
+            ActiveUsers = activeUsers,
+            InactiveUsers = inactiveUsers,
+            Customers = customers,
+            Sellers = sellers
+        };
+    }
 }

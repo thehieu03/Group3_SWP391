@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { OrderUserResponse } from "@models/modelResponse/OrderUserResponse.ts";
-import { orderServices } from "@services/OrderServices.tsx";
-import { feedbackServices } from "@services/FeedbackServices.tsx";
+import { orderServices } from "@services/OrderServices.ts";
+import { feedbackServices } from "@services/FeedbackServices.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBox, faMessage, faStar } from "@fortawesome/free-solid-svg-icons";
 import {

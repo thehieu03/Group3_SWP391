@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { adminProductServices } from "../../services/AdminProductServices";
+import { adminProductServices } from "@services/AdminProductServices.ts";
 import type {
   AdminProductResponse,
   AdminProductListResponse,
