@@ -64,7 +64,10 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IRoleServices, RoleServices>();
         builder.Services.AddScoped<IShopServices, ShopServices>();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         builder.Services.AddScoped<ISubcategoryServices, SubcategoryServices>();
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
         builder.Services.AddScoped<ISupportTicketServices, SupportticketServices>();

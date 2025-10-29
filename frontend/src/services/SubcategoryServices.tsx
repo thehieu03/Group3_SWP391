@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import type {SubcategoryResponse} from "../models/modelResponse/SubcategoryResponse.tsx";
 import {httpGet} from "../utils/http.tsx";
 
@@ -33,4 +34,20 @@ class SubcategoryServices {
 }
 
 export const subcategoryServices = new SubcategoryServices();
+>>>>>>> Stashed changes
+=======
+import axios from "axios";
+import type { SubcategoryResponse } from "../models/modelResponse/SubcategoryResponse";
+
+export const subCategoryServices = {
+    getAllSubCategoryAsync: async (): Promise<SubcategoryResponse[]> => {
+        const res = await axios.get("/api/subcategories");
+        return res.data;
+    },
+
+    getSubCategoryByIdAsync: async (id: number): Promise<SubcategoryResponse> => {
+        const res = await axios.get(`/api/products/by-subcategory?subcategoryId=${id}`);
+        return res.data;
+    },
+};
 >>>>>>> Stashed changes

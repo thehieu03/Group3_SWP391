@@ -18,7 +18,11 @@
         public DateTime CreatedAt { get; set; }
     }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
 =======
 }
 >>>>>>> Stashed changes

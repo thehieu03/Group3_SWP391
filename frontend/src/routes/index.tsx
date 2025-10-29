@@ -17,7 +17,12 @@ import type { User } from "../models/modelResponse/LoginResponse";
 import SupportTicket from "../pages/Admin/SupportTickets.tsx";
 import ChangePassword from "../pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
 import RegisterShop from "../pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
+<<<<<<< Updated upstream
 import SubcategoryProducts from "../pages/UserAndSeller/SubcategoryProducts/SubcategoryProducts.tsx";
+>>>>>>> Stashed changes
+=======
+import SubCategoryProducts from "../pages/UserAndSeller/SubCategoryProducts/SubCategoryProducts.tsx";
+
 >>>>>>> Stashed changes
 type AppRoute = {
   path: string;
@@ -32,6 +37,7 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
   {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     path: routesConfig.products,
     element: <Products />,
@@ -49,6 +55,9 @@ const publicRoutes: AppRoute[] = [
   },
   {
     path: routesConfig.productDetails,
+=======
+    path: "/product/:id",
+>>>>>>> Stashed changes
     element: <ProductDetails />,
     layout: HeaderAndFooter,
 =======
@@ -73,9 +82,28 @@ const publicRoutes: AppRoute[] = [
     layout: HeaderAndFooter,
   },
   {
-    path: routesConfig.categoryProducts + "/:id",
+    path: routesConfig.getProductDetailsUrl(":id"),
+    element: <ProductDetails />,
+    layout: HeaderAndFooter,
+  },
+  {
+    path: routesConfig.categoryProducts,
     element: <CategoryProducts />,
+<<<<<<< Updated upstream
     layout: DefaultLayout,
+>>>>>>> Stashed changes
+=======
+    layout: HeaderAndFooter,
+  },
+  {
+    path: routesConfig.subCategoryProducts,
+    element: <SubCategoryProducts />,
+    layout: HeaderAndFooter,
+  },
+  {
+    path: routesConfig.changePassword,
+    element: <ChangePassword />,
+    layout: HeaderAndFooter,
 >>>>>>> Stashed changes
   },
   {
@@ -83,6 +111,13 @@ const publicRoutes: AppRoute[] = [
     element: <Deposit />,
     layout: DefaultLayout,
   },
+<<<<<<< Updated upstream
+=======
+];
+
+
+const privateRoutes: AppRoute[] = [
+>>>>>>> Stashed changes
   {
     path: routesConfig.changePassword,
     element: <ChangePassword />,
@@ -95,6 +130,11 @@ const publicRoutes: AppRoute[] = [
   },
   {
     path: routesConfig.registerShop,
+    element: <RegisterShop />,
+    layout: HeaderAndFooter,
+  },
+  {
+    path: "/registerShop",
     element: <RegisterShop />,
     layout: HeaderAndFooter,
   },
@@ -130,6 +170,7 @@ const adminRoutes: AppRoute[] = [
     requiredRoles: ["ADMIN"],
   },
 ];
+
 export const hasRequiredRole = (
   user: User | null,
   requiredRoles?: string[]

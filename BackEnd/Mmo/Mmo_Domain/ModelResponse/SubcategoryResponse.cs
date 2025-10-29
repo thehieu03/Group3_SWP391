@@ -1,5 +1,9 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 namespace Mmo_Domain.ModelResponse;
+=======
+﻿namespace Mmo_Domain.ModelResponse;
+>>>>>>> Stashed changes
 =======
 ﻿namespace Mmo_Domain.ModelResponse;
 >>>>>>> Stashed changes
@@ -13,6 +17,9 @@ public class SubcategoryResponse
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

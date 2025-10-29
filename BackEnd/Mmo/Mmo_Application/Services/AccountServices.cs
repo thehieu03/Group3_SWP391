@@ -12,6 +12,9 @@ public class AccountServices : BaseServices<Account>, IAccountServices
 
     public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices)
         : base(unitOfWork)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     {
     }
@@ -55,6 +58,9 @@ public class AccountServices : BaseServices<Account>, IAccountServices
             .Where(r => roleIds.Contains(r.Id))
             .Select(r => r.RoleName)
             .ToList();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 

@@ -2,7 +2,11 @@
 {
     public class RegisterShopRequest
     {
+<<<<<<< Updated upstream
         public uint? AccountId { get; set; }
+=======
+        public int? AccountId { get; set; }
+>>>>>>> Stashed changes
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public string? Phone { get; set; }
@@ -15,7 +19,11 @@
         public string? IdCardBackImage { get; set; }
     }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
 =======
 }
 >>>>>>> Stashed changes

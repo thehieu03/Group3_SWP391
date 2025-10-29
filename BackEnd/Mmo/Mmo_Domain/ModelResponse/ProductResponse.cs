@@ -36,7 +36,11 @@ public class ProductResponse
     public string? CategoryName { get; set; }
     public string? SubcategoryName { get; set; }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
@@ -54,16 +58,7 @@ public class ProductResponse
 
     public List<ProductVariantResponse>? ProductVariants { get; set; }
 <<<<<<< Updated upstream
-}
-
-public class ProductVariantResponse
-{
-    public int Id { get; set; }
-    public int ProductId { get; set; }
-    public string? Name { get; set; }
-    public decimal? Price { get; set; }
-    public bool IsActive { get; set; }
-
+<<<<<<< Updated upstream
 =======
 >>>>>>> Stashed changes
 }
@@ -76,4 +71,19 @@ public class ProductVariantResponse
     public decimal? Price { get; set; }
     public bool IsActive { get; set; }
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+}
+
+public class ProductVariantResponse
+{
+    public int Id { get; set; }
+    public int ProductId { get; set; }
+    public string? Name { get; set; }
+    public decimal? Price { get; set; }
+    public bool IsActive { get; set; }
+
+=======
+>>>>>>> Stashed changes
 }

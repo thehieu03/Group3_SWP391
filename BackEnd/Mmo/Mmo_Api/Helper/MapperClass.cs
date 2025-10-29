@@ -28,11 +28,14 @@ public class MapperClass : Profile
             .ReverseMap();
         CreateMap<Product, ProductRequest>().ReverseMap();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
 
         CreateMap<Productvariant, ProductVariantResponse>().ReverseMap();
 =======
+=======
+>>>>>>> Stashed changes
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
         CreateMap<Productvariant, ProductVariantResponse>().ReverseMap();
         CreateMap<Shop, ShopResponse>().ReverseMap();

@@ -7,7 +7,11 @@
     public string Username { get; set; } = string.Empty;
     public int? AccountId { get; set; }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
 =======
 }
 >>>>>>> Stashed changes

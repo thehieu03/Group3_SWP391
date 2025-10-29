@@ -1,8 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 using Microsoft.AspNetCore.OData.Query;
 using Mmo_Application.Services;
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 using Mmo_Application.Services.Interface;
@@ -31,6 +34,7 @@ namespace Mmo_Api.Api
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         public ISupportTicketServices Get_supportTicketServices()
         {
             return _supportTicketServices;
@@ -44,6 +48,8 @@ namespace Mmo_Api.Api
         public async Task<ActionResult<IEnumerable<SupportTicketResponse>>> GetAllTickets(ISupportTicketServices _supportTicketServices)
         {
 =======
+=======
+>>>>>>> Stashed changes
         // ? GET: api/supporttickets?pageNumber=1&pageSize=10
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -61,15 +67,21 @@ namespace Mmo_Api.Api
             if (pageNumber <= 0)
                 pageNumber = 1;
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             var tickets = await _supportTicketServices.GetAllAsync();
             if (tickets == null || !tickets.Any())
                 return NotFound();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var accounts = await _accountServices.GetAllAsync();
             foreach (var ticket in tickets)
 =======
+=======
+>>>>>>> Stashed changes
             var totalRecords = tickets.Count();
             var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
 
@@ -83,15 +95,21 @@ namespace Mmo_Api.Api
             // ? Gán thông tin tài kho?n
             var accounts = await _accountServices.GetAllAsync();
             foreach (var ticket in pagedTickets)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             {
                 ticket.Account = accounts.FirstOrDefault(a => a.Id == ticket.AccountId);
             }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             var response = _mapper.Map<IEnumerable<SupportTicketResponse>>(tickets);
             return Ok(response);
 =======
+=======
+>>>>>>> Stashed changes
             var response = _mapper.Map<IEnumerable<SupportTicketResponse>>(pagedTickets);
 
             // ? Tr? v? d? li?u kèm meta
@@ -104,6 +122,9 @@ namespace Mmo_Api.Api
                 AllowedPageSizes = allowedPageSizes,
                 Data = response
             });
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
 
@@ -135,7 +156,10 @@ namespace Mmo_Api.Api
             var newTicket = _mapper.Map<SupportTicket>(request);
             newTicket.CreatedAt = DateTime.Now;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 

@@ -8,11 +8,14 @@ public class ProductServices   :BaseServices<Product>, IProductServices
     {
     }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     public async Task<IEnumerable<Product>> GetAllWithRelatedAsync()
     {
         return await _unitOfWork.GenericRepository<Product>().GetAllWithRelatedAsync();
 =======
+=======
+>>>>>>> Stashed changes
     public async Task<IEnumerable<Product>> GetBySubcategoryIdAsync(int subcategoryId)
     {
         var products = await _unitOfWork.GenericRepository<Product>().GetAllAsync();
@@ -20,6 +23,9 @@ public class ProductServices   :BaseServices<Product>, IProductServices
             .Where(p => p.SubcategoryId == (uint)subcategoryId)
             .OrderByDescending(p => p.Id)
             .ToList();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }

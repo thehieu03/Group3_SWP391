@@ -1,8 +1,17 @@
 ﻿
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 namespace Mmo_Application.Services;
 
 public class SupportticketServices:BaseServices<SupportTicket>,ISupportTicketServices
+=======
+using Mmo_Application.Services.Interface;
+using Mmo_Domain.Models;
+
+namespace Mmo_Application.Services;
+
+public class SupportticketServices : BaseServices<SupportTicket>, ISupportTicketServices
+>>>>>>> Stashed changes
 =======
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.Models;

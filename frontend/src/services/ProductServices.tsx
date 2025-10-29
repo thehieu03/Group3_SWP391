@@ -3,6 +3,7 @@ import { httpGet } from "../utils/http.tsx";
 
 class ProductServices {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     async getAllProducts(params?: { 
         categoryId?: number; 
         subcategoryId?: number; 
@@ -22,6 +23,8 @@ class ProductServices {
             throw err;
         }
 =======
+=======
+>>>>>>> Stashed changes
     async getAllProductAsync(): Promise<ProductResponse[]> {
         const response = await httpGet<ProductResponse[]>("products");
         return response;
@@ -43,10 +46,18 @@ class ProductServices {
         const response = await httpGet<ProductResponse[]>(`products/by-subcategory?subcategoryId=${subcategoryId}`);
         return response;
     }
+
+    async getProductsBySubcategoryAsync(subcategoryId: number): Promise<ProductResponse[]> {
+        const response = await httpGet<ProductResponse[]>(`products/by-subcategory?subcategoryId=${subcategoryId}`);
+        return response;
+    }
 }
 export const productServices = new ProductServices();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

@@ -17,5 +17,8 @@ public interface IAccountServices:IBaseServices<Account>
     Task<bool> DeleteAccountAsync(int accountId, int currentUserId);
     Task<bool> ChangePasswordAsync(int accountId, string oldPassword, string newPassword);
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
