@@ -1,6 +1,6 @@
 export interface LoginOrRegisterWithGoogleRequest {
-    email: string;
-    id: string;
-    name: string;
-    picture: string;
+  id: string; // NOT googleId!
+  email: string;
+  name: string; // NOT username!
+  picture: string; // NOT image!
 }

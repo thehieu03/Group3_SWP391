@@ -77,6 +77,8 @@ const LoginMenu = () => {
     onSuccess: async (tokenResponse) => {
       try {
         setIsLoading(true);
+
+        // Fetch user info from Google
         const googleUserInfo = await fetch(
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
@@ -85,6 +87,8 @@ const LoginMenu = () => {
             },
           }
         ).then((res) => res.json());
+
+        // Call backend API with Google user info
         const response = await authServices.loginOrRegisterWithGoogleAsync({
           id: googleUserInfo.sub,
           email: googleUserInfo.email,
@@ -103,15 +107,17 @@ const LoginMenu = () => {
           sameSite: "strict",
         });
 
-        login(response.user);
+        // Fetch user info from backend using token
+        const currentUser = await authServices.getCurrentUserAsync();
+        login(currentUser);
 
-        if (response.user.roles.includes("ADMIN")) {
+        if (currentUser.roles.includes("ADMIN")) {
           navigate("/admin/dashboard");
         } else {
           navigate(routesConfig.home);
         }
-      } catch (error) {
-        console.error("Google login failed:", error);
+      } catch (err) {
+        console.error("Google login failed:", err);
         setError("Đăng nhập với Google thất bại");
       } finally {
         setIsLoading(false);

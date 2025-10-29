@@ -288,9 +288,10 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         };
     }
 
-    public async Task<bool> CheckAccountByGoogleId(string googleId)
+    public async Task<Account> CheckAccountByGoogleId(string googleId)
     {
         var accounts = await GetAllAsync();
-        return accounts.Any(a => a.GoogleId == googleId);
+        var accountResponse = accounts.FirstOrDefault(a => a.GoogleId == googleId);
+        return accountResponse != null ? accountResponse : null;
     }
 }

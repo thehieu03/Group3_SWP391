@@ -65,5 +65,10 @@ public class MapperClass : Profile
             .ForMember(d => d.BuyerName, o => o.MapFrom(src => src.Account!.Username))
             .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity));
         CreateMap<Feedback, FeedbackRequest>().ReverseMap();
+        CreateMap<RegisterWithGoogleRequest, Account>()
+            .ForMember(d => d.GoogleId, o => o.MapFrom(src => src.GoogleId))
+            .ForMember(d => d.Email, o => o.MapFrom(src => src.Email))
+            .ForMember(d => d.Image, o => o.MapFrom(src => HelperImage.DownloadImageFromUrlAsync(src.Image)))
+            .ForMember(d => d.Username, o => o.MapFrom(src => src.Username));
     }
 }

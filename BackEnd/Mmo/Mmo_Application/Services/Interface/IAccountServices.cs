@@ -23,5 +23,5 @@ public interface IAccountServices : IBaseServices<Account>
     Task<bool> BanUserAsync(int userId);
     Task<bool> UnbanUserAsync(int userId);
     Task<UserStatistics> GetUserStatisticsAsync();
-    Task<bool> CheckAccountByGoogleId(string googleId);
+    Task<Account> CheckAccountByGoogleId(string googleId);
 }

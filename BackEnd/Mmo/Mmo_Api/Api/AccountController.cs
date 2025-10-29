@@ -4,6 +4,8 @@ using Mmo_Domain.ModelResponse;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Mmo_Api.Helper;
 
 namespace Mmo_Api.ApiController;
 
@@ -13,11 +15,16 @@ public class AccountController : ControllerBase
 {
     private readonly IAccountServices _accountServices;
     private readonly IMapper _mapper;
+    private readonly ITokenServices _tokenServices;
+    private readonly IRoleServices _roleServices;
 
-    public AccountController(IAccountServices accountServices, IMapper mapper)
+    public AccountController(IAccountServices accountServices, IMapper mapper, ITokenServices tokenServices,
+        IRoleServices roleServices)
     {
         _accountServices = accountServices;
         _mapper = mapper;
+        _tokenServices = tokenServices;
+        _roleServices = roleServices;
     }
 
     [HttpGet]
@@ -343,10 +350,37 @@ public class AccountController : ControllerBase
     [HttpPost("google")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult LoginOrRegisterGoogle([FromBody] RegisterWithGoogleRequest request)
+    public async Task<ActionResult<AuthResponse>> LoginOrRegisterGoogle([FromBody] RegisterWithGoogleRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
+        var account = await _accountServices.CheckAccountByGoogleId(request.GoogleId);
+        if (account != null)
+        {
+            var authResponse = await _tokenServices.GenerateTokensAsync(account);
+            return Ok(authResponse);
+        }
 
-        return Ok();
+        var accountAdd = new Account
+        {
+            GoogleId = request.GoogleId,
+            Email = request.Email,
+            Username = request.Username,
+            Image = await HelperImage.DownloadImageFromUrlAsync(request.Image)
+        };
+        var addAccount = await _accountServices.AddAsync(accountAdd);
+        try
+        {
+            var roles = await _roleServices.GetAllAsync();
+            var customerRoleId = roles.FirstOrDefault(r => r.RoleName == "CUSTOMER")?.Id ?? 0;
+            if (customerRoleId > 0 && accountAdd.Id > 0)
+                await _accountServices.UpdateAccountRolesAsync(accountAdd.Id, new List<int> { customerRoleId });
+        }
+        catch
+        {
+            // Swallow role assignment errors to not block Google login/registration
+        }
+
+        var tokens = await _tokenServices.GenerateTokensAsync(accountAdd);
+        return Ok(tokens);
     }
 }

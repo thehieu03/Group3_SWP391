@@ -46,19 +46,19 @@ const privateRoutes: AppRoute[] = [
     path: routesConfig.userProfile,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ["USER", "SELLER", "ADMIN"],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
     path: routesConfig.changePassword,
     element: <ChangePassword />,
     layout: DefaultLayout,
-    requiredRoles: ["USER"],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ["USER", "SELLER", "ADMIN"],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
     path: routesConfig.userOrder,
