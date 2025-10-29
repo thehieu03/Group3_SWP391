@@ -39,7 +39,6 @@ namespace Mmo_Api.Api
                     return Ok(CreateEmptyPaginationResponse(pageSize ?? DefaultPageSize));
                 }
 
-                // Apply status filter if provided
                 if (isActive.HasValue)
                 {
                     categories = categories.Where(c => c.IsActive == isActive.Value).ToList();

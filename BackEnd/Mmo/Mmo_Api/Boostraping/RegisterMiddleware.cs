@@ -57,6 +57,9 @@ public static class RegisterMiddleware
             
             options.AddPolicy("UserOrAdmin", policy =>
                 policy.RequireRole("USER", "ADMIN"));
+
+            options.AddPolicy("AdminOrSeller", policy =>
+                policy.RequireRole("ADMIN", "SELLER"));
         });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();

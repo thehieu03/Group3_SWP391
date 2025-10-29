@@ -5,7 +5,6 @@ const Deposit = () => {
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
 
-  // Cấu hình tài khoản
   const BANK_CODE = "MB";
   const ACCOUNT_NO = "0868430273";
   const ACCOUNT_NAME = "GORNER ROBIN";

@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+import useDebounce from "../../hooks/useDebounce";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../components/Button/Button";
 import ProductCard from "../../components/ProductCard/ProductCard";
@@ -12,7 +13,6 @@ import { productServices } from "../../services/ProductServices.tsx";
 import { subcategoryServices } from "../../services/SubcategoryServices.tsx";
 import { categoryServices } from "../../services/CategoryServices.tsx";
 
-
 const Products: FC = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
@@ -22,19 +22,22 @@ const Products: FC = () => {
     const [subcategories, setSubcategories] = useState<SubcategoryResponse[]>([]);
     const [selectedSubcats, setSelectedSubcats] = useState<Record<number, boolean>>({});
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const [sortBy, setSortBy] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
     const [pagination, setPagination] = useState<PaginationResponse<ProductResponse> | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [pageSize] = useState<number>(8);
+    const [pageSize, setPageSize] = useState<number>(10);
 
     const categoryId = id ? parseInt(id) : null;
 
 
+    // fall back to first page after changing category or pageSize
     useEffect(() => {
         setCurrentPage(1);
-    }, [categoryId]);
+    }, [categoryId, pageSize]);
 
+    // load filtered prods, fall back to home if category invalid
     useEffect(() => {
         let mounted = true;
         (async () => {
@@ -58,7 +61,7 @@ const Products: FC = () => {
                 
                 const response = await productServices.getProductsByCategory({ 
                     categoryId: categoryId, 
-                    searchTerm: searchTerm || undefined,
+                    searchTerm: debouncedSearchTerm || undefined,
                     sortBy: sortBy || undefined,
                     page: currentPage,
                     pageSize: pageSize
@@ -68,6 +71,7 @@ const Products: FC = () => {
                     setProducts(response.data);
                     setPagination(response);
                 }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
                 if (mounted) {
                     setError('Không thể tải dữ liệu sản phẩm');
@@ -77,8 +81,9 @@ const Products: FC = () => {
             }
         })();
         return () => { mounted = false; };
-    }, [categoryId, searchTerm, sortBy, currentPage]);
+    }, [categoryId, debouncedSearchTerm, sortBy, currentPage, pageSize, navigate]);
 
+    // fetch subcat by category  
     const refreshSubcategories = async () => {
         if (selectedCategory == null) {
             setSubcategories([]);
@@ -89,11 +94,13 @@ const Products: FC = () => {
             const subs = await subcategoryServices.getAllSubcategories(selectedCategory);
             setSubcategories(subs);
             setSelectedSubcats({});
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
             // Silently handle subcategory refresh errors
         }
     };
 
+    // load subcat whenever category changes
     useEffect(() => {
         let mounted = true;
         (async () => {
@@ -111,6 +118,7 @@ const Products: FC = () => {
         return () => { mounted = false; };
     }, [selectedCategory]);
 
+    // listen for subcat change
     useEffect(() => {
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === 'subcategoryUpdated' && e.newValue) {
@@ -123,16 +131,8 @@ const Products: FC = () => {
         return () => window.removeEventListener('storage', handleStorageChange);
     }, [selectedCategory]);
 
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            if (searchTerm !== "") {
-                applyFilters();
-            }
-        }, 500);
 
-        return () => clearTimeout(timeoutId);
-    }, [searchTerm]);
-
+    // apply filters and fetch 
     async function applyFilters() {
         if (categoryId == null) return;
         
@@ -143,7 +143,7 @@ const Products: FC = () => {
         let response: PaginationResponse<ProductResponse>;
         const searchParams = {
             categoryId: categoryId,
-            searchTerm: searchTerm || undefined,
+            searchTerm: debouncedSearchTerm || undefined,
             sortBy: sortBy || undefined,
             page: currentPage,
             pageSize: pageSize
@@ -153,7 +153,7 @@ const Products: FC = () => {
             response = await productServices.getProductsBySubcategories({
                 categoryId: categoryId,
                 subcategoryIds: subcatIds,
-                searchTerm: searchTerm || undefined,
+                searchTerm: debouncedSearchTerm || undefined,
                 sortBy: sortBy || undefined,
                 page: currentPage,
                 pageSize: pageSize
@@ -170,6 +170,7 @@ const Products: FC = () => {
         setCurrentPage(page);
     };
 
+    // map API model to card model
     const mappedProducts: ProductCardData[] = products.map((p) => ({
         id: String(p.id),
         name: p.name,
@@ -187,6 +188,7 @@ const Products: FC = () => {
         gradient: getGradientForCategory(p.categoryName),
     }));
 
+    // generate gradient based on category
     function getGradientForCategory(categoryName?: string | null): string {
         switch (categoryName?.toLowerCase()) {
             case 'gmail':
@@ -302,8 +304,21 @@ const Products: FC = () => {
 
                 <section className=" flex-1">
                     {!loading && pagination && (
-                        <div className="mb-4 text-sm text-gray-600">
-                            Hiển thị {mappedProducts.length} trong tổng số {pagination.totalItems} sản phẩm
+                        <div className="mb-4 flex items-center justify-between">
+                            <div className="text-sm text-gray-600">
+                                Hiển thị {mappedProducts.length} trong tổng số {pagination.totalItems} sản phẩm
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-600">Hiển thị:</label>
+                                <select
+                                    value={pageSize}
+                                    onChange={(e) => setPageSize(Number(e.target.value))}
+                                    className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                >
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                     )}
                     

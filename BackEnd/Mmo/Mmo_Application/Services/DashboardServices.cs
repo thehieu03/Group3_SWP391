@@ -141,4 +141,120 @@ public class DashboardServices : IDashboardServices
             Notifications = notifications
         };
     }
+
+    public async Task<SellerDashboardResponse> GetSellerDashboardAsync(int accountId, string? searchTerm = null, string? statusFilter = null, int? categoryFilter = null, int page = 1, int pageSize = 10)
+    {
+        // seller's shop
+        var shop = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Shop>()
+            .GetQuery()
+            .Where(s => s.AccountId == accountId && s.IsActive == true)
+            .FirstOrDefaultAsync();
+
+        if (shop == null)
+        {
+            return new SellerDashboardResponse
+            {
+                ShopId = 0,
+                ShopName = string.Empty,
+                TotalProducts = 0,
+                TotalOrders = 0,
+                TotalRevenue = 0,
+                PendingOrders = 0,
+                RecentOrders = new List<SellerRecentOrderItem>()
+            };
+        }
+
+        var shopId = shop.Id;
+
+        // total products 
+        var totalProducts = await _unitOfWork.GenericRepository<Mmo_Domain.Models.Product>()
+            .GetQuery()
+            .Where(p => p.ShopId == shopId && p.IsActive == true)
+            .CountAsync();
+
+        // shop orders query
+        var ordersQuery = _unitOfWork.GenericRepository<Mmo_Domain.Models.Order>()
+            .GetQuery()
+            .Include(o => o.ProductVariant)!
+                .ThenInclude(pv => pv.Product!)
+                    .ThenInclude(p => p.Category);
+
+        var shopOrdersQuery = ordersQuery
+            .Where(o => o.ProductVariant != null && o.ProductVariant.Product != null && o.ProductVariant.Product.ShopId == shopId);
+
+        var totalOrders = await shopOrdersQuery.CountAsync();
+
+        // total revenue (excluding pending orders)
+        var totalRevenue = await shopOrdersQuery
+            .Where(o => o.Status != null && o.Status != "PENDING")
+            .SumAsync(o => (decimal)o.TotalPrice);
+
+        // pending orders (by status)
+        var pendingOrders = await shopOrdersQuery
+            .Where(o => o.Status != null && o.Status == "PENDING")
+            .CountAsync();
+
+        // search
+        var recentOrdersQuery = shopOrdersQuery;
+        
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            recentOrdersQuery = recentOrdersQuery
+                .Where(o => 
+                    o.ProductVariant!.Product!.Name != null && o.ProductVariant.Product.Name.Contains(searchTerm)
+                );
+        }
+
+        // filter by status
+        if (!string.IsNullOrWhiteSpace(statusFilter))
+        {
+            recentOrdersQuery = recentOrdersQuery
+                .Where(o => o.Status != null && o.Status == statusFilter);
+        }
+
+        // filter by category
+        if (categoryFilter.HasValue && categoryFilter.Value > 0)
+        {
+            recentOrdersQuery = recentOrdersQuery
+                .Where(o => o.ProductVariant!.Product!.CategoryId != null && o.ProductVariant.Product.CategoryId == categoryFilter.Value);
+        }
+
+        var totalItems = await recentOrdersQuery.CountAsync();
+
+        var validPage = Math.Max(1, page);
+        var validPageSize = Math.Max(1, pageSize);
+        var totalPages = (int)Math.Ceiling((double)totalItems / validPageSize);
+
+        var recentOrders = await recentOrdersQuery
+            .OrderByDescending(o => o.CreatedAt)
+            .Skip((validPage - 1) * validPageSize)
+            .Take(validPageSize)
+            .Select(o => new SellerRecentOrderItem
+            {
+                OrderId = o.Id,
+                CreatedAt = o.CreatedAt,
+                ProductName = o.ProductVariant!.Product!.Name,
+                VariantName = o.ProductVariant.Name,
+                CategoryName = o.ProductVariant.Product.Category != null ? o.ProductVariant.Product.Category.Name : null,
+                Quantity = o.Quantity,
+                TotalPrice = o.TotalPrice,
+                Status = o.Status
+            })
+            .ToListAsync();
+
+        return new SellerDashboardResponse
+        {
+            ShopId = shopId,
+            ShopName = shop.Name,
+            TotalProducts = totalProducts,
+            TotalOrders = totalOrders,
+            TotalRevenue = totalRevenue,
+            PendingOrders = pendingOrders,
+            RecentOrders = recentOrders,
+            CurrentPage = validPage,
+            TotalPages = totalPages,
+            TotalItems = totalItems,
+            ItemsPerPage = validPageSize
+        };
+    }
 }

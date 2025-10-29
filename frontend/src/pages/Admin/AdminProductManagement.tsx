@@ -227,6 +227,7 @@ const AdminProductManagement = () => {
             </label>
             <select
               value={sortBy}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e) => setSortBy(e.target.value as any)}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -242,6 +243,7 @@ const AdminProductManagement = () => {
             </label>
             <select
               value={sortOrder}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e) => setSortOrder(e.target.value as any)}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >

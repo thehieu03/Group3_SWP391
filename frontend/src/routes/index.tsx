@@ -9,6 +9,7 @@ import AdminPanel from "@pages/Admin/AdminPanel.tsx";
 // import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
 import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
 import routesConfig from "@config/routesConfig.tsx";
+import SellerDashboard from "@pages/UserAndSeller/SellerDashboard/SellerDashboard.tsx";
 import Products from "@pages/Products/Products.tsx";
 import type { User } from "@models/modelResponse/LoginResponse";
 
@@ -25,9 +26,9 @@ const publicRoutes: AppRoute[] = [
     element: <Home />,
     layout: DefaultLayout,
   },
-  { path: "/category/:id", element: <Products />, layout: HeaderAndFooter },
+  { path: `${routesConfig.categoryProducts}/:id`, element: <Products />, layout: HeaderAndFooter },
   {
-    path: routesConfig.productDetails,
+    path: `${routesConfig.productDetails}/:id`,
     element: <ProductDetails />,
     layout: HeaderAndFooter,
   },
@@ -60,6 +61,12 @@ const privateRoutes: AppRoute[] = [
 
 // Seller routes - chỉ seller mới truy cập được
 const sellerRoutes: AppRoute[] = [
+  {
+    path: '/seller/dashboard',
+    element: <SellerDashboard />,
+    layout: DefaultLayout,
+    requiredRoles: ['SELLER'],
+  },
   {
     path: '/seller/products',
     element: <div>Quản lý sản phẩm</div>, // Placeholder

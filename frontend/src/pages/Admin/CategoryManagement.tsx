@@ -43,19 +43,19 @@ const CategoryManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   const filteredCategories = useMemo(() => {
     let filtered = categories;
     
-    // Apply search filter
+    // search filter
     if (searchTerm.trim()) {
       filtered = filtered.filter(category => 
         category.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
-    // Apply status filter
+    // status filter
     if (statusFilter !== 'all') {
       const isActive = statusFilter === 'active';
       filtered = filtered.filter(category => category.isActive === isActive);
@@ -64,6 +64,12 @@ const CategoryManagement = () => {
     return filtered;
   }, [categories, searchTerm, statusFilter]);
 
+  // Reset to page 1 when page size changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage]);
+
+  // fetch categories on change
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -87,6 +93,7 @@ const CategoryManagement = () => {
     void fetchCategories();
   }, [currentPage, itemsPerPage, statusFilter]);
 
+  // load subcat by catId
   const fetchSubcategoriesForCategory = async (categoryId: number) => {
     try {
       setLoadingSubcategories(prev => ({ ...prev, [categoryId]: true }));
@@ -123,12 +130,14 @@ const CategoryManagement = () => {
     setIsEditingSubcategory(true);
   };
 
+  // error message 
   const getErrorMessage = (err: unknown, defaultMessage: string): string => {
     return err instanceof Error && 'response' in err 
       ? (err as ApiError).response?.data?.message || defaultMessage
       : defaultMessage;
   };
 
+  // refresh category list
   const refreshCategories = async () => {
     const isActiveFilter = statusFilter === 'all' ? undefined : statusFilter === 'active';
     const paginatedData = await categoryServices.getCategoriesPaginated(currentPage, itemsPerPage, isActiveFilter);
@@ -137,6 +146,7 @@ const CategoryManagement = () => {
     setTotalItems(paginatedData.totalItems);
   };
 
+  // create new category
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) {
       setCategoryNameError('Tên danh mục không được để trống');
@@ -156,6 +166,7 @@ const CategoryManagement = () => {
     }
   };
 
+  // update category 
   const handleEditCategory = async () => {
     if (!editingCategoryName.trim()) {
       setCategoryNameError('Tên danh mục không được để trống');
@@ -178,6 +189,7 @@ const CategoryManagement = () => {
     }
   };
 
+  // create new subcat for selected category
   const handleAddSubcategory = async () => {
     if (!newSubcategoryName.trim()) {
       setSubcategoryNameError('Tên danh mục con không được để trống');
@@ -205,6 +217,7 @@ const CategoryManagement = () => {
     }
   };
 
+  // update subcat 
   const handleEditSubcategory = async () => {
     if (!editingSubcategoryName.trim()) {
       setSubcategoryNameError('Tên danh mục con không được để trống');
@@ -229,7 +242,7 @@ const CategoryManagement = () => {
     }
   };
 
-
+  // Activate/Deactivate a category and its subcategories if deactivated
   const toggleCategoryStatus = async (categoryId: number) => {
     try {
       const category = categories.find(cat => cat.id === categoryId);
@@ -258,6 +271,7 @@ const CategoryManagement = () => {
     }
   };
 
+  // Activate/Deactivate a subcategory 
   const toggleSubcategoryStatus = async (subcategoryId: number, categoryId: number) => {
     try {
       const subcategory = categorySubcategories[categoryId]?.find(sub => sub.id === subcategoryId);
@@ -275,6 +289,7 @@ const CategoryManagement = () => {
     }
   };
 
+  // Change current page for category list pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -306,16 +321,30 @@ const CategoryManagement = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Quản lý danh mục</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Hiển thị {filteredCategories.length} trong tổng số {totalItems} danh mục
-            {statusFilter !== 'all' && (
-              <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                {statusFilter === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-              </span>
-            )}
-          </p>
+          <div className="mt-1 flex items-center gap-4">
+            <p className="text-sm text-gray-600">
+              Hiển thị {filteredCategories.length} trong tổng số {totalItems} danh mục
+              {statusFilter !== 'all' && (
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                  {statusFilter === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                </span>
+              )}
+            </p>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">Hiển thị:</label>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+          </div>
         </div>
         <button
           onClick={() => setIsAddingCategory(true)}
