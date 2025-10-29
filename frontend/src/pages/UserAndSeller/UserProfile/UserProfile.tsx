@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import routesConfig from "@config/routesConfig.ts";
 import { orderServices } from "@services/OrderServices.ts";
 import { userServices } from "@services/UserServices.ts";
+import { authServices } from "@services/AuthServices.ts";
 import type { OrderUserResponse } from "@/models/modelResponse/OrderUserResponse";
 import Image from "@/components/Image";
 import Button from "@/components/Button/Button.tsx";
 
 const UserProfile: React.FC = () => {
-  const { user, isLoggedIn, loading } = useAuth();
+  const { user, isLoggedIn, loading, login } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,6 +41,52 @@ const UserProfile: React.FC = () => {
         email: user.email || "",
         phone: user.phone || "",
       });
+      // Debug avatar data when opening infoAccount
+      console.log("UserProfile user:", user);
+      console.log(
+        "UserProfile avatar raw:",
+        (
+          user as unknown as {
+            avatar?: unknown;
+            avatarBase64?: unknown;
+            image?: unknown;
+          }
+        )?.avatar ??
+          (user as unknown as { avatarBase64?: unknown })?.avatarBase64 ??
+          (user as unknown as { image?: unknown })?.image
+      );
+      const u = user as unknown as {
+        avatar?: unknown;
+        avatarBase64?: unknown;
+        image?: unknown;
+      };
+      const raw = u?.avatar ?? u?.avatarBase64 ?? u?.image;
+      if (!raw) {
+        setAvatar(null);
+      } else if (typeof raw === "string") {
+        const s = raw.trim();
+        const src =
+          s.startsWith("data:") ||
+          s.startsWith("http://") ||
+          s.startsWith("https://")
+            ? s
+            : `data:image/jpeg;base64,${s}`;
+        setAvatar(src);
+      } else if (Array.isArray(raw)) {
+        const bytes = new Uint8Array(raw as number[]);
+        let binary = "";
+        const chunk = 8192;
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode.apply(
+            null,
+            Array.from(bytes.subarray(i, i + chunk)) as unknown as number[]
+          );
+        }
+        const b64 = btoa(binary);
+        setAvatar(`data:image/jpeg;base64,${b64}`);
+      } else {
+        setAvatar(null);
+      }
     }
   }, [user]);
 
@@ -105,29 +152,39 @@ const UserProfile: React.FC = () => {
       setIsSaving(true);
       setSaveMessage(null);
 
-      if (avatarFile) {
-        try {
-          await userServices.uploadAvatarAsync(avatarFile);
-        } catch {
-          setSaveMessage({
-            type: "error",
-            text: "Có lỗi khi upload avatar. Vui lòng thử lại.",
-          });
-          return;
-        }
-      }
-
       const updateData = {
         username: formData.username,
-        email: formData.email,
         phone: formData.phone,
       };
 
-      await userServices.updateProfileAsync(updateData);
+      if (avatarFile) {
+        try {
+          await userServices.updateProfileWithAvatarAsync(
+            updateData,
+            avatarFile
+          );
+        } catch {
+          setSaveMessage({
+            type: "error",
+            text: "Có lỗi khi cập nhật thông tin kèm avatar. Vui lòng thử lại.",
+          });
+          return;
+        }
+      } else {
+        await userServices.updateProfileAsync(updateData);
+      }
+
+      // Refresh auth user so menus and other places get latest avatar
+      try {
+        const refreshed = await authServices.getCurrentUserAsync();
+        login(refreshed);
+      } catch {
+        // ignore
+      }
 
       setFormData({
         username: updateData.username || formData.username,
-        email: updateData.email || formData.email,
+        email: formData.email,
         phone: updateData.phone || formData.phone,
       });
 
@@ -294,20 +351,9 @@ const UserProfile: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email
                 </label>
-                {isEditing ? (
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Nhập email"
-                  />
-                ) : (
-                  <p className="text-gray-900 py-2">
-                    {formData.email || "Chưa có thông tin"}
-                  </p>
-                )}
+                <p className="text-gray-900 py-2">
+                  {formData.email || "Chưa có thông tin"}
+                </p>
               </div>
 
               <div>

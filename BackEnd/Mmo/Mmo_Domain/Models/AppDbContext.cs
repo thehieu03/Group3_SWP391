@@ -598,6 +598,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .HasColumnName("phone");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'OPEN'")
+                .HasColumnType("enum('OPEN','PENDING','RESOLVED','CLOSED')")
+                .HasColumnName("status");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");

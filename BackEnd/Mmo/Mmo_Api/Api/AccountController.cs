@@ -81,32 +81,55 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateProfile([FromBody] ProfileUpdateRequest request)
+    public async Task<ActionResult> UpdateProfile(
+        [FromForm] string? username,
+        [FromForm] string? phone,
+        [FromForm] IFormFile? avatar)
     {
         try
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (request == null) return BadRequest("Request body cannot be null");
-
-            if (string.IsNullOrEmpty(request.Username) &&
-                string.IsNullOrEmpty(request.Email) &&
-                string.IsNullOrEmpty(request.Phone))
-                return BadRequest("At least one field must be provided for update");
+            if (string.IsNullOrWhiteSpace(username) && string.IsNullOrWhiteSpace(phone) && avatar == null)
+                return BadRequest(new { message = "At least one field must be provided for update" });
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid token");
 
-            var result = await _accountServices.UpdateProfileAsync(userId, request);
+            var account = await _accountServices.GetByIdAsync(userId);
+            if (account == null) return NotFound(new { message = "User not found" });
 
-            if (!result)
+            if (!string.IsNullOrWhiteSpace(username))
             {
-                var account = await _accountServices.GetByIdAsync(userId);
-                if (account == null) return NotFound("User not found");
-
-                return BadRequest("Update failed. Username or email may already exist");
+                if (username.Length < 3 || username.Length > 50)
+                    return BadRequest(new { message = "Username must be between 3 and 50 characters" });
+                account.Username = username.Trim();
             }
+
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                if (phone.Length < 7 || phone.Length > 20)
+                    return BadRequest(new { message = "Phone must be between 7 and 20 characters" });
+                account.Phone = phone.Trim();
+            }
+
+            if (avatar != null)
+            {
+                if (!avatar.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                    return BadRequest(new { message = "Avatar must be an image" });
+                const long maxSize = 5 * 1024 * 1024;
+                if (avatar.Length > maxSize)
+                    return BadRequest(new { message = "Avatar size must be ≤ 5MB" });
+
+                await using var ms = new MemoryStream();
+                await avatar.CopyToAsync(ms);
+                account.Image = ms.ToArray();
+            }
+
+            account.UpdatedAt = DateTime.UtcNow;
+            var saved = await _accountServices.UpdateAsync(account);
+            if (!saved) return StatusCode(500, new { message = "Failed to update profile" });
 
             return Ok(new { message = "Profile updated successfully" });
         }

@@ -1,4 +1,4 @@
-import type {SubcategoryResponse} from "../models/modelResponse/SubcategoryResponse.tsx";
+import type {SubcategoryResponse} from "@/models/modelResponse/SubcategoryResponse.tsx";
 import {httpGet} from "@utils/http.ts";
 
 class SubcategoryServices {

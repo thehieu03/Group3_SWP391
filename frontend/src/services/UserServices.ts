@@ -18,6 +18,23 @@ class UserServices {
     return response;
   }
 
+  async updateProfileWithAvatarAsync(
+    profileData: { username?: string; phone?: string },
+    avatarFile: File
+  ): Promise<UpdateProfileResponse> {
+    const form = new FormData();
+    if (profileData.username) form.append("username", profileData.username);
+    if (profileData.phone) form.append("phone", profileData.phone);
+    form.append("avatar", avatarFile);
+
+    // Use POST or PUT depending on backend; assuming PUT here
+    const response = await httpPut<UpdateProfileResponse>(
+      "accounts/profile",
+      form as unknown as FormData
+    );
+    return response;
+  }
+
   async getProfileAsync(): Promise<UpdateProfileResponse> {
     const response = await httpGet<UpdateProfileResponse>("accounts/profile");
     return response;

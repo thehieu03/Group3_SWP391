@@ -14,6 +14,7 @@ import type { User } from "@models/modelResponse/LoginResponse";
 import ChangePassword from "@pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
 import OrderUser from "@/pages/UserAndSeller/OrderUser/OrderUser";
 import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
+import Share from "@pages/UserAndSeller/Share/Share.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -69,6 +70,12 @@ const privateRoutes: AppRoute[] = [
   {
     path: routesConfig.userOrder,
     element: <OrderUser />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.share,
+    element: <Share />,
     layout: DefaultLayout,
     requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },

@@ -49,11 +49,14 @@ public class MapperClass : Profile
             .ForMember(d => d.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(d => d.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(d => d.OwnerUsername, opt => opt.MapFrom(src => src.Account != null ? src.Account.Username : null))
+            .ForMember(d => d.OwnerUsername,
+                opt => opt.MapFrom(src => src.Account != null ? src.Account.Username : null))
             .ForMember(d => d.ProductCount, opt => opt.MapFrom(src => src.Products != null ? src.Products.Count : 0))
             .ForMember(d => d.ComplaintCount, opt => opt.MapFrom(src => src.Replies != null ? src.Replies.Count : 0))
-            .ForMember(d => d.IdentificationF, opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationF : null))
-            .ForMember(d => d.IdentificationB, opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationB : null));
+            .ForMember(d => d.IdentificationF,
+                opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationF : null))
+            .ForMember(d => d.IdentificationB,
+                opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationB : null));
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
         CreateMap<RegisterRequest, Account>().ReverseMap();
         CreateMap<Order, OrderUserResponse>()
@@ -76,5 +79,22 @@ public class MapperClass : Profile
             .ForMember(d => d.BuyerName, o => o.MapFrom(src => src.Account!.Username))
             .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity));
         CreateMap<Feedback, FeedbackRequest>().ReverseMap();
+
+        CreateMap<Supportticket, SupportTicketResponse>()
+            .ForMember(d => d.Id, o => o.MapFrom(src => src.Id))
+            .ForMember(d => d.AccountId, o => o.MapFrom(src => src.AccountId))
+            .ForMember(d => d.Email, o => o.MapFrom(src => src.Email))
+            .ForMember(d => d.Phone, o => o.MapFrom(src => src.Phone))
+            .ForMember(d => d.Title, o => o.MapFrom(src => src.Title))
+            .ForMember(d => d.Content, o => o.MapFrom(src => src.Content))
+            .ForMember(d => d.CreatedAt, o => o.MapFrom(src => src.CreatedAt))
+            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status ?? "OPEN"))
+            .ForMember(d => d.Account, o => o.MapFrom(src => src.Account != null ? new AccountMiniResponse
+            {
+                Id = src.Account.Id,
+                Username = src.Account.Username,
+                Email = src.Account.Email
+            } : null));
+        CreateMap<Supportticket, SupportTicketRequest>().ReverseMap();
     }
 }

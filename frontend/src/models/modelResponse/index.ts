@@ -1,3 +1,5 @@
+export * from "./SupportTicketResponse";
+
 // Export all response models
 export * from "./UserResponse";
 export * from "./LoginResponse";

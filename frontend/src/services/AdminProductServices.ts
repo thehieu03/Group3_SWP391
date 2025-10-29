@@ -3,12 +3,12 @@ import type {
   ProductRequest,
   ProductUpdateRequest,
   ProductListRequest,
-} from "../models/modelRequest/ProductRequest";
+} from "@/models/modelRequest/ProductRequest";
 import type {
   AdminProductResponse,
   AdminProductListResponse,
   AdminProductStatsResponse,
-} from "../models/modelResponse/AdminProductResponse";
+} from "@/models/modelResponse/AdminProductResponse";
 
 class AdminProductServices {
   // Lấy danh sách sản phẩm với phân trang và lọc
