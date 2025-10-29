@@ -83,6 +83,25 @@ const ProductApproval = () => {
         }
     };
 
+    const handleToggleActive = async (productId: number, currentStatus: boolean) => {
+        const newStatus = !currentStatus;
+        const confirmMessage = newStatus 
+            ? 'Bạn có chắc chắn muốn KÍCH HOẠT sản phẩm này?' 
+            : 'Bạn có chắc chắn muốn VÔ HIỆU HÓA sản phẩm này?';
+        
+        if (!window.confirm(confirmMessage)) {
+            return;
+        }
+
+        try {
+            await ProductApprovalServices.toggleProductActive(productId, newStatus);
+            alert(`${newStatus ? 'Kích hoạt' : 'Vô hiệu hóa'} sản phẩm thành công!`);
+            fetchPendingProducts();
+        } catch (err: any) {
+            alert(err?.response?.data?.message || 'Không thể thay đổi trạng thái sản phẩm');
+        }
+    };
+
     const handleViewDetail = (product: ProductApprovalItem) => {
         setSelectedProduct(product);
         setShowDetailModal(true);
@@ -230,6 +249,48 @@ const ProductApproval = () => {
             borderRadius: '6px',
             fontSize: '14px',
             cursor: 'pointer'
+        } as React.CSSProperties,
+        toggleSwitch: {
+            position: 'relative',
+            display: 'inline-block',
+            width: '52px',
+            height: '28px',
+            marginRight: '8px'
+        } as React.CSSProperties,
+        toggleInput: {
+            opacity: 0,
+            width: 0,
+            height: 0
+        } as React.CSSProperties,
+        slider: {
+            position: 'absolute',
+            cursor: 'pointer',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: '#ccc',
+            transition: '.4s',
+            borderRadius: '28px'
+        } as React.CSSProperties,
+        sliderBefore: {
+            position: 'absolute',
+            content: '""',
+            height: '20px',
+            width: '20px',
+            left: '4px',
+            bottom: '4px',
+            backgroundColor: 'white',
+            transition: '.4s',
+            borderRadius: '50%'
+        } as React.CSSProperties,
+        statusBadge: {
+            display: 'inline-block',
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '12px',
+            fontWeight: '500',
+            marginRight: '8px'
         } as React.CSSProperties
     };
 
@@ -312,6 +373,7 @@ const ProductApproval = () => {
                                         : ' ⇅'
                                 }
                             </th>
+                            <th style={styles.th}>Trạng thái</th>
                             <th style={styles.th}>Thao tác</th>
                         </tr>
                     </thead>

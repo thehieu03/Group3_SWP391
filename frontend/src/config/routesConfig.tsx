@@ -17,6 +17,12 @@ const routesConfig  =  {
     infoAccount:'/infoAccount',
     userProfile:'/userProfile',
     productApproval:'/admin/product-approval',
+    // Seller routes
+    sellerDashboard:'/seller/dashboard',
+    sellerProducts:'/seller/products',
+    sellerOrders:'/seller/orders',
+    sellerShopInfo:'/seller/shop-info',
+    sellerStatistics:'/seller/statistics',
     getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
     getProductUrl: (id: number) => `/product/${id}`,
     getCategoryProductsUrl: (id: number) => `/category/${id}`

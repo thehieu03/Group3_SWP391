@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.ModelRequest;
+using Mmo_Domain.ModelResponse;
 
 namespace Mmo_Api.Api;
 
@@ -154,6 +155,34 @@ public class ProductsController : ControllerBase
             }
 
             return Ok(new { message = "Product rejected successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Lấy danh sách sản phẩm của seller với phân trang, tìm kiếm, filter
+    /// </summary>
+    [HttpGet("seller/{shopId}")]
+    [Authorize(Policy = "SellerOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetSellerProducts(int shopId, [FromQuery] SellerProductRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            request.ShopId = shopId;
+            var result = await _productServices.GetSellerProductsAsync(request);
+            return Ok(result);
         }
         catch (Exception ex)
         {

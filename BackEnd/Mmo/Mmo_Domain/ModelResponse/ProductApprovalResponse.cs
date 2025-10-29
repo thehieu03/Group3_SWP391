@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Mmo_Domain.ModelResponse;
 
 public class ProductApprovalResponse

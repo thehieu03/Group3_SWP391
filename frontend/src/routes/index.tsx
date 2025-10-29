@@ -10,6 +10,9 @@ import Login from "../pages/UserAndSeller/Login/Login.tsx";
 import Register from "../pages/UserAndSeller/Register/Register.tsx";
 import AdminPanel from "../pages/Admin/AdminPanel.tsx";
 import ProductApproval from "../pages/Admin/ProductApproval.tsx";
+import SellerDashboard from "../pages/Seller/SellerDashboard.tsx";
+import SellerProductManagement from "../pages/Seller/SellerProductManagement.tsx";
+import SellerLayout from "../components/Layouts/SellerLayout/SellerLayout.tsx";
 import routesConfig from "../config/routesConfig.tsx";
 import type { User } from "../models/modelResponse/LoginResponse";
 type AppRoute = {
@@ -67,21 +70,33 @@ const privateRoutes: AppRoute[] = [
 
 const sellerRoutes: AppRoute[] = [
   {
-    path: '/seller/dashboard',
-    element: <div>Seller Dashboard - Quản lý shop</div>,
-    layout: DefaultLayout,
+    path: routesConfig.sellerDashboard,
+    element: <SellerDashboard />,
+    layout: SellerLayout,
     requiredRoles: ['SELLER'],
   },
   {
-    path: '/seller/products',
-    element: <div>Quản lý sản phẩm</div>,
-    layout: DefaultLayout,
+    path: routesConfig.sellerProducts,
+    element: <SellerProductManagement />,
+    layout: SellerLayout,
     requiredRoles: ['SELLER'],
   },
   {
-    path: '/seller/orders',
-    element: <div>Quản lý đơn hàng</div>,
-    layout: DefaultLayout,
+    path: routesConfig.sellerOrders,
+    element: <div style={{ padding: '24px' }}>Quản lý đơn hàng - Coming soon</div>,
+    layout: SellerLayout,
+    requiredRoles: ['SELLER'],
+  },
+  {
+    path: routesConfig.sellerShopInfo,
+    element: <div style={{ padding: '24px' }}>Thông tin shop - Coming soon</div>,
+    layout: SellerLayout,
+    requiredRoles: ['SELLER'],
+  },
+  {
+    path: routesConfig.sellerStatistics,
+    element: <div style={{ padding: '24px' }}>Thống kê - Coming soon</div>,
+    layout: SellerLayout,
     requiredRoles: ['SELLER'],
   },
 ];

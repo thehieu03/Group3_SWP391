@@ -70,6 +70,17 @@ class ProductApprovalServices {
             throw error;
         }
     }
+
+    // Thay đổi trạng thái active/inactive của sản phẩm
+    async toggleProductActive(productId: number, isActive: boolean): Promise<{ message: string }> {
+        try {
+            const response = await http.put(`/products/${productId}/toggle-active`, { isActive });
+            return response.data;
+        } catch (error) {
+            console.error(`Error toggling product ${productId} active status:`, error);
+            throw error;
+        }
+    }
 }
 
 export default new ProductApprovalServices();
