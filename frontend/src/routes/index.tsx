@@ -13,6 +13,7 @@ import routesConfig from "@config/routesConfig.ts";
 import type { User } from "@models/modelResponse/LoginResponse";
 import ChangePassword from "@pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
 import OrderUser from "@/pages/UserAndSeller/OrderUser/OrderUser";
+import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -38,6 +39,11 @@ const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.deposit,
     element: <Deposit />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.registerShop,
+    element: <RegisterShop />,
     layout: DefaultLayout,
   },
 ];

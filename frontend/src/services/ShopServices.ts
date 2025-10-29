@@ -1,4 +1,6 @@
 import { httpGet, httpPut } from "@utils/http.ts";
+import { httpPost } from "@utils/http.ts";
+import type { RegisterShopRequest } from "@models/modelRequest/RegisterShopRequest";
 
 export interface Shop {
   id: number;
@@ -27,6 +29,8 @@ export interface ShopForAdmin {
   ownerUsername: string | null;
   productCount: number;
   complaintCount: number;
+  identificationF?: string | null;
+  identificationB?: string | null;
 }
 
 class ShopServices {
@@ -214,6 +218,19 @@ class ShopServices {
   async getShopStatisticsAsync(): Promise<ShopStatistics> {
     const response = await httpGet<ShopStatistics>("shops/statistics");
     return response;
+  }
+
+  async registerShopAsync(request: RegisterShopRequest): Promise<void> {
+    const form = new FormData();
+    form.append("name", request.name);
+    form.append("phone", request.phone);
+    form.append("description", request.description);
+    form.append("identificationF", request.identificationF);
+    form.append("identificationB", request.identificationB);
+
+    await httpPost<void, FormData>("shops/register", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   }
 }
 

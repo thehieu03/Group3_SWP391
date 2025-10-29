@@ -5,6 +5,7 @@ const routesConfig = {
   productDetails: "/productDetails",
   categoryProducts: "/category",
   deposit: "/deposit",
+  registerShop: "/registerShop",
   register: "/register",
   account: "/account",
   paymentHistory: "/paymentHistory",

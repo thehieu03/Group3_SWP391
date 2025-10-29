@@ -2,6 +2,7 @@ import { type FC } from "react";
 import type { ShopForAdmin } from "@services/ShopServices.ts";
 import Button from "@components/Button/Button.tsx";
 import { formatDate } from "@/helpers";
+import Image from "@/components/Image";
 
 interface ViewShopModalProps {
   isOpen: boolean;
@@ -11,6 +12,16 @@ interface ViewShopModalProps {
 
 const ViewShopModal: FC<ViewShopModalProps> = ({ isOpen, onClose, shop }) => {
   if (!isOpen || !shop) return null;
+
+  const resolveImageSrc = (input?: string | null): string => {
+    if (!input) return "";
+    const trimmed = input.trim();
+    if (trimmed.startsWith("data:")) return trimmed;
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://"))
+      return trimmed;
+    // treat as base64 without prefix
+    return `data:image/jpeg;base64,${trimmed}`;
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -95,6 +106,43 @@ const ViewShopModal: FC<ViewShopModalProps> = ({ isOpen, onClose, shop }) => {
                     ? "Đã khóa"
                     : "Chờ duyệt"}
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Giấy tờ xác minh */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Giấy tờ xác minh
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mặt trước (Front)
+                </label>
+                <div className="w-full max-w-sm border rounded-md p-2 bg-white">
+                  <Image
+                    src={resolveImageSrc(
+                      shop.identificationF as unknown as string
+                    )}
+                    alt="Identification Front"
+                    className="w-full h-56 object-contain"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mặt sau (Back)
+                </label>
+                <div className="w-full max-w-sm border rounded-md p-2 bg-white">
+                  <Image
+                    src={resolveImageSrc(
+                      shop.identificationB as unknown as string
+                    )}
+                    alt="Identification Back"
+                    className="w-full h-56 object-contain"
+                  />
+                </div>
               </div>
             </div>
           </div>

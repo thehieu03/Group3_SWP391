@@ -42,7 +42,18 @@ public class MapperClass : Profile
         CreateMap<Order, OrderResponse>().ReverseMap();
         CreateMap<ProfileUpdateRequest, Account>().ReverseMap();
         CreateMap<Account, UserResponse>().ReverseMap();
-        CreateMap<Shop, ShopResponse>().ReverseMap();
+        CreateMap<Shop, ShopResponse>()
+            .ForMember(d => d.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(d => d.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(d => d.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(d => d.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(d => d.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(d => d.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(d => d.OwnerUsername, opt => opt.MapFrom(src => src.Account != null ? src.Account.Username : null))
+            .ForMember(d => d.ProductCount, opt => opt.MapFrom(src => src.Products != null ? src.Products.Count : 0))
+            .ForMember(d => d.ComplaintCount, opt => opt.MapFrom(src => src.Replies != null ? src.Replies.Count : 0))
+            .ForMember(d => d.IdentificationF, opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationF : null))
+            .ForMember(d => d.IdentificationB, opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationB : null));
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
         CreateMap<RegisterRequest, Account>().ReverseMap();
         CreateMap<Order, OrderUserResponse>()
@@ -65,10 +76,5 @@ public class MapperClass : Profile
             .ForMember(d => d.BuyerName, o => o.MapFrom(src => src.Account!.Username))
             .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity));
         CreateMap<Feedback, FeedbackRequest>().ReverseMap();
-        CreateMap<RegisterWithGoogleRequest, Account>()
-            .ForMember(d => d.GoogleId, o => o.MapFrom(src => src.GoogleId))
-            .ForMember(d => d.Email, o => o.MapFrom(src => src.Email))
-            .ForMember(d => d.Image, o => o.MapFrom(src => HelperImage.DownloadImageFromUrlAsync(src.Image)))
-            .ForMember(d => d.Username, o => o.MapFrom(src => src.Username));
     }
 }

@@ -6,11 +6,13 @@ public class ShopController : ControllerBase
 {
     private readonly IShopServices _shopServices;
     private readonly IMapper _mapper;
+    private readonly IAccountServices _accountServices;
 
-    public ShopController(IShopServices shopServices, IMapper mapper)
+    public ShopController(IShopServices shopServices, IMapper mapper, IAccountServices accountServices)
     {
         _shopServices = shopServices;
         _mapper = mapper;
+        _accountServices = accountServices;
     }
 
     [HttpGet]
@@ -265,6 +267,72 @@ public class ShopController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+        }
+    }
+
+    [HttpPost("register")]
+    [Authorize]
+    [RequestSizeLimit(20_000_000)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RegisterShop(
+        [FromForm] string name,
+        [FromForm] string phone,
+        [FromForm] string description,
+        [FromForm] IFormFile identificationF,
+        [FromForm] IFormFile identificationB)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(description))
+                return BadRequest(new { message = "Thiếu thông tin bắt buộc" });
+
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+                return Unauthorized(new { message = "Không xác thực được người dùng" });
+
+            var allShops = await _shopServices.GetAllAsync();
+            if (allShops.Any(s => s.AccountId == userId))
+                return BadRequest(new { message = "Bạn đã có shop, không thể đăng ký thêm" });
+
+            var account = await _accountServices.GetByIdAsync(userId);
+            if (account == null) return BadRequest(new { message = "Tài khoản không tồn tại" });
+
+            if (identificationF == null || identificationB == null)
+                return BadRequest(new { message = "Cần tải lên đủ 2 ảnh CMND/CCCD" });
+
+            await using var msF = new MemoryStream();
+            await identificationF.CopyToAsync(msF);
+            await using var msB = new MemoryStream();
+            await identificationB.CopyToAsync(msB);
+
+            account.Phone = phone.Trim();
+            account.IdentificationF = msF.ToArray();
+            account.IdentificationB = msB.ToArray();
+            account.UpdatedAt = DateTime.UtcNow;
+            var updated = await _accountServices.UpdateAsync(account);
+            if (!updated) return StatusCode(500, new { message = "Cập nhật tài khoản thất bại" });
+
+            var shop = new Shop
+            {
+                Name = name.Trim(),
+                Description = description.Trim(),
+                AccountId = userId,
+                Status = "PENDING",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            var addResult = await _shopServices.AddAsync(shop);
+            if (addResult <= 0) return StatusCode(500, new { message = "Tạo shop thất bại" });
+
+            return Ok(new { message = "Đăng ký shop thành công, chờ duyệt", shopId = shop.Id });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Lỗi hệ thống: {ex.Message}" });
         }
     }
 }

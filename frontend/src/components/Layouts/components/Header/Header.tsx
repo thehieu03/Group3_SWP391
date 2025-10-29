@@ -53,7 +53,7 @@ const Header = () => {
           <p>Thứ 2 - Chủ nhật: 8h - 21h</p>
         </div>
         <div className="text-red-400 cursor-pointer">
-          <Button to="/registerShop">Đăng kí bán hàng</Button>
+          <Button to={routesConfig.registerShop}>Đăng kí bán hàng</Button>
         </div>
       </div>
       <div className="h-[54px] w-full bg-[var(--green-color)]">
