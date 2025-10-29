@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBox } from "@fortawesome/free-solid-svg-icons";
 import Image from "../Image";
-import routesConfig from "@/config/routesConfig";
+import routesConfig from "@config/routesConfig.ts";
 import { orderServices } from "@services/OrderServices.ts";
 import type { OrderResponse } from "@/models/modelResponse/OrderResponse";
 import { useAuth } from "@/hooks/useAuth";

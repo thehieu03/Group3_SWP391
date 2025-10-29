@@ -4,5 +4,6 @@ public class AccountRoleServices : BaseServices<Accountrole>, IAccountRoleServic
 {
     public AccountRoleServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 }

@@ -11,7 +11,7 @@ import {
   getStatusColor,
   getStatusText,
 } from "@/helpers";
-import routesConfig from "@/config/routesConfig";
+import routesConfig from "@config/routesConfig.ts";
 import useDebounce from "@/hooks/useDebounce";
 import Button from "@/components/Button/Button";
 

@@ -37,7 +37,6 @@ const ShopFilters: FC<ShopFiltersProps> = ({
               type="text"
               value={shopNameSearch}
               onChange={(e) => {
-                // Trim leading spaces only
                 const value = e.target.value;
                 if (value.length === 0 || value[0] !== " ") {
                   setShopNameSearch(value);

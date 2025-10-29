@@ -9,6 +9,7 @@ public class ProductServices : BaseServices<Product>, IProductServices
 {
     public ProductServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<Product>> GetAllWithRelatedAsync()

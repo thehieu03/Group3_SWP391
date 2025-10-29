@@ -22,5 +22,7 @@
         <Using Include="Mmo_Domain.IUnit"/>
         <Using Include="Mmo_Domain.Models"/>
         <Using Include="Microsoft.EntityFrameworkCore"/>
+        <Using Include="Mmo_Domain.ModelResponse"/>
+        <Using Include="Mmo_Domain.ModelRequest"/>
     </ItemGroup>
 </Project>

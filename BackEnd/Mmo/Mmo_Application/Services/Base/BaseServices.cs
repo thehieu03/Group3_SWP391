@@ -2,7 +2,7 @@ namespace Mmo_Application.Services;
 
 public class BaseServices<T> : IBaseServices<T> where T : class
 {
-    protected readonly IUnitOfWork _unitOfWork;
+    protected IUnitOfWork _unitOfWork;
 
     public BaseServices(IUnitOfWork unitOfWork)
     {
@@ -48,7 +48,7 @@ public class BaseServices<T> : IBaseServices<T> where T : class
     {
         if (id == null || id <= 0)
             return null;
-        
+
         return await _unitOfWork.GenericRepository<T>().GetByIdAsync(id.Value);
     }
 

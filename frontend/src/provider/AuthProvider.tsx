@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const userData = await authServices.getCurrentUserAsync();
           setUser(userData);
           setIsLoggedIn(true);
-        } catch (error) {
+        } catch  {
           logout();
         }
       }

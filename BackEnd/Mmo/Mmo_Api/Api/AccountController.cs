@@ -340,11 +340,13 @@ public class AccountController : ControllerBase
         }
     }
 
-    [HttpPost("loginOrRegisterGoogle")]
+    [HttpPost("google")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult LoginOrRegisterGoogle()
+    public IActionResult LoginOrRegisterGoogle([FromBody] RegisterWithGoogleRequest request)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
         return Ok();
     }
 }

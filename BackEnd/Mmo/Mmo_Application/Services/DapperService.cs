@@ -1,5 +1,4 @@
 using Dapper;
-using Mmo_Domain.Models;
 using System.Data;
 
 namespace Mmo_Application.Services;
@@ -54,17 +53,18 @@ public class DapperService : IDapperService
 
 
         var parameters = roleIds.Select(roleId => new { accountId, roleId }).ToList();
-        
+
         var sql = @"
             INSERT IGNORE INTO accountroles (accountId, roleId) 
             VALUES (@accountId, @roleId)";
 
         Console.WriteLine($"[DEBUG] InsertAccountRoles SQL: {sql}");
-        Console.WriteLine($"[DEBUG] InsertAccountRoles Parameters: accountId={accountId}, roleIds=[{string.Join(", ", roleIds)}]");
-        
+        Console.WriteLine(
+            $"[DEBUG] InsertAccountRoles Parameters: accountId={accountId}, roleIds=[{string.Join(", ", roleIds)}]");
+
         var affectedRows = await _connection.ExecuteAsync(sql, parameters);
         Console.WriteLine($"[DEBUG] InsertAccountRoles affected rows: {affectedRows}");
-        
+
         return affectedRows > 0;
     }
 
@@ -82,31 +82,25 @@ public class DapperService : IDapperService
 
         var parameters = new DynamicParameters();
         parameters.Add("@accountId", accountId);
-        for (int i = 0; i < roleIds.Count; i++)
-        {
-            parameters.Add($"@roleId{i}", roleIds[i]);
-        }
+        for (var i = 0; i < roleIds.Count; i++) parameters.Add($"@roleId{i}", roleIds[i]);
 
         Console.WriteLine($"[DEBUG] DeleteAccountRoles SQL: {sql}");
-        Console.WriteLine($"[DEBUG] DeleteAccountRoles Parameters: accountId={accountId}, roleIds=[{string.Join(", ", roleIds)}]");
-        
+        Console.WriteLine(
+            $"[DEBUG] DeleteAccountRoles Parameters: accountId={accountId}, roleIds=[{string.Join(", ", roleIds)}]");
+
         var affectedRows = await _connection.ExecuteAsync(sql, parameters);
         Console.WriteLine($"[DEBUG] DeleteAccountRoles affected rows: {affectedRows}");
-        
-        return affectedRows >= 0; // >= 0 vì có thể không có role nào để xóa
+
+        return affectedRows >= 0;
     }
 
     public async Task<bool> ReplaceAccountRolesAsync(int accountId, List<int> newRoleIds)
     {
-
         var deleteSql = "DELETE FROM accountroles WHERE accountId = @accountId";
         await _connection.ExecuteAsync(deleteSql, new { accountId });
 
 
-        if (newRoleIds.Any())
-        {
-            return await InsertAccountRolesAsync(accountId, newRoleIds);
-        }
+        if (newRoleIds.Any()) return await InsertAccountRolesAsync(accountId, newRoleIds);
 
         return true;
     }
@@ -119,6 +113,6 @@ public class DapperService : IDapperService
             WHERE accountId = @accountId";
 
         var affectedRows = await _connection.ExecuteAsync(sql, new { accountId });
-        return true; // Luôn trả về true vì có thể user không có shop
+        return true;
     }
 }

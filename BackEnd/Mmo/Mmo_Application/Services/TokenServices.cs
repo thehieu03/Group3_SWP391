@@ -21,6 +21,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
         _configuration = configuration;
         _accountServices = accountServices;
         _roleServices = roleServices;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponse> GenerateTokensAsync(Account account)

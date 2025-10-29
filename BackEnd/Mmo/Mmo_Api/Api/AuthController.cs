@@ -29,8 +29,7 @@ public class AuthController : ControllerBase
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var account = await _accountServices.GetByUsernameAsync(loginRequest.Username)
-                          ?? await _accountServices.GetByEmailAsync(loginRequest.Username);
+            var account =  await _accountServices.GetByEmailAsync(loginRequest.Username);
 
             if (account == null) return Unauthorized("Invalid username or password");
 

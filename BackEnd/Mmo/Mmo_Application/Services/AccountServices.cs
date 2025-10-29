@@ -1,8 +1,3 @@
-using BCrypt.Net;
-using Mmo_Domain.Models;
-using Mmo_Domain.ModelRequest;
-using Mmo_Domain.ModelResponse;
-
 namespace Mmo_Application.Services;
 
 public class AccountServices : BaseServices<Account>, IAccountServices
@@ -15,6 +10,7 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     {
         _roleServices = roleServices;
         _dapperService = dapperService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Account?> GetByUsernameAsync(string username)
@@ -26,6 +22,7 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     public async Task<Account?> GetByEmailAsync(string email)
     {
         var accounts = await GetAllAsync();
+
         return accounts.FirstOrDefault(a => a.Email == email);
     }
 
@@ -131,7 +128,6 @@ public class AccountServices : BaseServices<Account>, IAccountServices
 
     public async Task<bool> UpdateAccountRolesAsync(int userId, List<int> roleIds)
     {
-
         if (roleIds == null || !roleIds.Any()) return true;
 
 
@@ -153,7 +149,6 @@ public class AccountServices : BaseServices<Account>, IAccountServices
 
     public async Task<bool> UpdateAccountRolesAdvancedAsync(int userId, List<int> roleIds, bool replaceAll = false)
     {
-
         var account = await GetByIdAsync(userId);
         if (account == null) return false;
 
@@ -202,7 +197,6 @@ public class AccountServices : BaseServices<Account>, IAccountServices
 
     public async Task<bool> RemoveAccountRolesAsync(int userId, List<int> roleIds)
     {
-
         var account = await GetByIdAsync(userId);
         if (account == null) return false;
 
@@ -213,7 +207,7 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         var currentRoleIds = currentAccountRoles.Select(ar => ar.RoleId).ToList();
 
 
-        var hasSellerRole = roleIds.Contains(2); // Giả sử roleId = 2 là seller role
+        var hasSellerRole = roleIds.Contains(2);
 
 
         var result = await _dapperService.DeleteAccountRolesAsync(userId, roleIds);
@@ -292,5 +286,11 @@ public class AccountServices : BaseServices<Account>, IAccountServices
             Customers = customers,
             Sellers = sellers
         };
+    }
+
+    public async Task<bool> CheckAccountByGoogleId(string googleId)
+    {
+        var accounts = await GetAllAsync();
+        return accounts.Any(a => a.GoogleId == googleId);
     }
 }

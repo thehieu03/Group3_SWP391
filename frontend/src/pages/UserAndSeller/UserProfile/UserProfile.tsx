@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import routesConfig from "../../../config/routesConfig";
+import routesConfig from "@config/routesConfig.ts";
 import { orderServices } from "@services/OrderServices.ts";
 import { userServices } from "@services/UserServices.ts";
 import type { OrderResponse } from "../../../models/modelResponse/OrderResponse";

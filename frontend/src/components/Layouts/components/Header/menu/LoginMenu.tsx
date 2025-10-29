@@ -1,13 +1,14 @@
 import { type ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@components/Button/Button.tsx";
-import routesConfig from "@config/routesConfig.tsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import routesConfig from "@config/routesConfig.ts";
 import { authServices } from "@services/AuthServices.ts";
 import type { LoginRequest } from "@models/modelRequest/LoginRequest";
 import { useAuth } from "@hooks/useAuth.tsx";
 import Cookies from "js-cookie";
+import { useGoogleLogin } from "@react-oauth/google";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 const LoginMenu = () => {
   const navigate = useNavigate();
@@ -72,7 +73,54 @@ const LoginMenu = () => {
     }
   };
 
-  const handleGoogleLogin = () => {};
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        setIsLoading(true);
+        const googleUserInfo = await fetch(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`,
+            },
+          }
+        ).then((res) => res.json());
+        const response = await authServices.loginOrRegisterWithGoogleAsync({
+          id: googleUserInfo.sub,
+          email: googleUserInfo.email,
+          name: googleUserInfo.name,
+          picture: googleUserInfo.picture,
+        });
+
+        Cookies.set("accessToken", response.accessToken, {
+          expires: 7,
+          secure: true,
+          sameSite: "strict",
+        });
+        Cookies.set("refreshToken", response.refreshToken, {
+          expires: 30,
+          secure: true,
+          sameSite: "strict",
+        });
+
+        login(response.user);
+
+        if (response.user.roles.includes("ADMIN")) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate(routesConfig.home);
+        }
+      } catch (error) {
+        console.error("Google login failed:", error);
+        setError("Đăng nhập với Google thất bại");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: () => {
+      setError("Đăng nhập với Google thất bại");
+    },
+  });
 
   return (
     <div className="bg-white shadow-md rounded-md p-4 w-[220px]">
@@ -119,12 +167,13 @@ const LoginMenu = () => {
         {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>
       <Button
-        className="w-full bg-blue-500 text-white py-1 mt-2 rounded text-center"
-        leftIcon={<FontAwesomeIcon icon={faGoogle} />}
-        onClick={handleGoogleLogin}
+        className="w-full bg-blue-500 text-white py-1 mt-2 rounded text-center flex items-center justify-center gap-2"
+        onClick={() => handleGoogleLogin()}
       >
-        Google Login
+        <FontAwesomeIcon icon={faGoogle} />
+        Đăng nhập với Google
       </Button>
+
       <div className="text-center mt-2 text-sm">
         <Button
           to={routesConfig.register}

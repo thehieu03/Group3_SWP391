@@ -7,7 +7,7 @@ import { categoryServices } from "@services/CategoryServices.ts";
 import type { ProductResponse } from "../../../models/modelResponse/ProductResponse";
 import type { CategoriesResponse } from "../../../models/modelResponse/CategoriesResponse";
 import Image from "../../../components/Image";
-import routesConfig from "../../../config/routesConfig";
+import routesConfig from "@config/routesConfig.ts";
 
 const CategoryProducts: React.FC = () => {
   const { id } = useParams<{ id: string }>();

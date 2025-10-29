@@ -10,6 +10,7 @@ public class ShopServices : BaseServices<Shop>, IShopServices
 {
     public ShopServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<Shop>> GetAllWithDetailsAsync()
@@ -23,16 +24,10 @@ public class ShopServices : BaseServices<Shop>, IShopServices
     {
         try
         {
-            if (!IsValidStatus(status))
-            {
-                return false;
-            }
+            if (!IsValidStatus(status)) return false;
 
             var shop = await GetByIdAsync(shopId);
-            if (shop == null)
-            {
-                return false;
-            }
+            if (shop == null) return false;
 
             shop.Status = status;
             shop.UpdatedAt = DateTime.Now;
@@ -41,8 +36,8 @@ public class ShopServices : BaseServices<Shop>, IShopServices
                 .Get(p => p.ShopId == shopId)
                 .ToListAsync();
 
-            bool shouldActivateProducts = status == "APPROVED";
-            
+            var shouldActivateProducts = status == "APPROVED";
+
             foreach (var product in products)
             {
                 product.IsActive = shouldActivateProducts;
@@ -51,8 +46,10 @@ public class ShopServices : BaseServices<Shop>, IShopServices
 
             await _unitOfWork.SaveChangeAsync();
 
-            Console.WriteLine($"[AUDIT] Shop {shopId} ({shop.Name}) status changed to {status} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            Console.WriteLine($"[AUDIT] {products.Count} products of shop {shopId} isActive set to {shouldActivateProducts}");
+            Console.WriteLine(
+                $"[AUDIT] Shop {shopId} ({shop.Name}) status changed to {status} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            Console.WriteLine(
+                $"[AUDIT] {products.Count} products of shop {shopId} isActive set to {shouldActivateProducts}");
 
             return true;
         }

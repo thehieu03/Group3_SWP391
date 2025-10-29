@@ -20,7 +20,7 @@ import SupportTickets from "./SupportTickets";
 import AdminProductManagement from "./AdminProductManagement";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import routesConfig from "../../config/routesConfig";
+import routesConfig from "@config/routesConfig.ts";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");

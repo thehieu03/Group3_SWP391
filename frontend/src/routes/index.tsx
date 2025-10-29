@@ -9,7 +9,7 @@ import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
 import AdminPanel from "@pages/Admin/AdminPanel.tsx";
 import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
-import routesConfig from "@config/routesConfig.tsx";
+import routesConfig from "@config/routesConfig.ts";
 import type { User } from "@models/modelResponse/LoginResponse";
 import ChangePassword from "@pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
 import OrderUser from "@/pages/UserAndSeller/OrderUser/OrderUser";

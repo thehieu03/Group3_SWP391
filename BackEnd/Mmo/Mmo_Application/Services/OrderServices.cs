@@ -4,6 +4,7 @@ public class OrderServices : BaseServices<Order>, IOrderServices
 {
     public OrderServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<Order>> GetUserOrdersAsync(int accountId)
@@ -32,7 +33,7 @@ public class OrderServices : BaseServices<Order>, IOrderServices
         var feedback = await _unitOfWork.GenericRepository<Feedback>()
             .Get(f => f.OrderId == orderId)
             .FirstOrDefaultAsync();
-        
+
         return feedback != null;
     }
 }

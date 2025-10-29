@@ -1,11 +1,11 @@
 import { type FC, useEffect, useState } from "react";
-import type { CategoriesResponse } from "../../../models/modelResponse/CategoriesResponse";
+import type { CategoriesResponse } from "@models/modelResponse/CategoriesResponse.ts";
 import { categoryServices } from "@services/CategoryServices.ts";
 import TippyHeadless from "@tippyjs/react/headless";
 import Tippy from "@tippyjs/react";
-import type { Tools } from "../../../models/Tools.tsx";
-import Button from "../../Button/Button.tsx";
-import routesConfig from "../../../config/routesConfig.tsx";
+import type { Tools } from "@models/Tools.ts";
+import Button from "@components/Button/Button.tsx";
+import routesConfig from "@config/routesConfig.ts";
 import { useNavigate } from "react-router-dom";
 
 const categoryNameToSlug: Record<string, string> = {
