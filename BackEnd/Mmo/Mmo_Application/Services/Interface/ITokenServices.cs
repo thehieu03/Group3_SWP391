@@ -1,6 +1,3 @@
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-
 namespace Mmo_Application.Services.Interface;
 
 public interface ITokenServices: IBaseServices<Token>

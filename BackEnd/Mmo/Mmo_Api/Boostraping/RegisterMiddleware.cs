@@ -1,16 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Mmo_Application.Services;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.IUnit;
-using Mmo_Domain.Models;
-using Mmo_Infrastructure.Unit;
-using MySqlConnector;
-using System.Data;
-
 namespace Mmo_Api.Boostraping;
 
 public static class RegisterMiddleware
@@ -56,10 +43,9 @@ public static class RegisterMiddleware
         {
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("ADMIN"));
-            
-            options.AddPolicy("UserOrAdminSeller", policy =>
-                policy.RequireRole("USER", "ADMIN","SELLER"));
 
+            options.AddPolicy("UserOrAdminSeller", policy =>
+                policy.RequireRole("USER", "ADMIN", "SELLER"));
         });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
@@ -82,7 +68,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
-        
+
 
         builder.Services.AddScoped<IDbConnection>(provider =>
         {

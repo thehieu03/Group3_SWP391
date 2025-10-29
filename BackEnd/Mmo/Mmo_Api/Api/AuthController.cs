@@ -1,7 +1,3 @@
-using Mmo_Application.Services.Interface;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-
 namespace Mmo_Api.Api;
 
 [Route("api/auth")]

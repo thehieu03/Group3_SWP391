@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import routesConfig from "@config/routesConfig.ts";
 import { orderServices } from "@services/OrderServices.ts";
 import { userServices } from "@services/UserServices.ts";
-import type { OrderResponse } from "../../../models/modelResponse/OrderResponse";
-import Image from "../../../components/Image";
-import Button from "../../../components/Button/Button.tsx";
+import type { OrderUserResponse } from "@/models/modelResponse/OrderUserResponse";
+import Image from "@/components/Image";
+import Button from "@/components/Button/Button.tsx";
 
 const UserProfile: React.FC = () => {
   const { user, isLoggedIn, loading } = useAuth();
@@ -19,7 +19,7 @@ const UserProfile: React.FC = () => {
   });
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [orders, setOrders] = useState<OrderResponse[]>([]);
+  const [orders, setOrders] = useState<OrderUserResponse[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{
@@ -48,7 +48,7 @@ const UserProfile: React.FC = () => {
       if (isLoggedIn) {
         try {
           setOrdersLoading(true);
-          const userOrders = await orderServices.getMyOrdersAsync();
+          const userOrders = await orderServices.getOrdersUserAsync();
           setOrders(userOrders);
         } catch {
           setOrders([]);
@@ -170,10 +170,7 @@ const UserProfile: React.FC = () => {
     const successfulOrders = orders.filter(
       (order) => order.status === "completed" || order.status === "success"
     ).length;
-    const totalSpent = orders.reduce(
-      (sum, order) => sum + order.totalAmount,
-      0
-    );
+    const totalSpent = orders.reduce((sum, order) => sum + order.totalPrice, 0);
 
     return {
       totalOrders,

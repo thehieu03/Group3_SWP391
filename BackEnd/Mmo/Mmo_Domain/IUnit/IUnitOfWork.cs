@@ -1,5 +1,3 @@
-using Mmo_Domain.IRepository;
-
 namespace Mmo_Domain.IUnit;
 
 public interface IUnitOfWork

@@ -1,12 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.Models;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.ModelRequest;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-
 namespace Mmo_Api.Api;
 
 [Route("api/shops")]
@@ -184,7 +175,6 @@ public class ShopController : ControllerBase
     {
         try
         {
-
             if (request == null) return BadRequest(new { message = "Request body cannot be null" });
 
             if (request.ShopId != shopId)

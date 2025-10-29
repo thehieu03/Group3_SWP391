@@ -1,8 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Mmo_Application.Services.Interface;
-
 namespace Mmo_Api.Api;
 
 [Route("api/feedbacks")]

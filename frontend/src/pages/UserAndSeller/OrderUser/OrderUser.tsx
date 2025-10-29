@@ -51,7 +51,6 @@ const OrderUser = () => {
         setSearchLoading(true);
         setError(null);
         setSearchMessage(null);
-
         // Fetch both orders and count in parallel
         const [data, count] = await Promise.all([
           orderServices.getOrdersUserAsync(

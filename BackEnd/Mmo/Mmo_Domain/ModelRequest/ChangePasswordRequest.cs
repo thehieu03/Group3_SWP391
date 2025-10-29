@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
 namespace Mmo_Domain.ModelRequest;
 
 public class ChangePasswordRequest

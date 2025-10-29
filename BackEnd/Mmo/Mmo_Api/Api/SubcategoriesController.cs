@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
-using Mmo_Application.Services.Interface;
-
 namespace Mmo_Api.Api;
 
 [Route("api/subcategories")]
@@ -25,10 +21,7 @@ public class SubcategoriesController : ControllerBase
     public async Task<ActionResult<IEnumerable<SubcategoryResponse>>> GetAll([FromQuery] int? categoryId)
     {
         var subcategories = await _subcategoryServices.GetAllAsync();
-        if (categoryId.HasValue)
-        {
-            subcategories = subcategories.Where(s => s.CategoryId == categoryId.Value);
-        }
+        if (categoryId.HasValue) subcategories = subcategories.Where(s => s.CategoryId == categoryId.Value);
 
         if (!subcategories.Any()) return NotFound();
 
@@ -36,5 +29,3 @@ public class SubcategoriesController : ControllerBase
         return Ok(dataResponse);
     }
 }
-
-
