@@ -5,6 +5,7 @@ import type {
   AdminProductListResponse,
 } from "@/models/modelResponse/AdminProductResponse";
 import type { ProductListRequest } from "../../models/modelRequest/ProductRequest";
+import { formatPrice, formatDateOnly } from "@/helpers";
 
 const AdminProductManagement = () => {
   const [products, setProducts] = useState<AdminProductResponse[]>([]);
@@ -112,17 +113,6 @@ const AdminProductManagement = () => {
         // Failed to delete product
       }
     }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
   return (
@@ -401,7 +391,7 @@ const AdminProductManagement = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(product.createdAt)}
+                        {formatDateOnly(product.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">

@@ -17,11 +17,35 @@ export const formatPrice = (price: number): string => {
 };
 
 /**
- * Format date to Vietnamese locale format
+ * Format currency (alias for formatPrice)
+ * @param amount - The amount to format
+ * @returns Formatted currency string in VND
+ */
+export const formatCurrency = (amount: number): string => {
+  return formatPrice(amount);
+};
+
+/**
+ * Format date to Vietnamese locale format with full details
  * @param dateString - The date string to format
  * @returns Formatted date string in Vietnamese locale
  */
 export const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+/**
+ * Format date to Vietnamese locale format (shorter version)
+ * @param dateString - The date string to format
+ * @returns Formatted date string in Vietnamese locale
+ */
+export const formatDateShort = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("vi-VN", {
     year: "numeric",
     month: "short",
@@ -144,11 +168,11 @@ export const formatNumber = (number: number): string => {
 };
 
 /**
- * Format date to short format (only date, no time)
+ * Format date to date-only format (no time)
  * @param dateString - The date string to format
- * @returns Short formatted date string
+ * @returns Formatted date string (date only)
  */
-export const formatDateShort = (dateString: string): string => {
+export const formatDateOnly = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("vi-VN", {
     year: "numeric",
     month: "short",

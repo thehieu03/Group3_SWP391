@@ -5,7 +5,7 @@ import { FaSearch } from "react-icons/fa";
 import TippyHeadless from "@tippyjs/react/headless";
 import { useDebounce } from "../../hooks";
 import { productServices } from "@services/ProductServices.ts";
-import type { ProductResponse } from "../../models/modelResponse/ProductResponse";
+import type { ProductResponse } from "@/models/modelResponse/ProductResponse";
 import HomeSearchItem from "./HomeSearchItem";
 import { useNavigate } from "react-router-dom";
 import routesConfig from "../../config/routesConfig";

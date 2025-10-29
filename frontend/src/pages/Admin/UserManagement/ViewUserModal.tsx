@@ -5,6 +5,8 @@ import {
   getRoleDisplayName,
   getActiveStatusTextColor,
   getActiveStatusText,
+  formatCurrency,
+  formatDate,
 } from "@/helpers";
 
 interface ViewUserModalProps {
@@ -19,23 +21,6 @@ const ViewUserModal: React.FC<ViewUserModalProps> = ({
   user,
 }) => {
   if (!isOpen || !user) return null;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

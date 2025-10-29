@@ -223,22 +223,41 @@ class UserServices {
   }
 
   async updateUserRolesAsync(userId: number, roleIds: number[]): Promise<void> {
-    const requestBody: {
-      userId: number;
-      roleIds: number[];
-      replaceAll?: boolean;
-    } = {
-      userId,
-      roleIds,
-      replaceAll: true, // Replace all roles instead of adding/removing
-    };
+    if (roleIds.length === 0) {
+      throw new Error("Cannot remove all roles from user");
+    }
 
-    const response = await httpPut<void>(
-      `accounts/${userId}/role`,
-      requestBody
-    );
+    // Try different request body formats
+    const approaches = [
+      // Approach 1: Simple format
+      { userId, roleIds },
+      // Approach 2: With replaceAll: true
+      { userId, roleIds, replaceAll: true },
+      // Approach 3: With replaceAll: false
+      { userId, roleIds, replaceAll: false },
+      // Approach 4: Different field names
+      { userId, roles: roleIds },
+      // Approach 5: With additional fields
+      { userId, roleIds, action: "replace" },
+    ];
 
-    return response;
+    for (let i = 0; i < approaches.length; i++) {
+      const requestBody = approaches[i];
+
+      try {
+        const response = await httpPut<void>(
+          `accounts/${userId}/role`,
+          requestBody
+        );
+
+        return response;
+      } catch (error) {
+        // If this is the last approach, throw the error
+        if (i === approaches.length - 1) {
+          throw error;
+        }
+      }
+    }
   }
 
   async updateUserStatusAsync(

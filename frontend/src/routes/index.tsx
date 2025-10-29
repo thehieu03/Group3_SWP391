@@ -2,6 +2,7 @@ import type { FC, ReactNode } from "react";
 import Home from "@pages/UserAndSeller/Home/Home.tsx";
 import DefaultLayout from "@components/Layouts/DefaultLayout/DefaultLayout.tsx";
 import HeaderAndFooter from "@components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
+import AdminLayoutNoHeader from "@components/Layouts/AdminLayoutNoHeader.tsx";
 import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
 import CategoryProducts from "@pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
 import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
@@ -92,13 +93,13 @@ const adminRoutes: AppRoute[] = [
   {
     path: "/admin/dashboard",
     element: <AdminPanel />,
-    layout: DefaultLayout,
+    layout: AdminLayoutNoHeader,
     requiredRoles: ["ADMIN"],
   },
   {
     path: "/admin/products",
     element: <AdminProductManagement />,
-    layout: DefaultLayout,
+    layout: AdminLayoutNoHeader,
     requiredRoles: ["ADMIN"],
   },
 ];

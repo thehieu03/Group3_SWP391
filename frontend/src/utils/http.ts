@@ -4,13 +4,6 @@ import Cookies from "js-cookie";
 const http = axios.create({ baseURL: "/api/" });
 http.interceptors.request.use(
   (config) => {
-    console.log("HTTP Request:", {
-      method: config.method,
-      url: config.url,
-      baseURL: config.baseURL,
-      params: config.params,
-    });
-
     const token = Cookies.get("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -19,29 +12,14 @@ http.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error("HTTP Request Error:", error);
     return Promise.reject(error);
   }
 );
 http.interceptors.response.use(
   (response) => {
-    console.log("HTTP Response:", {
-      url: response.config.url,
-      status: response.status,
-      data: response.data,
-    });
     return response;
   },
   async (error) => {
-    console.error("HTTP Error:", {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      message: error.message,
-    });
-
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

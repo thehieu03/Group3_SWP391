@@ -164,8 +164,8 @@ const OrderUser = () => {
       );
 
       handleCloseModal();
-    } catch (err) {
-      console.error("Error submitting feedback:", err);
+    } catch {
+      // Error submitting feedback
     } finally {
       setIsSubmitting(false);
     }

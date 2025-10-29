@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { SupportTicketResponse } from "../../models/modelResponse/SupportTicketResponse";
 import Button from "@components/Button/Button.tsx";
+import { formatDate } from "@/helpers";
 
 const SupportTickets = () => {
   const [tickets, setTickets] = useState<SupportTicketResponse[]>([]);
@@ -63,10 +64,6 @@ const SupportTickets = () => {
       ticket.email.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("vi-VN");
-  };
 
   const handleReply = () => {};
 

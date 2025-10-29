@@ -63,8 +63,8 @@ const UserManagement = () => {
       try {
         const stats = await userServices.getUserStatisticsAsync();
         setStatistics(stats);
-      } catch (err) {
-        console.error("Error loading statistics:", err);
+      } catch {
+        // Error loading statistics, continue with default values
       }
     };
 
@@ -178,31 +178,48 @@ const UserManagement = () => {
 
       await userServices.updateUserRolesAsync(editingUser.id, roleIds);
 
-      // Refresh statistics
-      const stats = await userServices.getUserStatisticsAsync();
-      setStatistics(stats);
-
-      const result = await userServices.getUsersPagedAsync(
-        currentPage,
-        pageSize,
-        undefined,
-        filterRole,
-        sortOrder,
-        debouncedUsernameSearch,
-        debouncedEmailSearch,
-        showBannedUsers ? false : true
-      );
-
-      setUsers(result.items);
-      setTotalUsers(result.total);
-
+      // Close modal first
       setShowEditModal(false);
       setEditingUser(null);
+
+      // Refresh data in background (don't wait for it)
+      setTimeout(async () => {
+        try {
+          // Refresh statistics
+          const stats = await userServices.getUserStatisticsAsync();
+          setStatistics(stats);
+        } catch {
+          // Error refreshing statistics
+        }
+
+        try {
+          // Refresh users list
+          const result = await userServices.getUsersPagedAsync(
+            currentPage,
+            pageSize,
+            undefined,
+            filterRole,
+            sortOrder,
+            debouncedUsernameSearch,
+            debouncedEmailSearch,
+            showBannedUsers ? false : true
+          );
+
+          setUsers(result.items);
+          setTotalUsers(result.total);
+        } catch {
+          // Error refreshing users list
+        }
+      }, 100); // Small delay to let the modal close first
     } catch (err: unknown) {
       const apiError = err as ApiError;
-      const errorMessage =
-        apiError?.response?.data?.message ||
-        (err instanceof Error ? err.message : "Không thể cập nhật người dùng");
+      let errorMessage = "Không thể cập nhật người dùng";
+
+      if (apiError?.response?.data?.message) {
+        errorMessage = apiError.response.data.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
 
       setError(errorMessage);
     } finally {

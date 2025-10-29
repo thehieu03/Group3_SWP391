@@ -13,14 +13,6 @@ const UserStats = ({
   customers,
   sellers,
 }: UserStatsProps) => {
-  console.log("🎯 UserStats RENDERING with props:", {
-    totalUsers,
-    activeUsers,
-    inactiveUsers,
-    customers,
-    sellers,
-  });
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
       <div className="bg-white rounded-lg shadow p-4">

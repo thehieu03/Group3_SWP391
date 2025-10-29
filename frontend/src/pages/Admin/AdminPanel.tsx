@@ -8,6 +8,7 @@ import {
   faMoneyBillWave,
   faHeadset,
   faCog,
+  faShoppingBag,
 } from "@fortawesome/free-solid-svg-icons";
 import AdminDashboard from "./AdminDashboard";
 import UserManagement from "./UserManagement/UserManagement.tsx";
@@ -16,9 +17,20 @@ import CategoryManagement from "./CategoryManagement";
 import AdminOrderManagement from "./OrderManagement/AdminOrderManagement.tsx";
 import SystemSettings from "./SystemSettings";
 import SupportTickets from "./SupportTickets";
+import AdminProductManagement from "./AdminProductManagement";
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import routesConfig from "../../config/routesConfig";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate(routesConfig.home);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -30,6 +42,8 @@ const AdminPanel = () => {
         return <ShopManagement />;
       case "categories":
         return <CategoryManagement />;
+      case "products":
+        return <AdminProductManagement />;
       case "transactions":
         return <AdminOrderManagement />;
       case "support":
@@ -51,9 +65,12 @@ const AdminPanel = () => {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Xin chào, <span className="font-medium">Admin</span>
+                Xin chào, <span className="font-medium">{user?.username}</span>
               </span>
-              <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+              >
                 Đăng xuất
               </button>
             </div>
@@ -87,6 +104,13 @@ const AdminPanel = () => {
                   id: "categories",
                   label: "Quản lý danh mục",
                   icon: <FontAwesomeIcon icon={faFolder} className="text-lg" />,
+                },
+                {
+                  id: "products",
+                  label: "Quản lý sản phẩm",
+                  icon: (
+                    <FontAwesomeIcon icon={faShoppingBag} className="text-lg" />
+                  ),
                 },
                 {
                   id: "transactions",
