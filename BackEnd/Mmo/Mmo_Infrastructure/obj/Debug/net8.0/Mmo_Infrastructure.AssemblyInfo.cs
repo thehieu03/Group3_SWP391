@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Mmo_Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9d5d7d3b1b2e57c794d19f6358de95b52c63404")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e77db69e9aaab2dc374617cb6e78fdc7043481b1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Mmo_Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Mmo_Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

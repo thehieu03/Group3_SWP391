@@ -347,9 +347,6 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("isActive");
-            entity.Property(e => e.IsApproved)
-                .HasDefaultValueSql("'0'")
-                .HasColumnName("isApproved");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");

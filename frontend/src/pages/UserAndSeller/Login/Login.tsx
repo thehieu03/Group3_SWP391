@@ -38,31 +38,40 @@ const Login = () => {
         password: loginData.password,
       };
 
+      console.log("[LOGIN] Sending request...", requestData);
       const response = await authServices.loginAsync(requestData);
+      console.log("[LOGIN] Response received:", response);
+
+      if (!response || !response.accessToken || !response.user) {
+        throw new Error("Invalid response from server");
+      }
+
+      // Xác định secure flag dựa trên protocol
+      const isHttps = window.location.protocol === 'https:';
 
       // Lưu tokens - dựa vào checkbox "Ghi nhớ đăng nhập"
       if (rememberMe) {
         // Ghi nhớ: Cookies tồn tại lâu dài
         Cookies.set("accessToken", response.accessToken, {
           expires: 7, // 7 ngày
-          secure: true,
+          secure: isHttps,
           sameSite: "strict",
         });
 
         Cookies.set("refreshToken", response.refreshToken, {
           expires: 30, // 30 ngày
-          secure: true,
+          secure: isHttps,
           sameSite: "strict",
         });
       } else {
         // Không ghi nhớ: Session cookies (tự xóa khi đóng trình duyệt)
         Cookies.set("accessToken", response.accessToken, {
-          secure: true,
+          secure: isHttps,
           sameSite: "strict",
         });
 
         Cookies.set("refreshToken", response.refreshToken, {
-          secure: true,
+          secure: isHttps,
           sameSite: "strict",
         });
       }
@@ -74,13 +83,13 @@ const Login = () => {
       let redirectPath = routesConfig.home;
       let redirectMessage = "Đã đăng nhập thành công! Đang chuyển hướng...";
 
-      if (response.user.roles.includes("ADMIN")) {
+      if (response.user.roles?.includes("ADMIN")) {
         redirectPath = "/admin/dashboard";
         redirectMessage = "Đã đăng nhập thành công! Đang chuyển đến trang quản trị...";
-      } else if (response.user.roles.includes("SELLER")) {
+      } else if (response.user.roles?.includes("SELLER")) {
         redirectPath = "/seller/dashboard";
         redirectMessage = "Đã đăng nhập thành công! Đang chuyển đến trang quản lý shop...";
-      } else if (response.user.roles.includes("BUYER")) {
+      } else if (response.user.roles?.includes("BUYER") || response.user.roles?.includes("CUSTOMER")) {
         redirectPath = routesConfig.home;
         redirectMessage = "Đã đăng nhập thành công! Đang chuyển về trang chủ...";
       } else {
@@ -96,8 +105,32 @@ const Login = () => {
         navigate(redirectPath);
       }, 1500);
     } catch (error: any) {
-      console.error("Login failed:", error);
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      console.error("[LOGIN] Failed:", error);
+      console.error("[LOGIN] Error response:", error.response);
+      console.error("[LOGIN] Error data:", error.response?.data);
+      
+      // Hiển thị lỗi chi tiết hơn
+      if (error.response) {
+        const status = error.response.status;
+        const data = error.response.data;
+        
+        if (status === 401) {
+          setError(data?.message || "Tên đăng nhập hoặc mật khẩu không đúng");
+        } else if (status === 400) {
+          const errorMessages = data?.errors 
+            ? Object.values(data.errors).flat().join(", ")
+            : data?.message || "Dữ liệu không hợp lệ";
+          setError(errorMessages);
+        } else if (status === 500) {
+          setError(data?.message || "Lỗi server. Vui lòng thử lại sau.");
+        } else {
+          setError(data?.message || `Lỗi không xác định (${status})`);
+        }
+      } else if (error.request) {
+        setError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+      } else {
+        setError(error.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      }
     } finally {
       setIsLoading(false);
     }

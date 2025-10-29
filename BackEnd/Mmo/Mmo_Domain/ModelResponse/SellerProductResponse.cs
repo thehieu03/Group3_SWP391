@@ -15,4 +15,3 @@ public class SellerProductResponse
     public int PageSize { get; set; }
 }
 
-

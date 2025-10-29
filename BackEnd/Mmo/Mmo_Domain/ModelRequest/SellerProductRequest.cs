@@ -15,7 +15,7 @@ public class SellerProductRequest
     public string? SortDirection { get; set; } = "desc";
     public string? SearchProductName { get; set; }
     public int? CategoryId { get; set; }
-    public bool? IsApproved { get; set; }
+    public bool? IsActive { get; set; }
     public int ShopId { get; set; }
 }
 

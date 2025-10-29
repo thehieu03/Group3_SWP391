@@ -8,8 +8,7 @@ export interface SellerProduct {
   description: string;
   image: string | null;
   details: string;
-  isActive: boolean;
-  isApproved: boolean;
+  isActive: boolean | null;
   createdAt: string;
   updatedAt: string;
   categoryName?: string;
@@ -32,7 +31,7 @@ export interface SellerProductListRequest {
   sortDirection?: string;
   searchProductName?: string;
   categoryId?: number;
-  isApproved?: boolean;
+  isActive?: boolean;
 }
 
 export interface SellerProductListResponse {
@@ -66,9 +65,9 @@ class SellerProductServices {
       queryParams.append('CategoryId', params.categoryId.toString());
     }
     
-    // Add approval status filter
-    if (params?.isApproved !== undefined) {
-      queryParams.append('IsApproved', params.isApproved.toString());
+    // Add active status filter
+    if (params?.isActive !== undefined) {
+      queryParams.append('IsActive', params.isActive.toString());
     }
     
     // Add sort params

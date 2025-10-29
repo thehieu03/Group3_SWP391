@@ -40,7 +40,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProductByCategoryId(int id)
     {
         var products = await _productServices.GetAllAsync();
-        var filteredProducts = products.Where(p => p.CategoryId == (uint)id);
+        var filteredProducts = products.Where(p => p.CategoryId == id);
         if (!filteredProducts.Any())
         {
             return NotFound();
@@ -72,8 +72,7 @@ public class ProductsController : ControllerBase
         var productAdd=_mapper.Map<Product>(productRequest);
         
         // Set default values for new product
-        productAdd.IsActive = true;  // Product is active
-        productAdd.IsApproved = false;  // Product needs approval from admin
+        productAdd.IsActive = true;
         productAdd.CreatedAt = DateTime.UtcNow;
         productAdd.UpdatedAt = DateTime.UtcNow;
         
@@ -81,86 +80,7 @@ public class ProductsController : ControllerBase
         return result>0?Ok():BadRequest();
     }
 
-    /// <summary>
-    /// Lấy danh sách sản phẩm chờ duyệt cho Admin
-    /// </summary>
-    [HttpGet("pending")]
-    [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetPendingProducts([FromQuery] ProductApprovalRequest request)
-    {
-        try
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _productServices.GetPendingProductsAsync(request);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Duyệt sản phẩm
-    /// </summary>
-    [HttpPut("{id}/approve")]
-    [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> ApproveProduct(int id)
-    {
-        try
-        {
-            var result = await _productServices.ApproveProductAsync(id);
-            if (!result)
-            {
-                return NotFound($"Product with ID {id} not found or already approved");
-            }
-
-            return Ok(new { message = "Product approved successfully" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Từ chối sản phẩm
-    /// </summary>
-    [HttpDelete("{id}/reject")]
-    [Authorize(Policy = "AdminOnly")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> RejectProduct(int id)
-    {
-        try
-        {
-            var result = await _productServices.RejectProductAsync(id);
-            if (!result)
-            {
-                return NotFound($"Product with ID {id} not found");
-            }
-
-            return Ok(new { message = "Product rejected successfully" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
+    // Approval endpoints removed per new business rule
 
     /// <summary>
     /// Lấy danh sách sản phẩm của seller với phân trang, tìm kiếm, filter

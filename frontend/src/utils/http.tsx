@@ -26,14 +26,25 @@ http.interceptors.response.use(
 
             try {
                 const refreshToken = Cookies.get('refreshToken');
-                const response = await axios.post('/auth/refresh', {
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+                
+                // Sử dụng http client đã có sẵn với baseURL
+                const response = await http.post('/auth/refresh', {
                     refreshToken
                 });
 
-                const { accessToken } = response.data;
+                const isHttps = window.location.protocol === 'https:';
+                const { accessToken } = response;
+                
+                if (!accessToken) {
+                    throw new Error('No access token in refresh response');
+                }
+                
                 Cookies.set('accessToken', accessToken, {
                     expires: 7,
-                    secure: true,
+                    secure: isHttps,
                     sameSite: 'strict'
                 });
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;

@@ -8,11 +8,11 @@ namespace Mmo_Domain.ModelResponse;
 
 public class ProductResponse
 {
-    public uint Id { get; set; }
+    public int Id { get; set; }
 
-    public uint? ShopId { get; set; }
+    public int? ShopId { get; set; }
 
-    public uint? CategoryId { get; set; }
+    public int? CategoryId { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -20,7 +20,17 @@ public class ProductResponse
 
     public byte[]? Image { get; set; }
 
+    public string? Details { get; set; }
+
     public bool? IsActive { get; set; }
 
-    public string? Details { get; set; }
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public decimal? Fee { get; set; }
+
+    public string? CategoryName { get; set; }
+
+    public string? ShopName { get; set; }
 }

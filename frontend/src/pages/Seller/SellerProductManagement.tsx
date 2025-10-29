@@ -19,7 +19,7 @@ const SellerProductManagement = () => {
     const [searchProductName, setSearchProductName] = useState<string>('');
     const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
     const [categories, setCategories] = useState<any[]>([]);
-    const [filterStatus, setFilterStatus] = useState<string>('all'); // all, approved, pending
+    const [filterStatus, setFilterStatus] = useState<string>('all'); // all, active, inactive
     
     // Sort state
     const [sortBy, setSortBy] = useState<string>('createdAt');
@@ -81,10 +81,10 @@ const SellerProductManagement = () => {
                 params.categoryId = parseInt(selectedCategoryId);
             }
             
-            if (filterStatus === 'approved') {
-                params.isApproved = true;
-            } else if (filterStatus === 'pending') {
-                params.isApproved = false;
+            if (filterStatus === 'active') {
+                params.isActive = true;
+            } else if (filterStatus === 'inactive') {
+                params.isActive = false;
             }
 
             const response = await sellerProductServices.getSellerProducts(shopId, params);
@@ -161,19 +161,6 @@ const SellerProductManagement = () => {
         setShowModal(true);
     };
 
-    const handleDelete = async (productId: number) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-            return;
-        }
-
-        try {
-            await sellerProductServices.deleteProduct(productId);
-            alert('Xóa sản phẩm thành công!');
-            fetchProducts();
-        } catch (err: any) {
-            alert(err?.response?.data?.message || 'Không thể xóa sản phẩm');
-        }
-    };
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -196,7 +183,7 @@ const SellerProductManagement = () => {
         try {
             if (modalMode === 'create') {
                 await sellerProductServices.createProduct(formData);
-                alert('Tạo sản phẩm thành công! Sản phẩm đang chờ duyệt.');
+                alert('Tạo sản phẩm thành công!');
             } else if (modalMode === 'edit' && selectedProduct) {
                 await sellerProductServices.updateProduct(selectedProduct.id, formData);
                 alert('Cập nhật sản phẩm thành công!');
@@ -223,7 +210,7 @@ const SellerProductManagement = () => {
     };
 
     const getStatusBadge = (product: SellerProduct) => {
-        if (product.isApproved) {
+        if (product.isActive) {
             return (
                 <span style={{
                     padding: '4px 12px',
@@ -233,7 +220,7 @@ const SellerProductManagement = () => {
                     backgroundColor: '#d1fae5',
                     color: '#065f46'
                 }}>
-                    Đã duyệt
+                    Hoạt động
                 </span>
             );
         } else {
@@ -243,10 +230,10 @@ const SellerProductManagement = () => {
                     borderRadius: '12px',
                     fontSize: '12px',
                     fontWeight: '500',
-                    backgroundColor: '#fef3c7',
-                    color: '#92400e'
+                    backgroundColor: '#fee2e2',
+                    color: '#991b1b'
                 }}>
-                    Chờ duyệt
+                    Không hoạt động
                 </span>
             );
         }
@@ -413,8 +400,8 @@ const SellerProductManagement = () => {
                             style={styles.input}
                         >
                             <option value="all">Tất cả</option>
-                            <option value="approved">Đã duyệt</option>
-                            <option value="pending">Chờ duyệt</option>
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
                         </select>
                     </div>
                     <div>
@@ -454,7 +441,7 @@ const SellerProductManagement = () => {
                         <strong>Đang lọc:</strong>
                         {searchProductName && ` Tên: "${searchProductName}"`}
                         {selectedCategoryId && ` | Danh mục: ${categories.find(c => c.id === parseInt(selectedCategoryId))?.name}`}
-                        {filterStatus !== 'all' && ` | Trạng thái: ${filterStatus === 'approved' ? 'Đã duyệt' : 'Chờ duyệt'}`}
+                        {filterStatus !== 'all' && ` | Trạng thái: ${filterStatus === 'active' ? 'Hoạt động' : 'Không hoạt động'}`}
                     </div>
                 )}
             </div>
@@ -560,12 +547,6 @@ const SellerProductManagement = () => {
                                             style={{ ...styles.actionButton, backgroundColor: '#f59e0b', color: 'white' }}
                                         >
                                             Sửa
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(product.id)}
-                                            style={{ ...styles.actionButton, backgroundColor: '#ef4444', color: 'white' }}
-                                        >
-                                            Xóa
                                         </button>
                                     </td>
                                 </tr>
