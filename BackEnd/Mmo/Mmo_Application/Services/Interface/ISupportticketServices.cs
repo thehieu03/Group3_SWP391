@@ -13,7 +13,7 @@ public interface ISupportticketServices : IBaseServices<Supportticket>
 
     Task<Supportticket?> GetByIdWithAccountAsync(int id);
     Task<bool> UpdateStatusAsync(int id, string status);
-    Task<(int total, int open, int pending, int resolved, int closed)> GetStatsAsync();
+    Task<(int total, int pending, int processing, int closed)> GetStatsAsync();
     Task<bool> ReplyAsync(int id, string message, int adminAccountId);
     IQueryable<Supportticket> GetQueryableWithAccount();
 }

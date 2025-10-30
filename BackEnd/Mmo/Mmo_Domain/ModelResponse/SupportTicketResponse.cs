@@ -9,7 +9,7 @@ public class SupportTicketResponse
     public string Title { get; set; } = null!;
     public string Content { get; set; } = null!;
     public DateTime? CreatedAt { get; set; }
-    public string Status { get; set; } = "OPEN";
+    public string Status { get; set; } = "PENDING";
     public AccountMiniResponse? Account { get; set; }
 }
 

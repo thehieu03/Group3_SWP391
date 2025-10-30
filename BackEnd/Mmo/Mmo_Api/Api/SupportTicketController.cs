@@ -41,16 +41,18 @@ public class AdminSupportTicketController : ControllerBase
 {
     private readonly ISupportticketServices _service;
     private readonly IMapper _mapper;
+    private readonly ISystemsconfigServices _sysConfig;
 
-    public AdminSupportTicketController(ISupportticketServices service, IMapper mapper)
+    public AdminSupportTicketController(ISupportticketServices service, IMapper mapper, ISystemsconfigServices sysConfig)
     {
         _service = service;
         _mapper = mapper;
+        _sysConfig = sysConfig;
     }
 
     [HttpGet]
     [EnableQuery(PageSize = 50)]
-    public ActionResult<IQueryable<SupportTicketResponse>> GetAll()
+    public async Task<ActionResult> GetAll()
     {
         var q = _service.GetQueryableWithAccount()
             .Select(t => new SupportTicketResponse
@@ -70,7 +72,9 @@ public class AdminSupportTicketController : ControllerBase
                     Email = t.Account.Email
                 }
             });
-        return Ok(q);
+
+        var (total, pending, processing, closed) = await _service.GetStatsAsync();
+        return Ok(new { value = q, stats = new { totalTickets = total, pending, processing, closed } });
     }
 
     [HttpGet("{id}")]
@@ -90,16 +94,57 @@ public class AdminSupportTicketController : ControllerBase
         if (string.IsNullOrEmpty(adminIdStr) || !int.TryParse(adminIdStr, out var adminId)) return Unauthorized();
         var ok = await _service.ReplyAsync(id, body.Message, adminId);
         if (!ok) return StatusCode(500, new { message = "Failed to reply" });
-        return Ok(new { message = "Replied" });
+
+        // Send email notification to ticket owner
+        try
+        {
+            var ticket = await _service.GetByIdWithAccountAsync(id);
+            if (ticket?.Email != null)
+            {
+                var configs = await _sysConfig.GetAllAsync();
+                var cfg = configs.FirstOrDefault();
+                if (cfg?.Email != null && cfg.GoogleAppPassword != null)
+                {
+                    using var smtp = new System.Net.Mail.SmtpClient("smtp.gmail.com", 587)
+                    {
+                        EnableSsl = true,
+                        Credentials = new System.Net.NetworkCredential(cfg.Email, cfg.GoogleAppPassword)
+                    };
+                    var to = ticket.Email;
+                    var subject = $"[Support] Reply for ticket #{ticket.Id}";
+                    var username = ticket.Account?.Username ?? ticket.Email;
+                    var title = ticket.Title ?? "Support Ticket";
+                    var bodyHtml = $@"<p>Xin chào {System.Net.WebUtility.HtmlEncode(username)},</p>
+<p>Admin đã phản hồi ticket: <strong>{System.Net.WebUtility.HtmlEncode(title)}</strong></p>
+<p>Nội dung:</p>
+<blockquote>{System.Net.WebUtility.HtmlEncode(body.Message)}</blockquote>
+<p>Trân trọng.</p>";
+
+                    var mail = new System.Net.Mail.MailMessage(cfg.Email, to)
+                    {
+                        Subject = subject,
+                        Body = bodyHtml,
+                        IsBodyHtml = true
+                    };
+                    await smtp.SendMailAsync(mail);
+                }
+            }
+        }
+        catch
+        {
+            // Không chặn luồng nếu gửi mail thất bại
+        }
+
+        return Ok(new { message = "Replied and emailed (if possible)" });
     }
 
     public class UpdateStatusRequest { public string Status { get; set; } = null!; }
     [HttpPut("{id}/status")]
     public async Task<ActionResult<SupportTicketResponse>> UpdateStatus(int id, [FromBody] UpdateStatusRequest body)
     {
-        var allowed = new[] { "OPEN", "PENDING", "RESOLVED", "CLOSED" };
+        var allowed = new[] { "PENDING", "PROCESSING", "CLOSED" };
         if (string.IsNullOrWhiteSpace(body?.Status) || !allowed.Contains(body.Status))
-            return BadRequest(new { message = "Status must be OPEN|PENDING|RESOLVED|CLOSED" });
+            return BadRequest(new { message = "Status must be PENDING|PROCESSING|CLOSED" });
         var ok = await _service.UpdateStatusAsync(id, body.Status);
         if (!ok) return NotFound();
         var updated = await _service.GetByIdWithAccountAsync(id);
@@ -109,7 +154,7 @@ public class AdminSupportTicketController : ControllerBase
     [HttpGet("stats")]
     public async Task<ActionResult> GetStats()
     {
-        var (total, open, pending, resolved, closed) = await _service.GetStatsAsync();
-        return Ok(new { totalTickets = total, open, pending, resolved, closed });
+        var (total, pending, processing, closed) = await _service.GetStatsAsync();
+        return Ok(new { totalTickets = total, pending, processing, closed });
     }
 }

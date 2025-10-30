@@ -74,6 +74,39 @@ public class AccountController : ControllerBase
     }
 
 
+    [HttpPut("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Unauthorized" });
+
+            var (ok, error) = await _accountServices.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
+            if (!ok)
+            {
+                if (error == "Mật khẩu hiện tại không đúng" || error == "Mật khẩu mới không được trùng mật khẩu hiện tại")
+                    return BadRequest(new { message = error });
+                if (error == "Unauthorized") return Unauthorized(new { message = error });
+                return StatusCode(500, new { message = error ?? "Cập nhật thất bại" });
+            }
+
+            return Ok(new { message = "Đổi mật khẩu thành công" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+        }
+    }
+
     [HttpPut("profile")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]

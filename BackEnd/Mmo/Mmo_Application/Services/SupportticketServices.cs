@@ -59,15 +59,14 @@ public class SupportticketServices : BaseServices<Supportticket>, ISupportticket
         return await _unitOfWork.SaveChangeAsync() > 0;
     }
 
-    public async Task<(int total, int open, int pending, int resolved, int closed)> GetStatsAsync()
+    public async Task<(int total, int pending, int processing, int closed)> GetStatsAsync()
     {
         var all = (await GetAllAsync()).ToList();
         var total = all.Count;
-        var open = all.Count(t => t.Status == "OPEN");
         var pending = all.Count(t => t.Status == "PENDING");
-        var resolved = all.Count(t => t.Status == "RESOLVED");
+        var processing = all.Count(t => t.Status == "PROCESSING");
         var closed = all.Count(t => t.Status == "CLOSED");
-        return (total, open, pending, resolved, closed);
+        return (total, pending, processing, closed);
     }
 
     public Task<bool> ReplyAsync(int id, string message, int adminAccountId)

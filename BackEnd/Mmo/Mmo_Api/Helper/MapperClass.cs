@@ -88,7 +88,7 @@ public class MapperClass : Profile
             .ForMember(d => d.Title, o => o.MapFrom(src => src.Title))
             .ForMember(d => d.Content, o => o.MapFrom(src => src.Content))
             .ForMember(d => d.CreatedAt, o => o.MapFrom(src => src.CreatedAt))
-            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status ?? "OPEN"))
+            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status ?? "PENDING"))
             .ForMember(d => d.Account, o => o.MapFrom(src => src.Account != null ? new AccountMiniResponse
             {
                 Id = src.Account.Id,

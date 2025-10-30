@@ -46,7 +46,7 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     {
         var accountRolesQuery = await _unitOfWork.GenericRepository<Accountrole>()
             .GetQuery(ar => ar.AccountId == accountId);
-        var accountRoles = accountRolesQuery.ToList();
+        var accountRoles = await accountRolesQuery.ToListAsync();
 
         var roleIds = accountRoles.Select(ar => ar.RoleId).ToList();
         var roles = await _roleServices.GetAllAsync();
@@ -293,5 +293,24 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         var accounts = await GetAllAsync();
         var accountResponse = accounts.FirstOrDefault(a => a.GoogleId == googleId);
         return accountResponse != null ? accountResponse : null;
+    }
+
+    public async Task<(bool ok, string? error)> ChangePasswordAsync(int accountId, string currentPassword, string newPassword)
+    {
+        var account = await GetByIdAsync(accountId);
+        if (account == null) return (false, "Unauthorized");
+
+        if (!await VerifyPasswordAsync(account, currentPassword))
+            return (false, "Mật khẩu hiện tại không đúng");
+
+        if (currentPassword == newPassword)
+            return (false, "Mật khẩu mới không được trùng mật khẩu hiện tại");
+
+        var newHash = await HashPasswordAsync(newPassword);
+        account.Password = newHash;
+        account.UpdatedAt = DateTime.Now;
+        var saved = await UpdateAsync(account);
+        if (!saved) return (false, "Cập nhật thất bại");
+        return (true, null);
     }
 }

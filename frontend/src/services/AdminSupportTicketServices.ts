@@ -3,6 +3,7 @@ import type {
   SupportTicketListResponse,
   SupportTicketResponse,
   SupportTicketStatsResponse,
+  SupportTicketApiResponse,
   TicketStatus,
 } from "@/models/modelResponse/SupportTicketResponse";
 import type {
@@ -49,11 +50,25 @@ function buildODataQuery(params: TicketListParams = {}): string {
 class AdminSupportTicketServices {
   private readonly base = "admin/supporttickets";
 
+  // Get all tickets with stats (from main API endpoint)
+  async getAllTicketsAsync(): Promise<SupportTicketApiResponse> {
+    return await httpGet<SupportTicketApiResponse>(`${this.base}`);
+  }
+
   async getListAsync(
     params: TicketListParams = {}
   ): Promise<SupportTicketListResponse> {
     const query = buildODataQuery(params);
     return await httpGet<SupportTicketListResponse>(`${this.base}${query}`);
+  }
+
+  // OData with arbitrary params (URLSearchParams)
+  async getODataAsync(
+    params: URLSearchParams
+  ): Promise<SupportTicketApiResponse> {
+    const query = params.toString();
+    const qs = query ? `?${query}` : "";
+    return await httpGet<SupportTicketApiResponse>(`${this.base}${qs}`);
   }
 
   async getDetailAsync(id: number): Promise<SupportTicketResponse> {

@@ -8,6 +8,17 @@ import type {
 } from "../models";
 
 class UserServices {
+  async changePasswordAsync(
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ message: string }> {
+    const response = await httpPut<{ message: string }>(
+      "accounts/change-password",
+      { currentPassword, newPassword }
+    );
+    return response;
+  }
+
   async updateProfileAsync(
     profileData: UpdateProfileRequest
   ): Promise<UpdateProfileResponse> {

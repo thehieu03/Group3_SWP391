@@ -16,7 +16,7 @@ import ShopManagement from "./ShopManagement/ShopManagement.tsx";
 import CategoryManagement from "./CategoryManagement";
 import AdminOrderManagement from "./OrderManagement/AdminOrderManagement.tsx";
 import SystemSettings from "./SystemSettings";
-import SupportTickets from "./SupportTickets";
+import SupportTickets from "./SupportTicket/SupportTickets.tsx";
 import AdminProductManagement from "./AdminProductManagement";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
