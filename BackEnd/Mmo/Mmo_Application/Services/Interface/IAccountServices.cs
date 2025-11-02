@@ -21,4 +21,5 @@ public interface IAccountServices : IBaseServices<Account>
     Task<UserStatistics> GetUserStatisticsAsync();
     Task<Account> CheckAccountByGoogleId(string googleId);
     Task<(bool ok, string? error)> ChangePasswordAsync(int accountId, string currentPassword, string newPassword);
+    Task<(bool ok, string? error)> ForgotPasswordAsync(string email);
 }

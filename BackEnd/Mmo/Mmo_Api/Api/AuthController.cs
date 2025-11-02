@@ -110,6 +110,34 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var (ok, error) = await _accountServices.ForgotPasswordAsync(request.Email);
+
+            if (!ok)
+            {
+                if (error == "Email không hợp lệ hoặc không tồn tại")
+                    return BadRequest(new { message = error });
+                
+                return StatusCode(500, new { message = error ?? "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau." });
+            }
+
+            return Ok(new { message = "Mật khẩu mới đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau." });
+        }
+    }
+
     [HttpGet("me")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

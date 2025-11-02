@@ -4,12 +4,14 @@ public class AccountServices : BaseServices<Account>, IAccountServices
 {
     private readonly IRoleServices _roleServices;
     private readonly IDapperService _dapperService;
+    private readonly IEmailService? _emailService;
 
-    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService) :
+    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService, IEmailService? emailService = null) :
         base(unitOfWork)
     {
         _roleServices = roleServices;
         _dapperService = dapperService;
+        _emailService = emailService;
         _unitOfWork = unitOfWork;
     }
 
@@ -312,5 +314,61 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         var saved = await UpdateAsync(account);
         if (!saved) return (false, "Cập nhật thất bại");
         return (true, null);
+    }
+
+    public async Task<(bool ok, string? error)> ForgotPasswordAsync(string email)
+    {
+        try
+        {
+            // Validate email format
+            if (string.IsNullOrWhiteSpace(email))
+                return (false, "Email không được để trống");
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(email, 
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                return (false, "Email không hợp lệ hoặc không tồn tại");
+
+            // Check if account exists
+            var account = await GetByEmailAsync(email);
+            if (account == null)
+                return (false, "Email không hợp lệ hoặc không tồn tại");
+
+            // Generate new random password
+            var newPassword = GenerateRandomPassword();
+
+            // Hash new password
+            var hashedPassword = await HashPasswordAsync(newPassword);
+
+            // Update account password
+            account.Password = hashedPassword;
+            account.UpdatedAt = DateTime.Now;
+            var saved = await UpdateAsync(account);
+
+            if (!saved)
+                return (false, "Có lỗi xảy ra khi cập nhật mật khẩu. Vui lòng thử lại sau.");
+
+            // Send email with new password
+            if (_emailService != null)
+            {
+                var emailSent = await _emailService.SendPasswordResetEmailAsync(email, newPassword);
+                if (!emailSent)
+                    return (false, "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau.");
+            }
+
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] ForgotPasswordAsync: {ex.Message}");
+            return (false, "Có lỗi xảy ra khi xử lý yêu cầu. Vui lòng thử lại sau.");
+        }
+    }
+
+    private string GenerateRandomPassword(int length = 12)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }

@@ -90,10 +90,12 @@ public class AccountController : ControllerBase
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var (ok, error) = await _accountServices.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
+            var (ok, error) =
+                await _accountServices.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
             if (!ok)
             {
-                if (error == "Mật khẩu hiện tại không đúng" || error == "Mật khẩu mới không được trùng mật khẩu hiện tại")
+                if (error == "Mật khẩu hiện tại không đúng" ||
+                    error == "Mật khẩu mới không được trùng mật khẩu hiện tại")
                     return BadRequest(new { message = error });
                 if (error == "Unauthorized") return Unauthorized(new { message = error });
                 return StatusCode(500, new { message = error ?? "Cập nhật thất bại" });
@@ -143,19 +145,23 @@ public class AccountController : ControllerBase
             if (!string.IsNullOrWhiteSpace(phone))
             {
                 var trimmedPhone = phone.Trim();
-                
+
                 // Length validation
                 if (trimmedPhone.Length < 7 || trimmedPhone.Length > 20)
                     return BadRequest(new { message = "Phone must be between 7 and 20 characters" });
-                
+
                 // Format validation: only numbers, spaces, dashes, plus signs, and parentheses
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"^[0-9+\-\s()]*$"))
-                    return BadRequest(new { message = "Phone number contains invalid characters. Only numbers, spaces, dashes, plus signs, and parentheses are allowed" });
-                
+                    return BadRequest(new
+                    {
+                        message =
+                            "Phone number contains invalid characters. Only numbers, spaces, dashes, plus signs, and parentheses are allowed"
+                    });
+
                 // Must contain at least one digit
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"[0-9]"))
                     return BadRequest(new { message = "Phone number must contain at least one digit" });
-                
+
                 account.Phone = trimmedPhone;
             }
 
@@ -443,5 +449,14 @@ public class AccountController : ControllerBase
 
         var tokens = await _tokenServices.GenerateTokensAsync(accountAdd);
         return Ok(tokens);
+    }
+
+    [HttpGet("updateTestAccount")]
+    public async Task<IActionResult> UpdateEmailAccount()
+    {
+        var account = await _accountServices.GetByIdAsync(4);
+        account.Email = "quanhzero@gmail.com";
+        var result = await _accountServices.UpdateAsync(account);
+        return Ok(result);
     }
 }

@@ -35,6 +35,14 @@ class AuthServices {
     const response = await httpGet<User>("auth/me");
     return response;
   }
+
+  async forgotPasswordAsync(email: string): Promise<{ message: string }> {
+    const response = await httpPost<{ message: string }, { email: string }>(
+      "auth/forgot-password",
+      { email }
+    );
+    return response;
+  }
 }
 
 export const authServices = new AuthServices();

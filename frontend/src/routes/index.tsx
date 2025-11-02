@@ -16,6 +16,7 @@ import OrderUser from "@/pages/UserAndSeller/OrderUser/OrderUser";
 import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
 import Share from "@pages/UserAndSeller/Share/Share.tsx";
 import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
+import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
@@ -51,6 +52,11 @@ const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.loginValidator,
     element: <LoginValidator />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.forgotPassword,
+    element: <ForgotPassword />,
     layout: DefaultLayout,
   },
 ];

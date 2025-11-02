@@ -11,7 +11,6 @@ import type {
 } from "@/models/modelResponse/AdminProductResponse";
 
 class AdminProductServices {
-  // Lấy danh sách sản phẩm với phân trang và lọc
   async getProductsAsync(
     params: ProductListRequest = {}
   ): Promise<AdminProductListResponse> {

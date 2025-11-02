@@ -79,7 +79,7 @@ const AdminProductManagement = () => {
   };
 
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, [
     currentPage,
     searchTerm,
@@ -91,7 +91,7 @@ const AdminProductManagement = () => {
   ]);
 
   useEffect(() => {
-    loadFilterOptions();
+    void loadFilterOptions();
   }, []);
 
   // Handle actions

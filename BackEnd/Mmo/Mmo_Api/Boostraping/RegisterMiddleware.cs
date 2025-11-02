@@ -74,6 +74,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
 
 
         builder.Services.AddScoped<IDbConnection>(provider =>
