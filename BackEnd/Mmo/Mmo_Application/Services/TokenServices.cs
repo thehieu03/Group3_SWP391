@@ -4,8 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
 
 namespace Mmo_Application.Services;
 
@@ -45,10 +43,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
         // Convert Image (byte[]) to base64 string
         string? avatarBase64 = null;
-        if (account.Image != null && account.Image.Length > 0)
-        {
-            avatarBase64 = Convert.ToBase64String(account.Image);
-        }
+        if (account.Image != null && account.Image.Length > 0) avatarBase64 = Convert.ToBase64String(account.Image);
 
         return new AuthResponse
         {

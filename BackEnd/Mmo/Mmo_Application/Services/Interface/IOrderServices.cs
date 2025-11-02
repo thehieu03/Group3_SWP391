@@ -2,7 +2,7 @@
 
 namespace Mmo_Application.Services.Interface;
 
-public interface IOrderServices:IBaseServices<Order>
+public interface IOrderServices : IBaseServices<Order>
 {
     Task<IEnumerable<Order>> GetUserOrdersAsync(int accountId);
     Task<IEnumerable<Order>> AdminGetAllOrderAsync();

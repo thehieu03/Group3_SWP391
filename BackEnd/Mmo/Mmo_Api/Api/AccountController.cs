@@ -481,31 +481,21 @@ public class AccountController : ControllerBase
         try
         {
             // Kiểm tra model validation
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // Kiểm tra request body
-            if (request == null)
-            {
-                return BadRequest("Request body cannot be null");
-            }
+            if (request == null) return BadRequest("Request body cannot be null");
 
             // Kiểm tra ít nhất một field được cập nhật
-            if (string.IsNullOrEmpty(request.Username) && 
-                string.IsNullOrEmpty(request.Email) && 
+            if (string.IsNullOrEmpty(request.Username) &&
+                string.IsNullOrEmpty(request.Email) &&
                 string.IsNullOrEmpty(request.Phone))
-            {
                 return BadRequest("At least one field must be provided for update");
-            }
 
             // Lấy user ID từ JWT token
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid token");
-            }
 
             // Cập nhật profile
             var result = await _accountServices.UpdateProfileAsync(userId, request);
@@ -514,10 +504,7 @@ public class AccountController : ControllerBase
             {
                 // Kiểm tra xem user có tồn tại không
                 var account = await _accountServices.GetByIdAsync(userId);
-                if (account == null)
-                {
-                    return NotFound("User not found");
-                }
+                if (account == null) return NotFound("User not found");
 
                 // Nếu user tồn tại nhưng update thất bại, có thể do username/email đã tồn tại
                 return BadRequest("Update failed. Username or email may already exist");

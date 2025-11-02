@@ -2,7 +2,7 @@ namespace Mmo_Application.Services;
 
 public class BaseServices<T> : IBaseServices<T> where T : class
 {
-    protected readonly IUnitOfWork _unitOfWork;
+    protected IUnitOfWork _unitOfWork;
 
     public BaseServices(IUnitOfWork unitOfWork)
     {

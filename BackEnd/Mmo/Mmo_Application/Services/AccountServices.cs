@@ -10,7 +10,8 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     private readonly IDapperService _dapperService;
     private readonly IEmailService? _emailService;
 
-    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService, IEmailService? emailService = null) :
+    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService,
+        IEmailService? emailService = null) :
         base(unitOfWork)
     {
         _roleServices = roleServices;
@@ -301,7 +302,8 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         return accountResponse != null ? accountResponse : null;
     }
 
-    public async Task<(bool ok, string? error)> ChangePasswordAsync(int accountId, string currentPassword, string newPassword)
+    public async Task<(bool ok, string? error)> ChangePasswordAsync(int accountId, string currentPassword,
+        string newPassword)
     {
         var account = await GetByIdAsync(accountId);
         if (account == null) return (false, "Unauthorized");
@@ -328,8 +330,8 @@ public class AccountServices : BaseServices<Account>, IAccountServices
             if (string.IsNullOrWhiteSpace(email))
                 return (false, "Email không được để trống");
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(email, 
-                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch(email,
+                    @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 return (false, "Email không hợp lệ hoặc không tồn tại");
 
             // Check if account exists
