@@ -1,5 +1,4 @@
-import { httpGet, httpPut } from "@utils/http.ts";
-import { httpPost } from "@utils/http.ts";
+import { httpGet, httpPut ,httpPost} from "@utils/http.ts";
 import type { RegisterShopRequest } from "@models/modelRequest/RegisterShopRequest";
 
 export interface Shop {

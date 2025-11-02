@@ -75,7 +75,7 @@ public class ShopController : ControllerBase
             if (shop == null) return NotFound("Shop not found");
 
             var shopResponse = _mapper.Map<ShopResponse>(shop);
-            shopResponse.OwnerUsername = shop.Account?.Username;
+            shopResponse.OwnerUsername = shop!.Account!.Username;
             shopResponse.ProductCount = shop.Products?.Count ?? 0;
             shopResponse.ComplaintCount = shop.Replies?.Count ?? 0; // Assuming complaints are stored in Replies
 
@@ -286,7 +286,8 @@ public class ShopController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(description))
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(phone) ||
+                string.IsNullOrWhiteSpace(description))
                 return BadRequest(new { message = "Thiếu thông tin bắt buộc" });
 
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;

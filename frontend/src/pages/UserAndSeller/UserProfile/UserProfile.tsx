@@ -6,8 +6,12 @@ import { orderServices } from "@services/OrderServices.ts";
 import { userServices } from "@services/UserServices.ts";
 import { authServices } from "@services/AuthServices.ts";
 import type { OrderUserResponse } from "@/models/modelResponse/OrderUserResponse";
-import Image from "@/components/Image";
-import Button from "@/components/Button/Button.tsx";
+import ProfileHeader from "./ProfileHeader.tsx";
+import AvatarSection from "./AvatarSection.tsx";
+import ProfileFormFields from "./ProfileFormFields.tsx";
+import ProfileMessage from "./ProfileMessage.tsx";
+import ProfileActions from "./ProfileActions.tsx";
+import ProfileStats from "./ProfileStats.tsx";
 
 const UserProfile: React.FC = () => {
   const { user, isLoggedIn, loading, login } = useAuth();
@@ -257,193 +261,38 @@ const UserProfile: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">
-              Thông tin cá nhân
-            </h1>
-            {!isEditing && (
-              <Button
-                onClick={() => setIsEditing(true)}
-                className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
-              >
-                Chỉnh sửa
-              </Button>
-            )}
-          </div>
+          <ProfileHeader
+            isEditing={isEditing}
+            onEditClick={() => setIsEditing(true)}
+          />
 
           <div className="space-y-6">
-            <div className="flex items-center space-x-6">
-              <div className="relative">
-                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
-                  {avatar ? (
-                    <Image
-                      src={avatar}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-2xl font-bold text-gray-600">
-                      {formData.username?.charAt(0).toUpperCase() || "U"}
-                    </span>
-                  )}
-                </div>
-                {isEditing && (
-                  <label className="absolute bottom-0 right-0 bg-green-500 text-white rounded-full p-2 cursor-pointer hover:bg-green-600 transition-colors">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                      className="hidden"
-                    />
-                  </label>
-                )}
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {formData.username || "Chưa có tên"}
-                </h2>
-                <p className="text-gray-600">
-                  {formData.email || "Chưa có email"}
-                </p>
-                {isEditing && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Nhấn vào icon + để thay đổi avatar
-                  </p>
-                )}
-              </div>
-            </div>
+            <AvatarSection
+              avatar={avatar}
+              username={formData.username}
+              email={formData.email}
+              isEditing={isEditing}
+              onAvatarChange={handleAvatarChange}
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tên đăng nhập
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Nhập tên đăng nhập"
-                  />
-                ) : (
-                  <p className="text-gray-900 py-2">
-                    {formData.username || "Chưa có thông tin"}
-                  </p>
-                )}
-              </div>
+            <ProfileFormFields
+              formData={formData}
+              isEditing={isEditing}
+              onInputChange={handleInputChange}
+            />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <p className="text-gray-900 py-2">
-                  {formData.email || "Chưa có thông tin"}
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Số điện thoại
-                </label>
-                {isEditing ? (
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Nhập số điện thoại"
-                  />
-                ) : (
-                  <p className="text-gray-900 py-2">
-                    {formData.phone || "Chưa có thông tin"}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {saveMessage && (
-              <div
-                className={`p-4 rounded-md ${
-                  saveMessage.type === "success"
-                    ? "bg-green-100 text-green-800 border border-green-200"
-                    : "bg-red-100 text-red-800 border border-red-200"
-                }`}
-              >
-                {saveMessage.text}
-              </div>
-            )}
+            <ProfileMessage message={saveMessage} />
 
             {isEditing && (
-              <div className="flex space-x-4 pt-6 border-t">
-                <Button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className={`font-medium py-2 px-6 rounded-md transition-colors duration-200 ${
-                    isSaving
-                      ? "bg-gray-400 cursor-not-allowed text-white"
-                      : "bg-green-500 hover:bg-green-600 text-white"
-                  }`}
-                >
-                  {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
-                </Button>
-                <Button
-                  onClick={handleCancel}
-                  disabled={isSaving}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  Hủy
-                </Button>
-              </div>
+              <ProfileActions
+                isSaving={isSaving}
+                onSave={handleSave}
+                onCancel={handleCancel}
+              />
             )}
           </div>
 
-          <div className="mt-8 pt-8 border-t">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Thống kê tài khoản
-            </h3>
-            {ordersLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600">Tổng đơn hàng</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.totalOrders}
-                  </p>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600">Đơn hàng thành công</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.successfulOrders}
-                  </p>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600">Tổng chi tiêu</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.totalSpent.toLocaleString("vi-VN")} VNĐ
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          <ProfileStats ordersLoading={ordersLoading} stats={stats} />
         </div>
       </div>
     </div>
