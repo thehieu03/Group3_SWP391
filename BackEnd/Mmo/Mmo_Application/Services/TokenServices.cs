@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,21 +15,23 @@ public class TokenServices : BaseServices<Token>, ITokenServices
     private readonly IAccountServices _accountServices;
     private readonly IRoleServices _roleServices;
 
-    public TokenServices(IUnitOfWork unitOfWork, IConfiguration configuration, 
+    public TokenServices(IUnitOfWork unitOfWork, IConfiguration configuration,
         IAccountServices accountServices, IRoleServices roleServices) : base(unitOfWork)
     {
         _configuration = configuration;
         _accountServices = accountServices;
         _roleServices = roleServices;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponse> GenerateTokensAsync(Account account)
     {
-        var accessToken = GenerateAccessToken(account);
+        var roles = await GetUserRolesAsync(account.Id);
+
+        var accessToken = GenerateAccessToken(account, roles);
         var refreshToken = GenerateRefreshToken();
         var expiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
 
-        // Lưu token vào database
         var token = new Token
         {
             AccountId = account.Id,
@@ -41,7 +43,12 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
         await AddAsync(token);
 
-        var roles = await GetUserRolesAsync(account.Id);
+        // Convert Image (byte[]) to base64 string
+        string? avatarBase64 = null;
+        if (account.Image != null && account.Image.Length > 0)
+        {
+            avatarBase64 = Convert.ToBase64String(account.Image);
+        }
 
         return new AuthResponse
         {
@@ -55,6 +62,8 @@ public class TokenServices : BaseServices<Token>, ITokenServices
                 Email = account.Email,
                 Phone = account.Phone,
                 Balance = account.Balance,
+                Avatar = account.Image,
+                AvatarBase64 = avatarBase64,
                 IsActive = account.IsActive,
                 CreatedAt = account.CreatedAt,
                 Roles = roles
@@ -64,29 +73,20 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
     public async Task<RefreshTokenResponse?> RefreshTokenAsync(string refreshToken)
     {
-        // Tìm token trong database
         var tokenQuery = await _unitOfWork.GenericRepository<Token>()
             .GetQuery(t => t.RefreshToken == refreshToken);
         var token = tokenQuery.FirstOrDefault();
 
-        if (token == null || token.ExpiresAt < DateTime.UtcNow)
-        {
-            return null;
-        }
+        if (token == null || token.ExpiresAt < DateTime.UtcNow) return null;
 
-        // Lấy account
         var account = await _accountServices.GetByIdAsync(token.AccountId);
-        if (account == null)
-        {
-            return null;
-        }
+        if (account == null) return null;
 
-        // Tạo token mới
-        var newAccessToken = GenerateAccessToken(account);
+        var roles = await GetUserRolesAsync(account.Id);
+        var newAccessToken = GenerateAccessToken(account, roles);
         var newRefreshToken = GenerateRefreshToken();
         var newExpiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
 
-        // Cập nhật token trong database
         token.AccessToken = newAccessToken;
         token.RefreshToken = newRefreshToken;
         token.ExpiresAt = newExpiresAt;
@@ -106,10 +106,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             .GetQuery(t => t.RefreshToken == refreshToken);
         var token = tokenQuery.FirstOrDefault();
 
-        if (token == null)
-        {
-            return false;
-        }
+        if (token == null) return false;
 
         return await DeleteAsync(token);
     }
@@ -123,7 +120,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
         return dbToken != null && dbToken.ExpiresAt > DateTime.UtcNow;
     }
 
-    private string GenerateAccessToken(Account account)
+    private string GenerateAccessToken(Account account, List<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -134,13 +131,15 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             new(ClaimTypes.Name, account.Username),
             new(ClaimTypes.Email, account.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                ClaimValueTypes.Integer64)
         };
+        foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
+            _configuration["Jwt:Issuer"],
+            _configuration["Jwt:Audience"],
+            claims,
             expires: DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes()),
             signingCredentials: credentials
         );
@@ -163,16 +162,15 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
     private async Task<List<string>> GetUserRolesAsync(int accountId)
     {
-        // Lấy roles của user từ AccountRole
         var accountRolesQuery = await _unitOfWork.GenericRepository<Accountrole>()
             .GetQuery(ar => ar.AccountId == accountId);
         var accountRoles = accountRolesQuery.ToList();
 
         var roleIds = accountRoles.Select(ar => ar.RoleId).ToList();
         var roles = await _roleServices.GetAllAsync();
-        
+
         return roles.Where(r => roleIds.Contains(r.Id))
-                   .Select(r => r.RoleName)
-                   .ToList();
+            .Select(r => r.RoleName)
+            .ToList();
     }
 }

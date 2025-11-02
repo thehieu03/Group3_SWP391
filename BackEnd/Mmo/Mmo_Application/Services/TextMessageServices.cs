@@ -1,8 +1,9 @@
-﻿namespace Mmo_Application.Services;
+namespace Mmo_Application.Services;
 
-public class TextMessageServices :BaseServices<Textmessage>,ITextMessageServices
+public class TextMessageServices : BaseServices<Textmessage>, ITextMessageServices
 {
     public TextMessageServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 }

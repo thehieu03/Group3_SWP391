@@ -1,8 +1,8 @@
 import React from 'react';
-import type { CategoriesResponse } from '../../models/modelResponse/CategoriesResponse';
-import indexHomeCategory from '../../assets/indexHomeCategory';
+import type { CategoriesResponse } from '@/models/modelResponse/CategoriesResponse';
+import indexHomeCategory from '@/assets/indexHomeCategory';
 import { useNavigate } from 'react-router-dom';
-import routesConfig from '../../config/routesConfig';
+import routesConfig from '@config/routesConfig.ts';
 import Image from '../Image';
 
 interface CategoryListProps {
@@ -12,7 +12,6 @@ interface CategoryListProps {
 const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
     const navigate = useNavigate();
     
-    // Danh sách icons theo thứ tự
     const categoryIcons = [
         indexHomeCategory.logoEmail,
         indexHomeCategory.logoTools,
@@ -20,7 +19,6 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
         indexHomeCategory.logoDiff
     ];
 
-    // Danh sách descriptions theo thứ tự
     const categoryDescriptions = [
         "Gmail, yahoo mail, hot mail... và nhiều hơn thế nữa",
         "Các phần mềm chuyên dụng cho kiếm tiền online từ những coder uy tín",
@@ -34,12 +32,10 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
 
     return (
         <div className="w-full max-w-4xl mx-auto px-4 py-8">
-            {/* Title */}
             <h2 className="text-2xl font-bold text-green-600 text-center mb-8">
                 -- DANH SÁCH SẢN PHẨM --
             </h2>
             
-            {/* Categories Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {categories.slice(0, 4).map((category, index) => (
                     <div 
@@ -48,7 +44,6 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
                         style={{ cursor: 'pointer' }}
                         onClick={() => handleCategoryClick(category.id)}
                     >
-                        {/* Icon */}
                         <div className="flex justify-center mb-4">
                             <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
                                 <Image 
@@ -59,12 +54,10 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
                             </div>
                         </div>
                         
-                        {/* Title */}
                         <h3 className="text-lg font-bold text-green-600 mb-2">
                             {category.name}
                         </h3>
                         
-                        {/* Description */}
                         <p className="text-sm text-gray-600 leading-relaxed">
                             {categoryDescriptions[index]}
                         </p>

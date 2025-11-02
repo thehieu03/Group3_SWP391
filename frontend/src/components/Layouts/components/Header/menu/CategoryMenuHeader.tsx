@@ -1,12 +1,19 @@
 import { type FC, useEffect, useState } from "react";
-import type { CategoriesResponse } from "../../../models/modelResponse/CategoriesResponse";
-import { categoryServices } from "../../../services/CategoryServices";
+import type { CategoriesResponse } from "@models/modelResponse/CategoriesResponse.ts";
+import { categoryServices } from "@services/CategoryServices.ts";
 import TippyHeadless from "@tippyjs/react/headless";
 import Tippy from "@tippyjs/react";
-import type { Tools } from "../../../models/Tools.tsx";
-import Button from "../../Button/Button.tsx";
-import routesConfig from "../../../config/routesConfig.tsx";
+import type { Tools } from "@models/Tools.ts";
+import Button from "@components/Button/Button.tsx";
+import routesConfig from "@config/routesConfig.ts";
+import { useNavigate } from "react-router-dom";
 
+const categoryNameToSlug: Record<string, string> = {
+  Gmail: "gmail",
+  "Phần mềm": "software",
+  "Tài khoản": "account",
+  Khác: "other",
+};
 
 const tools: Tools[] = [
   {
@@ -21,7 +28,7 @@ const tools: Tools[] = [
 const MENU_ITEM_CLASS =
   "h-full px-4 flex items-center text-white font-medium cursor-pointer hover:bg-emerald-600/90 transition-colors";
 
-  const DROPDOWN_ITEM_CLASS =
+const DROPDOWN_ITEM_CLASS =
   "block w-full text-left py-2 text-[15px] text-gray-700 hover:text-emerald-600 cursor-pointer transition-colors";
 
 const DROPDOWN_CONTAINER_CLASS =
@@ -42,6 +49,7 @@ type CategoryMenuHeaderProps = {
 };
 
 const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
+  const navigate = useNavigate();
   const [categoriesItems, setCategoriesItems] = useState<CategoriesResponse[]>(
     []
   );
@@ -54,6 +62,10 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
     void fetchData();
   }, []);
 
+  const handleCategoryClick = (categoryId: number) => {
+    navigate(routesConfig.getCategoryProductsUrl(categoryId));
+  };
+
   const mid = Math.ceil(categoriesItems.length / 2);
   const firstCol = categoriesItems.slice(0, mid);
   const secondCol = categoriesItems.slice(mid);
@@ -63,14 +75,23 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
       <div className="grid grid-cols-2 gap-x-12 gap-y-3">
         <div>
           {firstCol.map((item) => (
-            <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
+            // route fallback to /products
+            <Button
+              key={item.id}
+              to={`/${categoryNameToSlug[item.name] ?? "products"}`}
+              className={DROPDOWN_ITEM_CLASS}
+            >
               {item.name}
             </Button>
           ))}
         </div>
         <div>
           {secondCol.map((item) => (
-            <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
+            <Button
+              key={item.id}
+              to={`/${categoryNameToSlug[item.name] ?? "products"}`}
+              className={DROPDOWN_ITEM_CLASS}
+            >
               {item.name}
             </Button>
           ))}

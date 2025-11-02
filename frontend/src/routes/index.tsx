@@ -1,20 +1,27 @@
 import type { FC, ReactNode } from "react";
-import Home from "../pages/UserAndSeller/Home/Home.tsx";
-import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
-import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
-import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
-import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
-import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
-import AdminPanel from "../pages/Admin/AdminPanel.tsx";
-import PaymentHistory from "../pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
-import routesConfig from "../config/routesConfig.tsx";
-import type { User } from "../models/modelResponse/LoginResponse";
-import Products from "../pages/Products/Products.tsx";
+import Home from "@pages/UserAndSeller/Home/Home.tsx";
+import DefaultLayout from "@components/Layouts/DefaultLayout/DefaultLayout.tsx";
+import HeaderAndFooter from "@components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
+import AdminLayoutNoHeader from "@components/Layouts/AdminLayoutNoHeader.tsx";
+import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
+import CategoryProducts from "@pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
+import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
+import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
+import AdminPanel from "@pages/Admin/AdminPanel.tsx";
+import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
+import routesConfig from "@config/routesConfig.ts";
+import type { User } from "@models/modelResponse/LoginResponse";
+import ChangePassword from "@pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
+import OrderUser from "@/pages/UserAndSeller/OrderUser/OrderUser";
+import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
+import Share from "@pages/UserAndSeller/Share/Share.tsx";
+import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
+import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
 type AppRoute = {
   path: string;
   element: ReactNode;
   layout: FC<{ children?: ReactNode }>;
-  requiredRoles?: string[]; // Thêm trường roles
+  requiredRoles?: string[];
 };
 const publicRoutes: AppRoute[] = [
   {
@@ -22,15 +29,34 @@ const publicRoutes: AppRoute[] = [
     element: <Home />,
     layout: DefaultLayout,
   },
-  { path: "/category/:id", element: <Products />, layout: HeaderAndFooter },
   {
     path: routesConfig.productDetails,
     element: <ProductDetails />,
     layout: HeaderAndFooter,
   },
   {
+    path: routesConfig.categoryProducts + "/:id",
+    element: <CategoryProducts />,
+    layout: DefaultLayout,
+  },
+  {
     path: routesConfig.deposit,
     element: <Deposit />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.registerShop,
+    element: <RegisterShop />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.loginValidator,
+    element: <LoginValidator />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.forgotPassword,
+    element: <ForgotPassword />,
     layout: DefaultLayout,
   },
 ];
@@ -39,76 +65,97 @@ const privateRoutes: AppRoute[] = [
     path: routesConfig.userProfile,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'], // User và Seller có thể truy cập
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.changePassword,
+    element: <ChangePassword />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
-    path: routesConfig.paymentHistory,
-    element: <PaymentHistory />,
+    path: routesConfig.userOrder,
+    element: <OrderUser />,
     layout: DefaultLayout,
-    requiredRoles: ['CUSTOMER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.share,
+    element: <Share />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
 ];
 
-// Seller routes - chỉ seller mới truy cập được
 const sellerRoutes: AppRoute[] = [
   {
-    path: '/seller/dashboard',
-    element: <div>Seller Dashboard - Quản lý shop</div>, // Placeholder
+    path: "/seller/dashboard",
+    element: <div>Seller Dashboard - Quản lý shop</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: '/seller/products',
-    element: <div>Quản lý sản phẩm</div>, // Placeholder
+    path: "/seller/products",
+    element: <div>Quản lý sản phẩm</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: '/seller/orders',
-    element: <div>Quản lý đơn hàng</div>, // Placeholder
+    path: "/seller/orders",
+    element: <div>Quản lý đơn hàng</div>,
     layout: DefaultLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
 ];
 
-// Admin routes - chỉ admin mới truy cập được
 const adminRoutes: AppRoute[] = [
   {
-    path: '/admin/dashboard',
+    path: "/admin/dashboard",
     element: <AdminPanel />,
-    layout: DefaultLayout,
-    requiredRoles: ['ADMIN'],
+    layout: AdminLayoutNoHeader,
+    requiredRoles: ["ADMIN"],
+  },
+  {
+    path: "/admin/products",
+    element: <AdminProductManagement />,
+    layout: AdminLayoutNoHeader,
+    requiredRoles: ["ADMIN"],
   },
 ];
-// Helper function để check quyền truy cập
-export const hasRequiredRole = (user: User | null, requiredRoles?: string[]): boolean => {
+export const hasRequiredRole = (
+  user: User | null,
+  requiredRoles?: string[]
+): boolean => {
   if (!requiredRoles || requiredRoles.length === 0) {
-    return true; // Không yêu cầu role cụ thể
+    return true;
   }
-  
+
   if (!user || !user.roles || user.roles.length === 0) {
-    return false; // User không có role
+    return false;
   }
-  
-  // Kiểm tra xem user có ít nhất 1 role trong danh sách required không
-  return requiredRoles.some(role => user.roles.includes(role));
+
+  return requiredRoles.some((role) => user.roles.includes(role));
 };
 
-// Helper function để lấy routes dựa trên role
 export const getAccessibleRoutes = (user: User | null): AppRoute[] => {
-  const allRoutes = [...publicRoutes, ...privateRoutes, ...sellerRoutes, ...adminRoutes];
-  
-  return allRoutes.filter(route => {
+  const allRoutes = [
+    ...publicRoutes,
+    ...privateRoutes,
+    ...sellerRoutes,
+    ...adminRoutes,
+  ];
+
+  return allRoutes.filter((route) => {
     if (!route.requiredRoles) {
-      return true; // Public routes
+      return true;
     }
-    
+
     return hasRequiredRole(user, route.requiredRoles);
   });
 };

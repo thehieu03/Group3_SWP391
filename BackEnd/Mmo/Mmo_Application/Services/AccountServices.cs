@@ -1,16 +1,22 @@
-﻿using BCrypt.Net;
+using BCrypt.Net;
 using Mmo_Domain.Models;
 using Mmo_Domain.ModelRequest;
 
 namespace Mmo_Application.Services;
 
-public class AccountServices:BaseServices<Account>,IAccountServices
+public class AccountServices : BaseServices<Account>, IAccountServices
 {
     private readonly IRoleServices _roleServices;
+    private readonly IDapperService _dapperService;
+    private readonly IEmailService? _emailService;
 
-    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices) : base(unitOfWork)
+    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService, IEmailService? emailService = null) :
+        base(unitOfWork)
     {
         _roleServices = roleServices;
+        _dapperService = dapperService;
+        _emailService = emailService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Account?> GetByUsernameAsync(string username)
@@ -22,12 +28,18 @@ public class AccountServices:BaseServices<Account>,IAccountServices
     public async Task<Account?> GetByEmailAsync(string email)
     {
         var accounts = await GetAllAsync();
+
         return accounts.FirstOrDefault(a => a.Email == email);
     }
 
     public Task<bool> VerifyPasswordAsync(Account account, string password)
     {
         return Task.FromResult(BCrypt.Net.BCrypt.Verify(password, account.Password));
+    }
+
+    public Task<string> HashPasswordAsync(string password)
+    {
+        return Task.FromResult(BCrypt.Net.BCrypt.HashPassword(password));
     }
 
     public async Task<bool> IsAccountActiveAsync(int accountId)
@@ -40,65 +52,327 @@ public class AccountServices:BaseServices<Account>,IAccountServices
     {
         var accountRolesQuery = await _unitOfWork.GenericRepository<Accountrole>()
             .GetQuery(ar => ar.AccountId == accountId);
-        var accountRoles = accountRolesQuery.ToList();
+        var accountRoles = await accountRolesQuery.ToListAsync();
 
         var roleIds = accountRoles.Select(ar => ar.RoleId).ToList();
         var roles = await _roleServices.GetAllAsync();
-        
+
         return roles.Where(r => roleIds.Contains(r.Id))
-                   .Select(r => r.RoleName)
-                   .ToList();
+            .Select(r => r.RoleName)
+            .ToList();
     }
 
     public async Task<bool> UpdateProfileAsync(int accountId, ProfileUpdateRequest request)
     {
-        // Lấy account hiện tại
         var account = await GetByIdAsync(accountId);
-        if (account == null)
-        {
-            return false;
-        }
+        if (account == null) return false;
 
-        // Kiểm tra username đã tồn tại chưa (nếu có thay đổi)
         if (!string.IsNullOrEmpty(request.Username) && request.Username != account.Username)
         {
             var existingAccount = await GetByUsernameAsync(request.Username);
-            if (existingAccount != null)
-            {
-                return false; // Username đã tồn tại
-            }
+            if (existingAccount != null) return false;
         }
 
-        // Kiểm tra email đã tồn tại chưa (nếu có thay đổi)
         if (!string.IsNullOrEmpty(request.Email) && request.Email != account.Email)
         {
             var existingAccount = await GetByEmailAsync(request.Email);
-            if (existingAccount != null)
-            {
-                return false; // Email đã tồn tại
-            }
+            if (existingAccount != null) return false;
         }
 
-        // Cập nhật các field
-        if (!string.IsNullOrEmpty(request.Username))
-        {
-            account.Username = request.Username;
-        }
+        if (!string.IsNullOrEmpty(request.Username)) account.Username = request.Username;
 
-        if (!string.IsNullOrEmpty(request.Email))
-        {
-            account.Email = request.Email;
-        }
+        if (!string.IsNullOrEmpty(request.Email)) account.Email = request.Email;
 
-        if (!string.IsNullOrEmpty(request.Phone))
-        {
-            account.Phone = request.Phone;
-        }
+        if (!string.IsNullOrEmpty(request.Phone)) account.Phone = request.Phone;
 
-        // Cập nhật UpdatedAt
         account.UpdatedAt = DateTime.Now;
 
-        // Lưu thay đổi
         return await UpdateAsync(account);
+    }
+
+    public async Task<bool> UpdateAccountAsync(int accountId, UserResponse request)
+    {
+        var account = await GetByIdAsync(accountId);
+        if (account == null) return false;
+
+        if (!string.IsNullOrEmpty(request.Username) && request.Username != account.Username)
+        {
+            var existingAccount = await GetByUsernameAsync(request.Username);
+            if (existingAccount != null) return false;
+        }
+
+        if (!string.IsNullOrEmpty(request.Email) && request.Email != account.Email)
+        {
+            var existingAccount = await GetByEmailAsync(request.Email);
+            if (existingAccount != null) return false;
+        }
+
+        if (!string.IsNullOrEmpty(request.Username)) account.Username = request.Username;
+
+        if (!string.IsNullOrEmpty(request.Email)) account.Email = request.Email;
+
+        if (!string.IsNullOrEmpty(request.Phone)) account.Phone = request.Phone;
+
+        if (request.Balance.HasValue) account.Balance = request.Balance.Value;
+
+        if (request.IsActive.HasValue) account.IsActive = request.IsActive.Value;
+
+        account.UpdatedAt = DateTime.Now;
+
+        return await UpdateAsync(account);
+    }
+
+    public async Task<bool> DeleteAccountAsync(int accountId, int currentUserId)
+    {
+        if (accountId == currentUserId) return false;
+
+        var account = await GetByIdAsync(accountId);
+        if (account == null) return false;
+
+        return await DeleteAsync(account);
+    }
+
+    public async Task<bool> UpdateAccountRolesAsync(int userId, List<int> roleIds)
+    {
+        if (roleIds == null || !roleIds.Any()) return true;
+
+
+        var account = await GetByIdAsync(userId);
+        if (account == null) return false;
+
+
+        var currentAccountRoles = await _dapperService.GetAccountRolesAsync(userId);
+        var currentRoleIds = currentAccountRoles.Select(ar => ar.RoleId).ToList();
+
+
+        var rolesToAdd = roleIds.Where(roleId => !currentRoleIds.Contains(roleId)).ToList();
+
+
+        if (rolesToAdd.Any()) return await _dapperService.InsertAccountRolesAsync(userId, rolesToAdd);
+
+        return true;
+    }
+
+    public async Task<bool> UpdateAccountRolesAdvancedAsync(int userId, List<int> roleIds, bool replaceAll = false)
+    {
+        var account = await GetByIdAsync(userId);
+        if (account == null) return false;
+
+
+        if (roleIds == null) return true;
+
+
+        var currentAccountRoles = await _dapperService.GetAccountRolesAsync(userId);
+        var currentRoleIds = currentAccountRoles.Select(ar => ar.RoleId ?? 0).ToList();
+
+
+        Console.WriteLine($"[DEBUG] User {userId} - Current roles: [{string.Join(", ", currentRoleIds)}]");
+        Console.WriteLine($"[DEBUG] User {userId} - New roles: [{string.Join(", ", roleIds)}]");
+
+
+        var rolesToAdd = roleIds.Where(roleId => !currentRoleIds.Contains(roleId)).ToList();
+
+
+        var rolesToRemove = currentRoleIds.Where(roleId => !roleIds.Contains(roleId)).ToList();
+
+        Console.WriteLine($"[DEBUG] User {userId} - Roles to add: [{string.Join(", ", rolesToAdd)}]");
+        Console.WriteLine($"[DEBUG] User {userId} - Roles to remove: [{string.Join(", ", rolesToRemove)}]");
+
+
+        var hasSellerRoleToRemove = rolesToRemove.Contains(2); // Giả sử roleId = 2 là seller
+
+
+        if (rolesToRemove.Any())
+        {
+            var deleteResult = await _dapperService.DeleteAccountRolesAsync(userId, rolesToRemove);
+            if (!deleteResult) return false;
+        }
+
+
+        if (rolesToAdd.Any())
+        {
+            var insertResult = await _dapperService.InsertAccountRolesAsync(userId, rolesToAdd);
+            if (!insertResult) return false;
+        }
+
+
+        if (hasSellerRoleToRemove) await _dapperService.DeactivateUserShopsAsync(userId);
+
+        return true;
+    }
+
+    public async Task<bool> RemoveAccountRolesAsync(int userId, List<int> roleIds)
+    {
+        var account = await GetByIdAsync(userId);
+        if (account == null) return false;
+
+        if (roleIds == null || !roleIds.Any()) return true;
+
+
+        var currentAccountRoles = await _dapperService.GetAccountRolesAsync(userId);
+        var currentRoleIds = currentAccountRoles.Select(ar => ar.RoleId).ToList();
+
+
+        var hasSellerRole = roleIds.Contains(2);
+
+
+        var result = await _dapperService.DeleteAccountRolesAsync(userId, roleIds);
+
+
+        if (result && hasSellerRole) await _dapperService.DeactivateUserShopsAsync(userId);
+
+        return result;
+    }
+
+    public async Task<List<int>> GetUserRoleIdsAsync(int accountId)
+    {
+        var accountRolesQuery = await _unitOfWork.GenericRepository<Accountrole>()
+            .GetQuery(ar => ar.AccountId == accountId);
+        var accountRoles = accountRolesQuery.ToList();
+
+        return accountRoles.Select(ar => ar.RoleId ?? 0).ToList();
+    }
+
+    public async Task<bool> UpdateUserStatusAsync(int userId, bool isActive)
+    {
+        try
+        {
+            var account = await GetByIdAsync(userId);
+            if (account == null) return false;
+            account.IsActive = isActive;
+            await _unitOfWork.SaveChangeAsync();
+            var action = isActive ? "UNBANNED" : "BANNED";
+            Console.WriteLine($"[AUDIT] User {userId} {action} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Failed to update user status: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> BanUserAsync(int userId)
+    {
+        return await UpdateUserStatusAsync(userId, false);
+    }
+
+    public async Task<bool> UnbanUserAsync(int userId)
+    {
+        return await UpdateUserStatusAsync(userId, true);
+    }
+
+    public async Task<UserStatistics> GetUserStatisticsAsync()
+    {
+        var allUsers = await GetAllAsync();
+        var users = allUsers.ToList();
+
+        var totalUsers = users.Count;
+        var activeUsers = users.Count(u => u.IsActive == true);
+        var inactiveUsers = users.Count(u => u.IsActive == false);
+
+        var customers = 0;
+        var sellers = 0;
+
+        foreach (var user in users)
+        {
+            var roles = await GetUserRolesAsync(user.Id);
+            if (roles.Contains("SELLER"))
+                sellers++;
+            if (roles.Contains("CUSTOMER"))
+                customers++;
+        }
+
+        return new UserStatistics
+        {
+            TotalUsers = totalUsers,
+            ActiveUsers = activeUsers,
+            InactiveUsers = inactiveUsers,
+            Customers = customers,
+            Sellers = sellers
+        };
+    }
+
+    public async Task<Account> CheckAccountByGoogleId(string googleId)
+    {
+        var accounts = await GetAllAsync();
+        var accountResponse = accounts.FirstOrDefault(a => a.GoogleId == googleId);
+        return accountResponse != null ? accountResponse : null;
+    }
+
+    public async Task<(bool ok, string? error)> ChangePasswordAsync(int accountId, string currentPassword, string newPassword)
+    {
+        var account = await GetByIdAsync(accountId);
+        if (account == null) return (false, "Unauthorized");
+
+        if (!await VerifyPasswordAsync(account, currentPassword))
+            return (false, "Mật khẩu hiện tại không đúng");
+
+        if (currentPassword == newPassword)
+            return (false, "Mật khẩu mới không được trùng mật khẩu hiện tại");
+
+        var newHash = await HashPasswordAsync(newPassword);
+        account.Password = newHash;
+        account.UpdatedAt = DateTime.Now;
+        var saved = await UpdateAsync(account);
+        if (!saved) return (false, "Cập nhật thất bại");
+        return (true, null);
+    }
+
+    public async Task<(bool ok, string? error)> ForgotPasswordAsync(string email)
+    {
+        try
+        {
+            // Validate email format
+            if (string.IsNullOrWhiteSpace(email))
+                return (false, "Email không được để trống");
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(email, 
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                return (false, "Email không hợp lệ hoặc không tồn tại");
+
+            // Check if account exists
+            var account = await GetByEmailAsync(email);
+            if (account == null)
+                return (false, "Email không hợp lệ hoặc không tồn tại");
+
+            // Generate new random password
+            var newPassword = GenerateRandomPassword();
+
+            // Hash new password
+            var hashedPassword = await HashPasswordAsync(newPassword);
+
+            // Update account password
+            account.Password = hashedPassword;
+            account.UpdatedAt = DateTime.Now;
+            var saved = await UpdateAsync(account);
+
+            if (!saved)
+                return (false, "Có lỗi xảy ra khi cập nhật mật khẩu. Vui lòng thử lại sau.");
+
+            // Send email with new password
+            if (_emailService != null)
+            {
+                var emailSent = await _emailService.SendPasswordResetEmailAsync(email, newPassword);
+                if (!emailSent)
+                    return (false, "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau.");
+            }
+
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] ForgotPasswordAsync: {ex.Message}");
+            return (false, "Có lỗi xảy ra khi xử lý yêu cầu. Vui lòng thử lại sau.");
+        }
+    }
+
+    private string GenerateRandomPassword(int length = 12)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var random = new Random();
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }

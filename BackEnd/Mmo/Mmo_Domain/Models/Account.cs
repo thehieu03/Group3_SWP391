@@ -9,7 +9,7 @@ public partial class Account
 
     public string Username { get; set; } = null!;
 
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; }
 
     public string? Phone { get; set; }
 
@@ -22,6 +22,8 @@ public partial class Account
     public byte[]? IdentificationF { get; set; }
 
     public byte[]? IdentificationB { get; set; }
+
+    public byte[]? Image { get; set; }
 
     public bool? IsActive { get; set; }
 

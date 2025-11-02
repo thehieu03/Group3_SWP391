@@ -4,7 +4,6 @@ public class SubcategoryServices : BaseServices<Subcategory>, ISubcategoryServic
 {
     public SubcategoryServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 }
-
-

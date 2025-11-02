@@ -1,7 +1,3 @@
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-
 namespace Mmo_Api.Api;
 
 [Route("api/products")]
@@ -20,54 +16,38 @@ public class ProductsController : ControllerBase
     [HttpGet]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProductsByCategory([FromQuery] int categoryId,
+    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProduct([FromQuery] int? categoryId,
         [FromQuery] int? subcategoryId, [FromQuery] string? searchTerm, [FromQuery] string? sortBy)
     {
-        if (categoryId <= 0)
-        {
-            return BadRequest("CategoryId is required and must be greater than 0");
-        }
-
         var products = await _productServices.GetAllWithRelatedAsync();
 
-        // Filter by category (required)
-        products = products.Where(p => p.CategoryId == (uint)categoryId);
 
-        // Filter by subcategory (optional)
-        if (subcategoryId.HasValue)
-        {
-            products = products.Where(p => p.SubcategoryId == (uint?)subcategoryId.Value);
-        }
+        if (categoryId.HasValue) products = products.Where(p => p.CategoryId == (uint?)categoryId.Value);
 
-        //search filter
+
+        if (subcategoryId.HasValue) products = products.Where(p => p.SubcategoryId == (uint?)subcategoryId.Value);
+
+
         if (!string.IsNullOrEmpty(searchTerm))
-        {
             products = products.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
-        }
 
-        if (!products.Any())
-        {
-            return NotFound();
-        }
+        if (!products.Any()) return NotFound();
 
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(products);
 
-        // Apply sorting
         if (!string.IsNullOrEmpty(sortBy))
-        {
             switch (sortBy.ToLower())
             {
                 case "price_asc":
-                    // sort by minPrice, then default by name
+
                     resultResponse = resultResponse
                         .OrderBy(p => p.MinPrice ?? 0)
                         .ThenBy(p => p.Name);
                     break;
                 case "price_desc":
-                    // Sort by MaxPrice, then default by name
+
                     resultResponse = resultResponse
                         .OrderByDescending(p => p.MaxPrice ?? 0)
                         .ThenBy(p => p.Name);
@@ -82,11 +62,24 @@ public class ProductsController : ControllerBase
                     resultResponse = resultResponse.OrderByDescending(p => p.AverageRating);
                     break;
             }
-        }
 
         return Ok(resultResponse);
     }
 
+    [HttpGet("{id}")]
+    [EnableQuery]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProductByCategoryId(int id)
+    {
+        var products = await _productServices.GetAllAsync();
+        var filteredProducts = products.Where(p => p.CategoryId == (uint)id);
+        if (!filteredProducts.Any()) return NotFound();
+
+        var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(filteredProducts);
+        return Ok(resultResponse);
+    }
 
     [HttpGet("getProductById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -95,10 +88,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery] int id)
     {
         var productResult = await _productServices.GetByIdAsync(id);
-        if (productResult == null)
-        {
-            return NotFound();
-        }
+        if (productResult == null) return NotFound();
 
         var productResponse = _mapper.Map<ProductResponse>(productResult);
         return Ok(productResponse);
@@ -109,10 +99,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest productRequest)
     {
-        if (productRequest == null || !ModelState.IsValid)
-        {
-            return BadRequest();
-        }
+        if (productRequest == null || !ModelState.IsValid) return BadRequest();
 
         var productAdd = _mapper.Map<Product>(productRequest);
         var result = await _productServices.AddAsync(productAdd);

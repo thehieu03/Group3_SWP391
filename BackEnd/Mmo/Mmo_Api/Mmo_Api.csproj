@@ -8,25 +8,38 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="[12.0.1]" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[12.0.1]" />
-        
-        <PackageReference Include="Microsoft.AspNetCore.OData" Version="[8.3.1]" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageReference Include="AutoMapper" Version="[12.0.1]"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[12.0.1]"/>
+
+        <PackageReference Include="Microsoft.AspNetCore.OData" Version="[8.3.1]"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.20"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mmo_Application\Mmo_Application.csproj" />
+        <ProjectReference Include="..\Mmo_Application\Mmo_Application.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Using Include="Microsoft.AspNetCore.Mvc" />
-        <Using Include="Mmo_Domain.Models" />
-        <Using Include="Mmo_Domain.ModelRequest" />
-        <Using Include="AutoMapper" />
-        <Using Include="Microsoft.AspNetCore.OData.Query" />
-        <Using Include="Mmo_Domain.ModelResponse" />
+        <Using Include="Microsoft.AspNetCore.Mvc"/>
+        <Using Include="Mmo_Domain.Models"/>
+        <Using Include="Mmo_Domain.ModelRequest"/>
+        <Using Include="AutoMapper"/>
+        <Using Include="Microsoft.AspNetCore.OData.Query"/>
+        <Using Include="Mmo_Domain.ModelResponse"/>
+        <Using Include="Microsoft.AspNetCore.Authorization"/>
+        <Using Include="System.Security.Claims"/>
+        <Using Include="Mmo_Application.Services.Interface"/>
+        <Using Include="Mmo_Domain.IUnit"/>
+        <Using Include="System.Data"/>
+        <Using Include="MySqlConnector"/>
+        <Using Include="Mmo_Application.Services"/>
+        <Using Include="Microsoft.IdentityModel.Tokens"/>
+        <Using Include="Microsoft.EntityFrameworkCore"/>
+        <Using Include="Microsoft.AspNetCore.OData"/>
+        <Using Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+        <Using Include="System.Text"/>
+        <Using Include="Mmo_Infrastructure.Unit"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="..\.dockerignore">

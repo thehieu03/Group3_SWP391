@@ -1,5 +1,5 @@
-import type {SubcategoryResponse} from "../models/modelResponse/SubcategoryResponse.tsx";
-import {httpGet} from "../utils/http.tsx";
+import type {SubcategoryResponse} from "@/models/modelResponse/SubcategoryResponse.tsx";
+import {httpGet} from "@utils/http.ts";
 
 class SubcategoryServices {
     async getAllSubcategories(categoryId?: number): Promise<SubcategoryResponse[]> {

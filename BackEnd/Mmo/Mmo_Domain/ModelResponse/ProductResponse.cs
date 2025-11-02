@@ -36,7 +36,7 @@ public class ProductResponse
     public string? CategoryName { get; set; }
     public string? SubcategoryName { get; set; }
     
-    //  data for product card
+
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
     public int TotalStock { get; set; }

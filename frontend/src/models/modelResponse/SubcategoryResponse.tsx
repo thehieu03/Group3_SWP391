@@ -4,3 +4,5 @@ export interface SubcategoryResponse {
     name: string;
     isActive: boolean | null;
 }
+
+
