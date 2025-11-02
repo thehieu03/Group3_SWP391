@@ -1,5 +1,6 @@
 import { httpGet, httpPost } from "@utils/http.ts";
 import type { LoginRequest } from "@models/modelRequest/LoginRequest";
+import type { RegisterRequest } from "@models/modelRequest/RegisterRequest";
 import type { LoginOrRegisterWithGoogleRequest } from "@models/modelRequest/LoginOrRegisterWithGoogleRequest";
 import type { LoginResponse, User } from "@models/modelResponse/LoginResponse";
 
@@ -19,6 +20,14 @@ class AuthServices {
       LoginResponse,
       LoginOrRegisterWithGoogleRequest
     >("accounts/google", googleData);
+    return response;
+  }
+
+  async registerAsync(registerData: RegisterRequest): Promise<LoginResponse> {
+    const response = await httpPost<LoginResponse, RegisterRequest>(
+      "auth/register",
+      registerData
+    );
     return response;
   }
 

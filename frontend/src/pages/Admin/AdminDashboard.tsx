@@ -72,7 +72,7 @@ const AdminDashboard = () => {
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => globalThis.location.reload()}
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             Thử lại
@@ -130,8 +130,8 @@ const AdminDashboard = () => {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        {statCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg shadow p-6">
+        {statCards.map((stat) => (
+          <div key={stat.title} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className={`p-3 rounded-full ${stat.color} text-white`}>
                 {stat.icon}
@@ -158,8 +158,11 @@ const AdminDashboard = () => {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {dashboardData.notifications.map((notification, index) => (
-                <div key={index} className="flex items-center space-x-3">
+              {dashboardData.notifications.map((notification) => (
+                <div
+                  key={`${notification.type}-${notification.createdAt}`}
+                  className="flex items-center space-x-3"
+                >
                   <div
                     className={`w-2 h-2 ${getNotificationColor(
                       notification.type
@@ -202,33 +205,50 @@ const AdminDashboard = () => {
                     n.type === "NewOrder" ||
                     n.type === "SuccessfulTransactions"
                 )
-                .map((notification, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center"
-                  >
-                    <span className="text-sm text-gray-600">
-                      {notification.type === "TodayRevenue"
-                        ? "Doanh thu hôm nay"
-                        : notification.type === "NewOrder"
-                        ? "Đơn hàng thành công hôm nay"
-                        : "Giao dịch thành công hôm nay"}
-                    </span>
-                    <span
-                      className={`text-sm font-medium ${
-                        notification.type === "TodayRevenue"
-                          ? "text-blue-600"
-                          : notification.type === "NewOrder"
-                          ? "text-purple-600"
-                          : "text-green-600"
-                      }`}
+                .map((notification) => {
+                  const getLabel = () => {
+                    if (notification.type === "TodayRevenue") {
+                      return "Doanh thu hôm nay";
+                    }
+                    if (notification.type === "NewOrder") {
+                      return "Đơn hàng thành công hôm nay";
+                    }
+                    return "Giao dịch thành công hôm nay";
+                  };
+
+                  const getColorClass = () => {
+                    if (notification.type === "TodayRevenue") {
+                      return "text-blue-600";
+                    }
+                    if (notification.type === "NewOrder") {
+                      return "text-purple-600";
+                    }
+                    return "text-green-600";
+                  };
+
+                  const getDisplayValue = () => {
+                    if (notification.type === "TodayRevenue") {
+                      return formatPrice(notification.count);
+                    }
+                    return notification.count;
+                  };
+
+                  return (
+                    <div
+                      key={`${notification.type}-${notification.createdAt}`}
+                      className="flex justify-between items-center"
                     >
-                      {notification.type === "TodayRevenue"
-                        ? formatPrice(notification.count)
-                        : notification.count}
-                    </span>
-                  </div>
-                ))}
+                      <span className="text-sm text-gray-600">
+                        {getLabel()}
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${getColorClass()}`}
+                      >
+                        {getDisplayValue()}
+                      </span>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

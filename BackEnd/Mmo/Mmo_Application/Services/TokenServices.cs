@@ -43,6 +43,13 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
         await AddAsync(token);
 
+        // Convert Image (byte[]) to base64 string
+        string? avatarBase64 = null;
+        if (account.Image != null && account.Image.Length > 0)
+        {
+            avatarBase64 = Convert.ToBase64String(account.Image);
+        }
+
         return new AuthResponse
         {
             AccessToken = accessToken,
@@ -56,6 +63,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
                 Phone = account.Phone,
                 Balance = account.Balance,
                 Avatar = account.Image,
+                AvatarBase64 = avatarBase64,
                 IsActive = account.IsActive,
                 CreatedAt = account.CreatedAt,
                 Roles = roles

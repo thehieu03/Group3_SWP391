@@ -30,7 +30,7 @@ const LoginMenu = () => {
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      setError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+      navigate(routesConfig.loginValidator);
       return;
     }
 
@@ -116,8 +116,7 @@ const LoginMenu = () => {
         } else {
           navigate(routesConfig.home);
         }
-      } catch (err) {
-        console.error("Google login failed:", err);
+      } catch {
         setError("Đăng nhập với Google thất bại");
       } finally {
         setIsLoading(false);

@@ -22,9 +22,15 @@ class UserServices {
   async updateProfileAsync(
     profileData: UpdateProfileRequest
   ): Promise<UpdateProfileResponse> {
+    // Backend requires multipart/form-data format even without avatar
+    const form = new FormData();
+    if (profileData.username) form.append("username", profileData.username);
+    if (profileData.phone) form.append("phone", profileData.phone);
+    // Note: email cannot be updated via this endpoint
+
     const response = await httpPut<UpdateProfileResponse>(
       "accounts/profile",
-      profileData
+      form as unknown as FormData
     );
     return response;
   }

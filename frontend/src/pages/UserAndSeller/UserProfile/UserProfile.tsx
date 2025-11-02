@@ -38,6 +38,51 @@ const UserProfile: React.FC = () => {
     }
   }, [isLoggedIn, loading, navigate]);
 
+  // Helper function to parse avatar from user object
+  const parseAvatarFromUser = React.useCallback((userData: typeof user) => {
+    if (!userData) return null;
+
+    const u = userData as unknown as {
+      avatar?: unknown;
+      avatarBase64?: unknown;
+      image?: unknown;
+    };
+    const raw =
+      u?.avatar ?? u?.avatarBase64 ?? u?.image ?? userData.avatarBase64;
+
+    if (!raw) {
+      return null;
+    }
+
+    if (typeof raw === "string") {
+      const s = raw.trim();
+      if (s === "") return null;
+      const src =
+        s.startsWith("data:") ||
+        s.startsWith("http://") ||
+        s.startsWith("https://")
+          ? s
+          : `data:image/jpeg;base64,${s}`;
+      return src;
+    }
+
+    if (Array.isArray(raw)) {
+      const bytes = new Uint8Array(raw as number[]);
+      let binary = "";
+      const chunk = 8192;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(
+          null,
+          Array.from(bytes.subarray(i, i + chunk)) as unknown as number[]
+        );
+      }
+      const b64 = btoa(binary);
+      return `data:image/jpeg;base64,${b64}`;
+    }
+
+    return null;
+  }, []);
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -45,54 +90,12 @@ const UserProfile: React.FC = () => {
         email: user.email || "",
         phone: user.phone || "",
       });
-      // Debug avatar data when opening infoAccount
-      console.log("UserProfile user:", user);
-      console.log(
-        "UserProfile avatar raw:",
-        (
-          user as unknown as {
-            avatar?: unknown;
-            avatarBase64?: unknown;
-            image?: unknown;
-          }
-        )?.avatar ??
-          (user as unknown as { avatarBase64?: unknown })?.avatarBase64 ??
-          (user as unknown as { image?: unknown })?.image
-      );
-      const u = user as unknown as {
-        avatar?: unknown;
-        avatarBase64?: unknown;
-        image?: unknown;
-      };
-      const raw = u?.avatar ?? u?.avatarBase64 ?? u?.image;
-      if (!raw) {
-        setAvatar(null);
-      } else if (typeof raw === "string") {
-        const s = raw.trim();
-        const src =
-          s.startsWith("data:") ||
-          s.startsWith("http://") ||
-          s.startsWith("https://")
-            ? s
-            : `data:image/jpeg;base64,${s}`;
-        setAvatar(src);
-      } else if (Array.isArray(raw)) {
-        const bytes = new Uint8Array(raw as number[]);
-        let binary = "";
-        const chunk = 8192;
-        for (let i = 0; i < bytes.length; i += chunk) {
-          binary += String.fromCharCode.apply(
-            null,
-            Array.from(bytes.subarray(i, i + chunk)) as unknown as number[]
-          );
-        }
-        const b64 = btoa(binary);
-        setAvatar(`data:image/jpeg;base64,${b64}`);
-      } else {
-        setAvatar(null);
-      }
+
+      // Parse avatar from user
+      const parsedAvatar = parseAvatarFromUser(user);
+      setAvatar(parsedAvatar);
     }
-  }, [user]);
+  }, [user, parseAvatarFromUser]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -161,13 +164,14 @@ const UserProfile: React.FC = () => {
         phone: formData.phone,
       };
 
+      let updateResponse = null;
       if (avatarFile) {
         try {
-          await userServices.updateProfileWithAvatarAsync(
+          updateResponse = await userServices.updateProfileWithAvatarAsync(
             updateData,
             avatarFile
           );
-        } catch {
+        } catch (error: unknown) {
           setSaveMessage({
             type: "error",
             text: "Có lỗi khi cập nhật thông tin kèm avatar. Vui lòng thử lại.",
@@ -175,22 +179,105 @@ const UserProfile: React.FC = () => {
           return;
         }
       } else {
-        await userServices.updateProfileAsync(updateData);
+        updateResponse = await userServices.updateProfileAsync(updateData);
       }
 
       // Refresh auth user so menus and other places get latest avatar
+      let refreshedUser = null;
       try {
-        const refreshed = await authServices.getCurrentUserAsync();
-        login(refreshed);
-      } catch {
+        // Add a small delay to ensure backend has processed the update
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        refreshedUser = await authServices.getCurrentUserAsync();
+
+        // Thử gọi API accounts/profile để xem có avatar không (nếu endpoint hỗ trợ GET)
+        // Note: Endpoint này có thể không hỗ trợ GET method, sẽ bỏ qua nếu lỗi
+        let profileAvatarData: string | null = null;
+        try {
+          const profileResponse = await userServices.getProfileAsync();
+
+          // Kiểm tra tất cả các field có thể chứa avatar
+          const profileObj = profileResponse as unknown as Record<
+            string,
+            unknown
+          >;
+          const avatarFields = [
+            "avatarUrl",
+            "avatar",
+            "avatarBase64",
+            "image",
+            "Image",
+          ];
+          for (const field of avatarFields) {
+            const value = profileObj[field];
+            if (value && typeof value === "string" && value.trim() !== "") {
+              profileAvatarData = value;
+              break;
+            }
+          }
+        } catch (profileError) {
+          // API accounts/profile có thể không hỗ trợ GET method (405 error)
+          // Bỏ qua nếu lỗi
+        }
+
+        // If avatar was uploaded, retry getting user if avatar is not yet available
+        if (avatarFile) {
+          let retryCount = 0;
+          while (retryCount < 3) {
+            const parsedAvatar = parseAvatarFromUser(refreshedUser);
+            if (parsedAvatar) {
+              break; // Avatar is available
+            }
+            // Wait and retry
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            refreshedUser = await authServices.getCurrentUserAsync();
+            retryCount++;
+          }
+        }
+
+        let finalParsedAvatar = parseAvatarFromUser(refreshedUser);
+
+        // Nếu không có avatar từ auth/me nhưng có từ profile API, sử dụng profile API
+        if (!finalParsedAvatar && profileAvatarData) {
+          finalParsedAvatar = parseAvatarFromUser({
+            ...refreshedUser,
+            avatarBase64: profileAvatarData,
+          } as typeof refreshedUser);
+
+          // Merge avatar vào refreshedUser để lưu vào auth context
+          refreshedUser = {
+            ...refreshedUser,
+            avatarBase64: profileAvatarData,
+          } as typeof refreshedUser;
+        }
+
+        login(refreshedUser);
+      } catch (error: unknown) {
         // ignore
       }
 
+      // Update form data
       setFormData({
         username: updateData.username || formData.username,
         email: formData.email,
         phone: updateData.phone || formData.phone,
       });
+
+      // Always update avatar from refreshed user data if available
+      // If avatar was uploaded but backend hasn't processed it yet, keep the preview
+      if (refreshedUser) {
+        const parsedAvatar = parseAvatarFromUser(refreshedUser);
+
+        // Only update avatar if we got a valid one from backend, otherwise keep preview
+        if (parsedAvatar) {
+          setAvatar(parsedAvatar);
+          // Clear avatarFile vì đã có từ backend
+          setAvatarFile(null);
+        } else if (avatarFile) {
+          // If avatarFile exists and no avatar from backend, keep the preview (avatar state already set)
+          // Avatar preview sẽ bị mất khi refresh page vì chỉ là base64 từ file local
+        }
+      }
 
       setSaveMessage({
         type: "success",
@@ -203,7 +290,7 @@ const UserProfile: React.FC = () => {
       setTimeout(() => {
         setSaveMessage(null);
       }, 3000);
-    } catch {
+    } catch (error: unknown) {
       setSaveMessage({
         type: "error",
         text: "Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.",

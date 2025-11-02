@@ -45,7 +45,6 @@ const SupportTickets = () => {
       setTickets(res.value);
       setStats(res.stats);
     } catch (err) {
-      console.error("Error fetching support tickets:", err);
       setError("Không thể tải danh sách ticket. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
@@ -95,7 +94,6 @@ const SupportTickets = () => {
       setReplyMessage("");
       setReplyingTicket(null);
     } catch (e) {
-      console.error("Reply failed", e);
       setError("Gửi phản hồi thất bại. Vui lòng thử lại.");
     } finally {
       setSendingReply(false);
@@ -117,7 +115,6 @@ const SupportTickets = () => {
         setSelectedTicket({ ...selectedTicket, status });
       }
     } catch (e) {
-      console.error("Update status failed", e);
       setError("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
     } finally {
       setUpdatingId(null);

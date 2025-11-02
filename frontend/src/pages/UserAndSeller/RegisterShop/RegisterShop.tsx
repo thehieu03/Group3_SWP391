@@ -21,7 +21,6 @@ export default function RegisterShop() {
   const [message, setMessage] = useState<string>("");
   const frontInputRef = useRef<HTMLInputElement | null>(null);
   const backInputRef = useRef<HTMLInputElement | null>(null);
-    console.log(name);
   const handleFile = (
     file: File | null,
     setFile: (f: File | null) => void,
@@ -61,17 +60,6 @@ export default function RegisterShop() {
         identificationF: frontFile as File,
         identificationB: backFile as File,
       };
-      console.log("RegisterShop debug:", {
-        name: payload.name,
-        phone: payload.phone,
-        description: payload.description,
-        frontFile: frontFile
-          ? { name: frontFile.name, type: frontFile.type, size: frontFile.size }
-          : null,
-        backFile: backFile
-          ? { name: backFile.name, type: backFile.type, size: backFile.size }
-          : null,
-      });
       await shopServices.registerShopAsync(payload);
       window.alert("Đăng ký shop thành công, chờ duyệt");
       navigate(routesConfig.home);

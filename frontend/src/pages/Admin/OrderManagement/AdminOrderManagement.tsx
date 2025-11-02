@@ -67,7 +67,7 @@ const AdminOrderManagement = () => {
 
         setOrders(ordersData);
         setTotalCount(countData);
-      } catch (err) {
+      } catch {
         setError("Không thể tải dữ liệu đơn hàng");
       } finally {
         setLoading(false);

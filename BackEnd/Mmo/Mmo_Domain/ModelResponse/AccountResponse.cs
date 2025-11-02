@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Mmo_Domain.ModelResponse;
 
 public class AccountResponse
@@ -8,6 +10,10 @@ public class AccountResponse
     public string? Phone { get; set; }
     public decimal? Balance { get; set; }
     public byte[]? Avatar { get; set; }
+    
+    [JsonPropertyName("avatarBase64")]
+    public string? AvatarBase64 { get; set; }
+    
     public bool? IsActive { get; set; }
     public DateTime? CreatedAt { get; set; }
     public List<string> Roles { get; set; } = new();

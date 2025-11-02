@@ -142,9 +142,21 @@ public class AccountController : ControllerBase
 
             if (!string.IsNullOrWhiteSpace(phone))
             {
-                if (phone.Length < 7 || phone.Length > 20)
+                var trimmedPhone = phone.Trim();
+                
+                // Length validation
+                if (trimmedPhone.Length < 7 || trimmedPhone.Length > 20)
                     return BadRequest(new { message = "Phone must be between 7 and 20 characters" });
-                account.Phone = phone.Trim();
+                
+                // Format validation: only numbers, spaces, dashes, plus signs, and parentheses
+                if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"^[0-9+\-\s()]*$"))
+                    return BadRequest(new { message = "Phone number contains invalid characters. Only numbers, spaces, dashes, plus signs, and parentheses are allowed" });
+                
+                // Must contain at least one digit
+                if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"[0-9]"))
+                    return BadRequest(new { message = "Phone number must contain at least one digit" });
+                
+                account.Phone = trimmedPhone;
             }
 
             if (avatar != null)

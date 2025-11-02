@@ -8,10 +8,16 @@ public static class RegisterMiddleware
         var connStr = configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddControllers().AddOData(options =>
-        {
-            options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
-        });
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.WriteIndented = true;
+            })
+            .AddOData(options =>
+            {
+                options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
+            });
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {

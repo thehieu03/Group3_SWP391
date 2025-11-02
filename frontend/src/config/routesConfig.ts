@@ -17,6 +17,7 @@ const routesConfig = {
   forgotPassword: "/forgotPassword",
   infoAccount: "/infoAccount",
   userProfile: "/userProfile",
+  loginValidator: "/loginValidator",
   getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
   getProductUrl: (id: number) => `/product/${id}`,
   getCategoryProductsUrl: (id: number) => `/category/${id}`,
