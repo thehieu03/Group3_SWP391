@@ -6,6 +6,7 @@ import type {
 } from "@/models/modelResponse/AdminProductResponse";
 import type { ProductListRequest } from "../../models/modelRequest/ProductRequest";
 import { formatPrice, formatDateOnly } from "@/helpers";
+import Image from "@/components/Image";
 
 const AdminProductManagement = () => {
   const [products, setProducts] = useState<AdminProductResponse[]>([]);
@@ -326,19 +327,25 @@ const AdminProductManagement = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            {product.images.length > 0 ? (
-                              <img
-                                className="h-10 w-10 rounded-lg object-cover"
-                                src={product.images[0]}
-                                alt={product.name}
-                              />
-                            ) : (
-                              <div className="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                                <span className="text-gray-400 text-xs">
-                                  No Image
-                                </span>
-                              </div>
-                            )}
+                            {(() => {
+                              const first =
+                                product.primaryImageUrl ||
+                                (product.imageUrls && product.imageUrls[0]) ||
+                                (product.images && product.images[0]);
+                              return first ? (
+                                <Image
+                                  className="h-10 w-10 rounded-lg object-cover"
+                                  src={first}
+                                  alt={product.name}
+                                />
+                              ) : (
+                                <div className="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                                  <span className="text-gray-400 text-xs">
+                                    No Image
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">

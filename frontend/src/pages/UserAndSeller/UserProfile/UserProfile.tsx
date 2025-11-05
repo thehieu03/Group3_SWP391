@@ -12,6 +12,7 @@ import ProfileFormFields from "./ProfileFormFields.tsx";
 import ProfileMessage from "./ProfileMessage.tsx";
 import ProfileActions from "./ProfileActions.tsx";
 import ProfileStats from "./ProfileStats.tsx";
+import { toAbsoluteImageUrl } from "@/utils/apiBase";
 
 const UserProfile: React.FC = () => {
   const { user, isLoggedIn, loading, login } = useAuth();
@@ -38,49 +39,16 @@ const UserProfile: React.FC = () => {
     }
   }, [isLoggedIn, loading, navigate]);
 
-  // Helper function to parse avatar from user object
+  // Helper function to get avatar URL from user object (backend now returns URL)
   const parseAvatarFromUser = React.useCallback((userData: typeof user) => {
     if (!userData) return null;
-
     const u = userData as unknown as {
-      avatar?: unknown;
-      avatarBase64?: unknown;
-      image?: unknown;
+      imageUrl?: unknown;
+      avatarUrl?: unknown;
     };
-    const raw =
-      u?.avatar ?? u?.avatarBase64 ?? u?.image ?? userData.avatarBase64;
-
-    if (!raw) {
-      return null;
-    }
-
-    if (typeof raw === "string") {
-      const s = raw.trim();
-      if (s === "") return null;
-      const src =
-        s.startsWith("data:") ||
-        s.startsWith("http://") ||
-        s.startsWith("https://")
-          ? s
-          : `data:image/jpeg;base64,${s}`;
-      return src;
-    }
-
-    if (Array.isArray(raw)) {
-      const bytes = new Uint8Array(raw as number[]);
-      let binary = "";
-      const chunk = 8192;
-      for (let i = 0; i < bytes.length; i += chunk) {
-        binary += String.fromCharCode.apply(
-          null,
-          Array.from(bytes.subarray(i, i + chunk)) as unknown as number[]
-        );
-      }
-      const b64 = btoa(binary);
-      return `data:image/jpeg;base64,${b64}`;
-    }
-
-    return null;
+    const raw = (u?.imageUrl ?? u?.avatarUrl) as string | undefined;
+    if (!raw || typeof raw !== "string" || raw.trim() === "") return null;
+    return toAbsoluteImageUrl(raw);
   }, []);
 
   useEffect(() => {
@@ -94,6 +62,9 @@ const UserProfile: React.FC = () => {
       // Parse avatar from user
       const parsedAvatar = parseAvatarFromUser(user);
       setAvatar(parsedAvatar);
+
+      console.log("[UserProfile] initial user:", user);
+      console.log("[UserProfile] initial avatar URL:", parsedAvatar);
     }
   }, [user, parseAvatarFromUser]);
 
@@ -146,6 +117,7 @@ const UserProfile: React.FC = () => {
 
       setAvatarFile(file);
 
+      // Show a temporary preview for local selection
       const reader = new FileReader();
       reader.onload = (e) => {
         setAvatar(e.target?.result as string);
@@ -164,14 +136,13 @@ const UserProfile: React.FC = () => {
         phone: formData.phone,
       };
 
-      let updateResponse = null;
       if (avatarFile) {
         try {
-          updateResponse = await userServices.updateProfileWithAvatarAsync(
+          await userServices.updateProfileWithAvatarAsync(
             updateData,
             avatarFile
           );
-        } catch (error: unknown) {
+        } catch {
           setSaveMessage({
             type: "error",
             text: "Có lỗi khi cập nhật thông tin kèm avatar. Vui lòng thử lại.",
@@ -179,7 +150,7 @@ const UserProfile: React.FC = () => {
           return;
         }
       } else {
-        updateResponse = await userServices.updateProfileAsync(updateData);
+        await userServices.updateProfileAsync(updateData);
       }
 
       // Refresh auth user so menus and other places get latest avatar
@@ -201,13 +172,7 @@ const UserProfile: React.FC = () => {
             string,
             unknown
           >;
-          const avatarFields = [
-            "avatarUrl",
-            "avatar",
-            "avatarBase64",
-            "image",
-            "Image",
-          ];
+          const avatarFields = ["imageUrl", "avatarUrl"];
           for (const field of avatarFields) {
             const value = profileObj[field];
             if (value && typeof value === "string" && value.trim() !== "") {
@@ -215,7 +180,7 @@ const UserProfile: React.FC = () => {
               break;
             }
           }
-        } catch (profileError) {
+        } catch {
           // API accounts/profile có thể không hỗ trợ GET method (405 error)
           // Bỏ qua nếu lỗi
         }
@@ -239,20 +204,18 @@ const UserProfile: React.FC = () => {
 
         // Nếu không có avatar từ auth/me nhưng có từ profile API, sử dụng profile API
         if (!finalParsedAvatar && profileAvatarData) {
-          finalParsedAvatar = parseAvatarFromUser({
-            ...refreshedUser,
-            avatarBase64: profileAvatarData,
-          } as typeof refreshedUser);
-
-          // Merge avatar vào refreshedUser để lưu vào auth context
+          finalParsedAvatar = toAbsoluteImageUrl(profileAvatarData);
           refreshedUser = {
-            ...refreshedUser,
-            avatarBase64: profileAvatarData,
+            ...(refreshedUser as object),
+            imageUrl: profileAvatarData,
           } as typeof refreshedUser;
         }
 
+        console.log("[UserProfile] refreshed user:", refreshedUser);
+        console.log("[UserProfile] final avatar URL:", finalParsedAvatar);
+
         login(refreshedUser);
-      } catch (error: unknown) {
+      } catch {
         // ignore
       }
 
@@ -290,7 +253,7 @@ const UserProfile: React.FC = () => {
       setTimeout(() => {
         setSaveMessage(null);
       }, 3000);
-    } catch (error: unknown) {
+    } catch {
       setSaveMessage({
         type: "error",
         text: "Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.",

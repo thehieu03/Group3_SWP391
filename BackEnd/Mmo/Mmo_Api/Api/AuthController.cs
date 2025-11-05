@@ -155,13 +155,6 @@ public class AuthController : ControllerBase
 
             var roles = await _accountServices.GetUserRolesAsync(userId);
 
-            // Convert Image (byte[]) to base64 string
-            string? avatarBase64 = null;
-            if (account.Image != null && account.Image.Length > 0)
-            {
-                avatarBase64 = Convert.ToBase64String(account.Image);
-            }
-
             var userResponse = new AccountResponse
             {
                 Id = account.Id,
@@ -169,7 +162,7 @@ public class AuthController : ControllerBase
                 Email = account.Email,
                 Phone = account.Phone,
                 Balance = account.Balance,
-                AvatarBase64 = avatarBase64,
+                ImageUrl = account.ImageUrl,
                 IsActive = account.IsActive,
                 CreatedAt = account.CreatedAt,
                 Roles = roles

@@ -10,7 +10,11 @@ export interface AdminProductResponse {
   shopId: number;
   shopName: string;
   stock: number;
-  images: string[];
+  // Backend now returns image URLs instead of base64.
+  // Prefer imageUrls; keep images optional for backward compatibility.
+  imageUrls?: string[];
+  primaryImageUrl?: string;
+  images?: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

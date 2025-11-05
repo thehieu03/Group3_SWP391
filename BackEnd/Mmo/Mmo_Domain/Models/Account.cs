@@ -19,11 +19,17 @@ public partial class Account
 
     public string? GoogleId { get; set; }
 
-    public byte[]? IdentificationF { get; set; }
+    public string? IdentificationFurl { get; set; }
 
-    public byte[]? IdentificationB { get; set; }
+    public DateTime? IdentificationFuploadedAt { get; set; }
 
-    public byte[]? Image { get; set; }
+    public string? IdentificationBurl { get; set; }
+
+    public DateTime? IdentificationBuploadedAt { get; set; }
+
+    public string? ImageUrl { get; set; }
+
+    public DateTime? ImageUploadedAt { get; set; }
 
     public bool? IsActive { get; set; }
 

@@ -20,7 +20,7 @@ public class ProductResponse
 
     public string? Description { get; set; }
 
-    public byte[]? Image { get; set; }
+    public string? ImageUrl { get; set; }
 
     public bool? IsActive { get; set; }
 

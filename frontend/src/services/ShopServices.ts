@@ -1,4 +1,4 @@
-import { httpGet, httpPut ,httpPost} from "@utils/http.ts";
+import { httpGet, httpPut, httpPost } from "@utils/http.ts";
 import type { RegisterShopRequest } from "@models/modelRequest/RegisterShopRequest";
 
 export interface Shop {
@@ -227,9 +227,7 @@ class ShopServices {
     form.append("identificationF", request.identificationF);
     form.append("identificationB", request.identificationB);
 
-    await httpPost<void, FormData>("shops/register", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    await httpPost<void, FormData>("shops/register", form);
   }
 }
 

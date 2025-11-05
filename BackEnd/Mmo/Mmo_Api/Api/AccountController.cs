@@ -10,14 +10,16 @@ public class AccountController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ITokenServices _tokenServices;
     private readonly IRoleServices _roleServices;
+    private readonly IWebHostEnvironment _environment;
 
     public AccountController(IAccountServices accountServices, IMapper mapper, ITokenServices tokenServices,
-        IRoleServices roleServices)
+        IRoleServices roleServices, IWebHostEnvironment environment)
     {
         _accountServices = accountServices;
         _mapper = mapper;
         _tokenServices = tokenServices;
         _roleServices = roleServices;
+        _environment = environment;
     }
 
     [HttpGet]
@@ -167,15 +169,21 @@ public class AccountController : ControllerBase
 
             if (avatar != null)
             {
-                if (!avatar.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
-                    return BadRequest(new { message = "Avatar must be an image" });
-                const long maxSize = 5 * 1024 * 1024;
-                if (avatar.Length > maxSize)
-                    return BadRequest(new { message = "Avatar size must be ≤ 5MB" });
+                // Delete old image if exists
+                if (!string.IsNullOrEmpty(account.ImageUrl)) HelperImage.DeleteImage(account.ImageUrl);
 
-                await using var ms = new MemoryStream();
-                await avatar.CopyToAsync(ms);
-                account.Image = ms.ToArray();
+                // Use helper to validate and save to Images/Accounts
+                try
+                {
+                    var imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Accounts, avatar,
+                        _environment, 5 * 1024 * 1024);
+                    account.ImageUrl = imageUrl;
+                    account.ImageUploadedAt = DateTime.UtcNow;
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
             }
 
             account.UpdatedAt = DateTime.UtcNow;
@@ -187,6 +195,44 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpGet("accountProfile")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> GetMyProfile()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Unauthorized" });
+
+            var account = await _accountServices.GetByIdAsync(userId);
+            if (account == null) return NotFound(new { message = "User not found" });
+
+            var response = new
+            {
+                id = account.Id,
+                username = account.Username,
+                email = account.Email,
+                phone = account.Phone,
+                balance = account.Balance,
+                isActive = account.IsActive,
+                createdAt = account.CreatedAt?.ToString("o"),
+                updatedAt = account.UpdatedAt?.ToString("o"),
+                avatarUrl = account.ImageUrl
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
 
@@ -427,12 +473,63 @@ public class AccountController : ControllerBase
             return Ok(authResponse);
         }
 
+        // Download and save Google image to Accounts folder
+        string? imageUrl = null;
+        if (!string.IsNullOrEmpty(request.Image))
+            try
+            {
+                var imageBytes = await HelperImage.DownloadImageFromUrlAsync(request.Image);
+                await using var ms = new MemoryStream(imageBytes);
+                IFormFile formFile = new FormFile(ms, 0, ms.Length, "avatar", $"{request.GoogleId}_avatar.jpg")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "image/jpeg"
+                };
+                imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Accounts, formFile,
+                    _environment, 5 * 1024 * 1024);
+            }
+            catch
+            {
+                // If image download fails, continue without image
+                imageUrl = null;
+            }
+
+        // If account not found by GoogleId, try link by email
+        var existingByEmail = await _accountServices.GetByEmailAsync(request.Email);
+        if (existingByEmail != null)
+        {
+            existingByEmail.GoogleId = request.GoogleId;
+            if (string.IsNullOrEmpty(existingByEmail.ImageUrl) && !string.IsNullOrEmpty(imageUrl))
+            {
+                existingByEmail.ImageUrl = imageUrl;
+                existingByEmail.ImageUploadedAt = DateTime.UtcNow;
+            }
+            existingByEmail.UpdatedAt = DateTime.UtcNow;
+            await _accountServices.UpdateAsync(existingByEmail);
+
+            var linkedTokens = await _tokenServices.GenerateTokensAsync(existingByEmail);
+            return Ok(linkedTokens);
+        }
+
+        // Generate a unique username to avoid duplicate key violation
+        var desiredUsername = (request.Username ?? request.Email?.Split('@').FirstOrDefault() ?? "user").Trim();
+        if (string.IsNullOrWhiteSpace(desiredUsername)) desiredUsername = $"user_{request.GoogleId.Substring(0, Math.Min(6, request.GoogleId.Length))}";
+
+        var uniqueUsername = desiredUsername;
+        var suffix = 0;
+        while (await _accountServices.GetByUsernameAsync(uniqueUsername) != null && suffix < 100)
+        {
+            suffix++;
+            uniqueUsername = $"{desiredUsername}{suffix}";
+        }
+
         var accountAdd = new Account
         {
             GoogleId = request.GoogleId,
-            Email = request.Email,
-            Username = request.Username,
-            Image = await HelperImage.DownloadImageFromUrlAsync(request.Image)
+            Email = request.Email!,
+            Username = uniqueUsername,
+            ImageUrl = imageUrl,
+            ImageUploadedAt = imageUrl != null ? DateTime.UtcNow : null
         };
         var addAccount = await _accountServices.AddAsync(accountAdd);
         try
@@ -455,6 +552,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> UpdateEmailAccount()
     {
         var account = await _accountServices.GetByIdAsync(4);
+        if (account == null) return NotFound();
         account.Email = "leducmanh038@gmail.com";
         var result = await _accountServices.UpdateAsync(account);
         return Ok(result);
@@ -464,6 +562,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> U()
     {
         var account = await _accountServices.GetByIdAsync(4);
+        if (account == null) return NotFound();
         account.Email = "leducmanh038@gmail.com";
         account.Password = await _accountServices.HashPasswordAsync("Password123!");
         var result = await _accountServices.UpdateAsync(account);

@@ -1,4 +1,5 @@
 import { httpPut, httpGet, httpPost, httpDelete } from "@utils/http.ts";
+import { toAbsoluteImageUrl } from "@utils/apiBase";
 import type {
   UpdateProfileRequest,
   UpdateAccountRequest,
@@ -53,7 +54,9 @@ class UserServices {
   }
 
   async getProfileAsync(): Promise<UpdateProfileResponse> {
-    const response = await httpGet<UpdateProfileResponse>("accounts/profile");
+    const response = await httpGet<UpdateProfileResponse>(
+      "accounts/accountProfile"
+    );
     return response;
   }
 

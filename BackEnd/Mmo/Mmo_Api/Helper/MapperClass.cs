@@ -53,10 +53,10 @@ public class MapperClass : Profile
                 opt => opt.MapFrom(src => src.Account != null ? src.Account.Username : null))
             .ForMember(d => d.ProductCount, opt => opt.MapFrom(src => src.Products != null ? src.Products.Count : 0))
             .ForMember(d => d.ComplaintCount, opt => opt.MapFrom(src => src.Replies != null ? src.Replies.Count : 0))
-            .ForMember(d => d.IdentificationF,
-                opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationF : null))
-            .ForMember(d => d.IdentificationB,
-                opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationB : null));
+            .ForMember(d => d.IdentificationFurl,
+                opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationFurl : null))
+            .ForMember(d => d.IdentificationBurl,
+                opt => opt.MapFrom(src => src.Account != null ? src.Account.IdentificationBurl : null));
         CreateMap<Subcategory, SubcategoryResponse>().ReverseMap();
         CreateMap<RegisterRequest, Account>().ReverseMap();
         CreateMap<Order, OrderUserResponse>()

@@ -17,7 +17,9 @@ public partial class Product
 
     public string? Description { get; set; }
 
-    public byte[]? Image { get; set; }
+    public string? ImageUrl { get; set; }
+
+    public DateTime? ImageUploadedAt { get; set; }
 
     public bool? IsActive { get; set; }
 

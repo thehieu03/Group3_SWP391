@@ -1,3 +1,4 @@
+using Mmo_Api.Helper;
 namespace Mmo_Api.Api;
 
 [Route("api/products")]
@@ -6,11 +7,13 @@ public class ProductsController : ControllerBase
 {
     private readonly IProductServices _productServices;
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _environment;
 
-    public ProductsController(IProductServices productServices, IMapper mapper)
+    public ProductsController(IProductServices productServices, IMapper mapper, IWebHostEnvironment environment)
     {
         _productServices = productServices;
         _mapper = mapper;
+        _environment = environment;
     }
 
     [HttpGet]
@@ -97,11 +100,29 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateProduct([FromBody] ProductRequest productRequest)
+    public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image)
     {
         if (productRequest == null || !ModelState.IsValid) return BadRequest();
 
         var productAdd = _mapper.Map<Product>(productRequest);
+
+        // Handle image upload if provided
+        if (image != null)
+        {
+            if (!image.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                return BadRequest(new { message = "File must be an image" });
+
+            const long maxSize = 10 * 1024 * 1024; // 10MB
+            if (image.Length > maxSize)
+                return BadRequest(new { message = "Image size must be ≤ 10MB" });
+
+            // Save image to Products folder using HelperImage
+            var imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Products, image, _environment);
+
+            productAdd.ImageUrl = imageUrl;
+            productAdd.ImageUploadedAt = DateTime.UtcNow;
+        }
+
         var result = await _productServices.AddAsync(productAdd);
         return result > 0 ? Ok() : BadRequest();
     }

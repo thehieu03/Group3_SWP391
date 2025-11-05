@@ -26,7 +26,8 @@ http.interceptors.response.use(
 
       try {
         const refreshToken = Cookies.get("refreshToken");
-        const response = await axios.post("/auth/refresh", {
+        // Use the configured http client to ensure baseURL is applied (e.g., /api)
+        const response = await http.post("auth/refresh", {
           refreshToken,
         });
 

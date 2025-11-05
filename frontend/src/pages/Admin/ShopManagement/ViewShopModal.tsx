@@ -15,12 +15,8 @@ const ViewShopModal: FC<ViewShopModalProps> = ({ isOpen, onClose, shop }) => {
 
   const resolveImageSrc = (input?: string | null): string => {
     if (!input) return "";
-    const trimmed = input.trim();
-    if (trimmed.startsWith("data:")) return trimmed;
-    if (trimmed.startsWith("http://") || trimmed.startsWith("https://"))
-      return trimmed;
-    // treat as base64 without prefix
-    return `data:image/jpeg;base64,${trimmed}`;
+    // Backend now provides URL (absolute or relative). Image component will prefix API base if needed.
+    return input;
   };
 
   return (

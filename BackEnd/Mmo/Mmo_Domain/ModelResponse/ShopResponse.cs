@@ -10,9 +10,8 @@ public class ShopResponse
     public string OwnerUsername { get; set; } = null!;
     public int? ProductCount { get; set; }
     public int? ComplaintCount { get; set; }
-    public byte[] IdentificationF { get; set; } = null!;
-
-    public byte[] IdentificationB { get; set; } = null!;
+    public string? IdentificationFurl { get; set; }
+    public string? IdentificationBurl { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

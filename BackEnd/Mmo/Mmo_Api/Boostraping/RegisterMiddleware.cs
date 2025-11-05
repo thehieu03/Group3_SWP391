@@ -1,3 +1,4 @@
+using Microsoft.Extensions.FileProviders;
 namespace Mmo_Api.Boostraping;
 
 public static class RegisterMiddleware
@@ -75,6 +76,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ITokenServices, TokenServices>();
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
         builder.Services.AddScoped<IEmailService, EmailService>();
+        // Removed image service DI; using static HelperImage methods instead
 
 
         builder.Services.AddScoped<IDbConnection>(provider =>
@@ -95,10 +97,24 @@ public static class RegisterMiddleware
             app.UseSwaggerUI();
         }
 
-        app.MapControllers();
+        // HTTPS redirection first
         app.UseHttpsRedirection();
+
+        // Serve static files from default wwwroot (if any)
+        app.UseStaticFiles();
+
+        // Explicitly serve the Images folder at /Images
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Images")),
+            RequestPath = "/Images"
+        });
+
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapControllers();
+
         app.Run();
         return app;
     }

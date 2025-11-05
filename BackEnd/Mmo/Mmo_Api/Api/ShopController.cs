@@ -1,3 +1,4 @@
+using Mmo_Api.Helper;
 namespace Mmo_Api.Api;
 
 [Route("api/shops")]
@@ -7,12 +8,14 @@ public class ShopController : ControllerBase
     private readonly IShopServices _shopServices;
     private readonly IMapper _mapper;
     private readonly IAccountServices _accountServices;
+    private readonly IWebHostEnvironment _environment;
 
-    public ShopController(IShopServices shopServices, IMapper mapper, IAccountServices accountServices)
+    public ShopController(IShopServices shopServices, IMapper mapper, IAccountServices accountServices, IWebHostEnvironment environment)
     {
         _shopServices = shopServices;
         _mapper = mapper;
         _accountServices = accountServices;
+        _environment = environment;
     }
 
     [HttpGet]
@@ -304,14 +307,35 @@ public class ShopController : ControllerBase
             if (identificationF == null || identificationB == null)
                 return BadRequest(new { message = "Cần tải lên đủ 2 ảnh CMND/CCCD" });
 
-            await using var msF = new MemoryStream();
-            await identificationF.CopyToAsync(msF);
-            await using var msB = new MemoryStream();
-            await identificationB.CopyToAsync(msB);
+            // Validate image files
+            if (!identificationF.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase) ||
+                !identificationB.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                return BadRequest(new { message = "File phải là hình ảnh" });
+
+            const long maxSize = 10 * 1024 * 1024; // 10MB
+            if (identificationF.Length > maxSize || identificationB.Length > maxSize)
+                return BadRequest(new { message = "Kích thước file không được vượt quá 10MB" });
+
+            // Delete old images if exists
+            if (!string.IsNullOrEmpty(account.IdentificationFurl))
+            {
+                HelperImage.DeleteImage(account.IdentificationFurl);
+            }
+            if (!string.IsNullOrEmpty(account.IdentificationBurl))
+            {
+                HelperImage.DeleteImage(account.IdentificationBurl);
+            }
+
+            // Save identification images to Shops folder using HelperImage
+            var identificationFurl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Shops, identificationF, _environment);
+
+            var identificationBurl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Shops, identificationB, _environment);
 
             account.Phone = phone.Trim();
-            account.IdentificationF = msF.ToArray();
-            account.IdentificationB = msB.ToArray();
+            account.IdentificationFurl = identificationFurl;
+            account.IdentificationBurl = identificationBurl;
+            account.IdentificationFuploadedAt = DateTime.UtcNow;
+            account.IdentificationBuploadedAt = DateTime.UtcNow;
             account.UpdatedAt = DateTime.UtcNow;
             var updated = await _accountServices.UpdateAsync(account);
             if (!updated) return StatusCode(500, new { message = "Cập nhật tài khoản thất bại" });

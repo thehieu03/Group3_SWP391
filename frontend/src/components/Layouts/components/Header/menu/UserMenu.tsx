@@ -11,45 +11,17 @@ const UserMenu = () => {
   return (
     <div className="bg-white shadow-md rounded-md p-3 w-[220px]">
       <div className="flex items-center gap-2 mb-2 border-b pb-2">
-        {(() => {
-          const u = user as unknown as {
-            avatarBase64?: unknown;
-            image?: unknown;
-          };
-          const raw = u?.avatarBase64 ?? u?.image;
-          const resolveSrc = (): string => {
-            if (!raw) return "/avatar.png";
-            if (typeof raw === "string") {
-              const s = raw.trim();
-              if (s.startsWith("data:")) return s;
-              if (s.startsWith("http://") || s.startsWith("https://")) return s;
-              return `data:image/jpeg;base64,${s}`;
-            }
-            if (Array.isArray(raw)) {
-              const bytes = new Uint8Array(raw as number[]);
-              let binary = "";
-              const chunk = 8192;
-              for (let i = 0; i < bytes.length; i += chunk) {
-                binary += String.fromCharCode.apply(
-                  null,
-                  Array.from(
-                    bytes.subarray(i, i + chunk)
-                  ) as unknown as number[]
-                );
-              }
-              const b64 = btoa(binary);
-              return `data:image/jpeg;base64,${b64}`;
-            }
-            return "/avatar.png";
-          };
-          return (
-            <Image
-              src={resolveSrc()}
-              alt="avatar"
-              className="w-8 h-8 rounded-full"
-            />
-          );
-        })()}
+        <Image
+          src={
+            (user as unknown as { imageUrl?: string; avatarUrl?: string })
+              ?.imageUrl ||
+            (user as unknown as { imageUrl?: string; avatarUrl?: string })
+              ?.avatarUrl ||
+            "/avatar.png"
+          }
+          alt="avatar"
+          className="w-8 h-8 rounded-full"
+        />
         <div>
           <p className="font-semibold text-sm">{user?.username}</p>
           <p className="text-gray-500 text-xs">{user?.email}</p>

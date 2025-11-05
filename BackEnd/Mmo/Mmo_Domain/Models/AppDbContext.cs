@@ -76,7 +76,9 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.GoogleId, "googleId").IsUnique();
 
-            entity.HasIndex(e => e.Username, "username").IsUnique();
+            entity.HasIndex(e => e.Username, "idx_accounts_username");
+
+            entity.HasIndex(e => e.ImageUrl, "idx_imageUrl").HasAnnotation("MySql:IndexPrefixLength", new[] { 255 });
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Balance)
@@ -91,15 +93,24 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("email");
             entity.Property(e => e.GoogleId).HasColumnName("googleId");
-            entity.Property(e => e.IdentificationB)
-                .HasColumnType("mediumblob")
-                .HasColumnName("identificationB");
-            entity.Property(e => e.IdentificationF)
-                .HasColumnType("mediumblob")
-                .HasColumnName("identificationF");
-            entity.Property(e => e.Image)
-                .HasColumnType("mediumblob")
-                .HasColumnName("image");
+            entity.Property(e => e.IdentificationBuploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("identificationBUploadedAt");
+            entity.Property(e => e.IdentificationBurl)
+                .HasMaxLength(500)
+                .HasColumnName("identificationBUrl");
+            entity.Property(e => e.IdentificationFuploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("identificationFUploadedAt");
+            entity.Property(e => e.IdentificationFurl)
+                .HasMaxLength(500)
+                .HasColumnName("identificationFUrl");
+            entity.Property(e => e.ImageUploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("imageUploadedAt");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imageUrl");
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("isActive");
@@ -230,9 +241,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.MessageId)
                 .ValueGeneratedNever()
                 .HasColumnName("messageId");
-            entity.Property(e => e.Image)
-                .HasColumnType("blob")
-                .HasColumnName("image");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imageUrl");
 
             entity.HasOne(d => d.Message).WithOne(p => p.Imagemessage)
                 .HasForeignKey<Imagemessage>(d => d.MessageId)
@@ -348,6 +359,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.CategoryId, "categoryId");
 
+            entity.HasIndex(e => e.ImageUrl, "idx_imageUrl").HasAnnotation("MySql:IndexPrefixLength", new[] { 255 });
+
             entity.HasIndex(e => e.ShopId, "shopId");
 
             entity.HasIndex(e => e.SubcategoryId, "subcategoryId");
@@ -372,9 +385,12 @@ public partial class AppDbContext : DbContext
                 .HasPrecision(3, 2)
                 .HasDefaultValueSql("'-1.00'")
                 .HasColumnName("fee");
-            entity.Property(e => e.Image)
-                .HasColumnType("blob")
-                .HasColumnName("image");
+            entity.Property(e => e.ImageUploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("imageUploadedAt");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imageUrl");
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("isActive");
