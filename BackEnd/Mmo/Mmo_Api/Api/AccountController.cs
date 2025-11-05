@@ -455,7 +455,17 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> UpdateEmailAccount()
     {
         var account = await _accountServices.GetByIdAsync(4);
-        account.Email = "quanhzero@gmail.com";
+        account.Email = "leducmanh038@gmail.com";
+        var result = await _accountServices.UpdateAsync(account);
+        return Ok(result);
+    }
+
+    [HttpGet("u")]
+    public async Task<IActionResult> U()
+    {
+        var account = await _accountServices.GetByIdAsync(4);
+        account.Email = "leducmanh038@gmail.com";
+        account.Password = await _accountServices.HashPasswordAsync("Password123!");
         var result = await _accountServices.UpdateAsync(account);
         return Ok(result);
     }

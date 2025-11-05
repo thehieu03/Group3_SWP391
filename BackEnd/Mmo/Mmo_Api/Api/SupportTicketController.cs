@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Mmo_Api.Api;
 
 [Route("api/supporttickets")]
@@ -43,7 +40,8 @@ public class AdminSupportTicketController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ISystemsconfigServices _sysConfig;
 
-    public AdminSupportTicketController(ISupportticketServices service, IMapper mapper, ISystemsconfigServices sysConfig)
+    public AdminSupportTicketController(ISupportticketServices service, IMapper mapper,
+        ISystemsconfigServices sysConfig)
     {
         _service = service;
         _mapper = mapper;
@@ -65,12 +63,14 @@ public class AdminSupportTicketController : ControllerBase
                 Content = t.Content!,
                 CreatedAt = t.CreatedAt,
                 Status = t.Status ?? "OPEN",
-                Account = t.Account == null ? null : new AccountMiniResponse
-                {
-                    Id = t.Account.Id,
-                    Username = t.Account.Username,
-                    Email = t.Account.Email
-                }
+                Account = t.Account == null
+                    ? null
+                    : new AccountMiniResponse
+                    {
+                        Id = t.Account.Id,
+                        Username = t.Account.Username,
+                        Email = t.Account.Email
+                    }
             });
 
         var (total, pending, processing, closed) = await _service.GetStatsAsync();
@@ -85,7 +85,11 @@ public class AdminSupportTicketController : ControllerBase
         return Ok(_mapper.Map<SupportTicketResponse>(ticket));
     }
 
-    public class ReplyRequest { public string Message { get; set; } = null!; }
+    public class ReplyRequest
+    {
+        public string Message { get; set; } = null!;
+    }
+
     [HttpPost("{id}/reply")]
     public async Task<ActionResult> Reply(int id, [FromBody] ReplyRequest body)
     {
@@ -138,7 +142,11 @@ public class AdminSupportTicketController : ControllerBase
         return Ok(new { message = "Replied and emailed (if possible)" });
     }
 
-    public class UpdateStatusRequest { public string Status { get; set; } = null!; }
+    public class UpdateStatusRequest
+    {
+        public string Status { get; set; } = null!;
+    }
+
     [HttpPut("{id}/status")]
     public async Task<ActionResult<SupportTicketResponse>> UpdateStatus(int id, [FromBody] UpdateStatusRequest body)
     {
