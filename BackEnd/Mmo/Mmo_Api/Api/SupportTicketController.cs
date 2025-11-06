@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Mmo_Api.Api;
 
 [Route("api/supporttickets")]
@@ -39,10 +41,10 @@ public class AdminSupportTicketController : ControllerBase
     private readonly ISupportticketServices _service;
     private readonly IMapper _mapper;
     private readonly ISystemsconfigServices _sysConfig;
-    private readonly Logger<AdminSupportTicketController> _logger;
+    private readonly ILogger<AdminSupportTicketController> _logger;
 
     public AdminSupportTicketController(ISupportticketServices service, IMapper mapper,
-        ISystemsconfigServices sysConfig, Logger<AdminSupportTicketController> logger)
+        ISystemsconfigServices sysConfig, ILogger<AdminSupportTicketController> logger)
     {
         _service = service;
         _mapper = mapper;
