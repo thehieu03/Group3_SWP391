@@ -115,6 +115,7 @@ public class AccountController : ControllerBase
 
     [HttpPut("profile")]
     [Authorize]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -590,6 +591,7 @@ public class AccountController : ControllerBase
     /// <returns>Kết quả cập nhật</returns>
     [HttpPut("profile")]
     [Authorize] // Yêu cầu authentication
+    [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
