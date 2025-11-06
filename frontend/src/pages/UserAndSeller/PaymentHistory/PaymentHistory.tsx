@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { paymentHistoryServices } from "../../../services/PaymentHistoryServices";
 import { useAuth } from "../../../hooks/useAuth";
-import type { PaymentHistorySummary } from "../../../models/modelResponse/PaymentHistoryResponse";
+import type { PaymentHistorySummary } from "@models/modelResponse/PaymentHistoryResponse.ts";
 
 const PaymentHistory: React.FC = () => {
     const { user, isLoggedIn } = useAuth();

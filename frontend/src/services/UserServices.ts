@@ -1,5 +1,4 @@
 import { httpPut, httpGet, httpPost, httpDelete } from "@utils/http.ts";
-import { toAbsoluteImageUrl } from "@utils/apiBase";
 import type {
   UpdateProfileRequest,
   UpdateAccountRequest,

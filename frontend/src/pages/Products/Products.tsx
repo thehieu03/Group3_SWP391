@@ -5,9 +5,6 @@
 // import Button from "../../components/Button/Button";
 // import ProductCard from "../../components/ProductCard/ProductCard";
 // import type { ProductCardData } from "../../components/ProductCard/ProductCard";
-// import type {CategoriesResponse} from "../../models/modelResponse/CategoriesResponse.tsx";
-// import type {ProductResponse} from "../../models/modelResponse/ProductResponse.tsx";
-// import type {SubcategoryResponse} from "../../models/modelResponse/SubcategoryResponse.tsx";
 // import {categoryServices} from "@services/CategoryServices.ts";
 // import {productServices} from "@services/ProductServices.ts";
 // import {subcategoryServices} from "@services/SubcategoryServices.ts";
