@@ -1,10 +1,15 @@
+using Microsoft.Extensions.Logging;
+
 namespace Mmo_Application.Services;
 
 public class ShopServices : BaseServices<Shop>, IShopServices
 {
-    public ShopServices(IUnitOfWork unitOfWork) : base(unitOfWork)
+    private readonly ILogger<ShopServices> _logger;
+
+    public ShopServices(IUnitOfWork unitOfWork, ILogger<ShopServices> logger) : base(unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Shop>> GetAllWithDetailsAsync()
@@ -40,16 +45,16 @@ public class ShopServices : BaseServices<Shop>, IShopServices
 
             await _unitOfWork.SaveChangeAsync();
 
-            Console.WriteLine(
-                $"[AUDIT] Shop {shopId} ({shop.Name}) status changed to {status} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            Console.WriteLine(
-                $"[AUDIT] {products.Count} products of shop {shopId} isActive set to {shouldActivateProducts}");
+            _logger.LogInformation("Shop {ShopId} ({ShopName}) status changed to {Status} at {Timestamp}", 
+                shopId, shop.Name, status, DateTime.Now);
+            _logger.LogInformation("{ProductCount} products of shop {ShopId} isActive set to {IsActive}", 
+                products.Count, shopId, shouldActivateProducts);
 
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Failed to update shop status: {ex.Message}");
+            _logger.LogError(ex, "Failed to update shop status for shop {ShopId}", shopId);
             return false;
         }
     }

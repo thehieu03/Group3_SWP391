@@ -1,5 +1,5 @@
-import type { ProductResponse } from "@models/modelResponse/ProductResponse.tsx";
-import { httpGet } from "@utils/http.ts";
+import type { ProductResponse } from "@models/modelResponse/ProductResponse";
+import { httpGet } from "@utils/http";
 
 class ProductServices {
   async getAllProductAsync(): Promise<ProductResponse[]> {

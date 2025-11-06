@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Mmo_Domain.Enum;
 
 namespace Mmo_Api.Helper;
@@ -62,7 +63,7 @@ public static class HelperImage
         return $"/Images/{folder}/{fileName}";
     }
 
-    public static void DeleteImage(string imageUrl)
+    public static void DeleteImage(string imageUrl, ILogger? logger = null)
     {
         try
         {
@@ -81,7 +82,10 @@ public static class HelperImage
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[WARNING] Failed to delete image {imageUrl}: {ex.Message}");
+            if (logger != null)
+            {
+                logger.LogWarning(ex, "Failed to delete image {ImageUrl}", imageUrl);
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   publicRoutes,
-  privateRoutes,
+  sharedRoutes,
+  customerRoutes,
   sellerRoutes,
   adminRoutes,
   hasRequiredRole,
+  type AppRoute,
 } from "./routes";
 import { useAuth } from "./hooks/useAuth";
 import { Navigate } from "react-router-dom";
@@ -38,7 +40,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-          {publicRoutes.map((route, index) => {
+          {publicRoutes.map((route: AppRoute, index: number) => {
             const Layout = route.layout;
             const Page = route.element;
             return (
@@ -50,12 +52,12 @@ function App() {
             );
           })}
 
-          {privateRoutes.map((route, index) => {
+          {sharedRoutes.map((route: AppRoute, index: number) => {
             const Layout = route.layout;
             const Page = route.element;
             return (
               <Route
-                key={`private-${index}`}
+                key={`shared-${index}`}
                 path={route.path}
                 element={
                   <ProtectedRoute requiredRoles={route.requiredRoles}>
@@ -66,7 +68,23 @@ function App() {
             );
           })}
 
-          {sellerRoutes.map((route, index) => {
+          {customerRoutes.map((route: AppRoute, index: number) => {
+            const Layout = route.layout;
+            const Page = route.element;
+            return (
+              <Route
+                key={`customer-${index}`}
+                path={route.path}
+                element={
+                  <ProtectedRoute requiredRoles={route.requiredRoles}>
+                    <Layout>{Page}</Layout>
+                  </ProtectedRoute>
+                }
+              />
+            );
+          })}
+
+          {sellerRoutes.map((route: AppRoute, index: number) => {
             const Layout = route.layout;
             const Page = route.element;
             return (
@@ -82,7 +100,7 @@ function App() {
             );
           })}
 
-          {adminRoutes.map((route, index) => {
+          {adminRoutes.map((route: AppRoute, index: number) => {
             const Layout = route.layout;
             const Page = route.element;
             return (

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Logging;
 using Mmo_Application.Services.Interface;
 
 namespace Mmo_Application.Services;
@@ -7,12 +8,14 @@ namespace Mmo_Application.Services;
 public class EmailService : IEmailService
 {
     private readonly ISystemsconfigServices _systemsconfigServices;
+    private readonly ILogger<EmailService> _logger;
     private const string SmtpServer = "smtp.gmail.com";
     private const int SmtpPort = 587;
 
-    public EmailService(ISystemsconfigServices systemsconfigServices)
+    public EmailService(ISystemsconfigServices systemsconfigServices, ILogger<EmailService> logger)
     {
         _systemsconfigServices = systemsconfigServices;
+        _logger = logger;
     }
 
     public async Task<bool> SendPasswordResetEmailAsync(string toEmail, string newPassword)
@@ -70,8 +73,7 @@ Trân trọng,
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Failed to send email: {ex.Message}");
-            Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+            _logger.LogError(ex, "Failed to send email to {ToEmail}", toEmail);
             return false;
         }
     }

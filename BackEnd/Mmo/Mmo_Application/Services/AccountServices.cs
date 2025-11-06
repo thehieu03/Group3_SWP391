@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Mmo_Application.Services;
 
 public class AccountServices : BaseServices<Account>, IAccountServices
@@ -5,13 +7,16 @@ public class AccountServices : BaseServices<Account>, IAccountServices
     private readonly IRoleServices _roleServices;
     private readonly IDapperService _dapperService;
     private readonly IEmailService? _emailService;
+    private readonly ILogger<AccountServices> _logger;
 
-    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService, IEmailService? emailService = null) :
+    public AccountServices(IUnitOfWork unitOfWork, IRoleServices roleServices, IDapperService dapperService, 
+        IEmailService? emailService, ILogger<AccountServices> logger) :
         base(unitOfWork)
     {
         _roleServices = roleServices;
         _dapperService = dapperService;
         _emailService = emailService;
+        _logger = logger;
         _unitOfWork = unitOfWork;
     }
 
@@ -162,8 +167,8 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         var currentRoleIds = currentAccountRoles.Select(ar => ar.RoleId ?? 0).ToList();
 
 
-        Console.WriteLine($"[DEBUG] User {userId} - Current roles: [{string.Join(", ", currentRoleIds)}]");
-        Console.WriteLine($"[DEBUG] User {userId} - New roles: [{string.Join(", ", roleIds)}]");
+        _logger.LogDebug("User {UserId} - Current roles: [{CurrentRoles}]", userId, string.Join(", ", currentRoleIds));
+        _logger.LogDebug("User {UserId} - New roles: [{NewRoles}]", userId, string.Join(", ", roleIds));
 
 
         var rolesToAdd = roleIds.Where(roleId => !currentRoleIds.Contains(roleId)).ToList();
@@ -171,8 +176,8 @@ public class AccountServices : BaseServices<Account>, IAccountServices
 
         var rolesToRemove = currentRoleIds.Where(roleId => !roleIds.Contains(roleId)).ToList();
 
-        Console.WriteLine($"[DEBUG] User {userId} - Roles to add: [{string.Join(", ", rolesToAdd)}]");
-        Console.WriteLine($"[DEBUG] User {userId} - Roles to remove: [{string.Join(", ", rolesToRemove)}]");
+        _logger.LogDebug("User {UserId} - Roles to add: [{RolesToAdd}]", userId, string.Join(", ", rolesToAdd));
+        _logger.LogDebug("User {UserId} - Roles to remove: [{RolesToRemove}]", userId, string.Join(", ", rolesToRemove));
 
 
         var hasSellerRoleToRemove = rolesToRemove.Contains(2); // Giả sử roleId = 2 là seller
@@ -238,13 +243,13 @@ public class AccountServices : BaseServices<Account>, IAccountServices
             account.IsActive = isActive;
             await _unitOfWork.SaveChangeAsync();
             var action = isActive ? "UNBANNED" : "BANNED";
-            Console.WriteLine($"[AUDIT] User {userId} {action} at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            _logger.LogInformation("User {UserId} {Action} at {Timestamp}", userId, action, DateTime.Now);
 
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Failed to update user status: {ex.Message}");
+            _logger.LogError(ex, "Failed to update user status for user {UserId}", userId);
             return false;
         }
     }
@@ -359,7 +364,7 @@ public class AccountServices : BaseServices<Account>, IAccountServices
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] ForgotPasswordAsync: {ex.Message}");
+            _logger.LogError(ex, "ForgotPasswordAsync failed for email {Email}", email);
             return (false, "Có lỗi xảy ra khi xử lý yêu cầu. Vui lòng thử lại sau.");
         }
     }

@@ -1,4 +1,3 @@
-using Mmo_Api.Helper;
 namespace Mmo_Api.Api;
 
 [Route("api/products")]

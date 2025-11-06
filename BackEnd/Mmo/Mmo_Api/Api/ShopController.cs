@@ -1,4 +1,3 @@
-using Mmo_Api.Helper;
 namespace Mmo_Api.Api;
 
 [Route("api/shops")]
@@ -9,13 +8,16 @@ public class ShopController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IAccountServices _accountServices;
     private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<ShopController> _logger;
 
-    public ShopController(IShopServices shopServices, IMapper mapper, IAccountServices accountServices, IWebHostEnvironment environment)
+    public ShopController(IShopServices shopServices, IMapper mapper, IAccountServices accountServices,
+        IWebHostEnvironment environment, ILogger<ShopController> logger)
     {
         _shopServices = shopServices;
         _mapper = mapper;
         _accountServices = accountServices;
         _environment = environment;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -318,18 +320,16 @@ public class ShopController : ControllerBase
 
             // Delete old images if exists
             if (!string.IsNullOrEmpty(account.IdentificationFurl))
-            {
-                HelperImage.DeleteImage(account.IdentificationFurl);
-            }
+                HelperImage.DeleteImage(account.IdentificationFurl, _logger);
             if (!string.IsNullOrEmpty(account.IdentificationBurl))
-            {
-                HelperImage.DeleteImage(account.IdentificationBurl);
-            }
+                HelperImage.DeleteImage(account.IdentificationBurl, _logger);
 
             // Save identification images to Shops folder using HelperImage
-            var identificationFurl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Shops, identificationF, _environment);
+            var identificationFurl =
+                await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Shops, identificationF, _environment);
 
-            var identificationBurl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Shops, identificationB, _environment);
+            var identificationBurl =
+                await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Shops, identificationB, _environment);
 
             account.Phone = phone.Trim();
             account.IdentificationFurl = identificationFurl;

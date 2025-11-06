@@ -39,13 +39,15 @@ public class AdminSupportTicketController : ControllerBase
     private readonly ISupportticketServices _service;
     private readonly IMapper _mapper;
     private readonly ISystemsconfigServices _sysConfig;
+    private readonly Logger<AdminSupportTicketController> _logger;
 
     public AdminSupportTicketController(ISupportticketServices service, IMapper mapper,
-        ISystemsconfigServices sysConfig)
+        ISystemsconfigServices sysConfig, Logger<AdminSupportTicketController> logger)
     {
         _service = service;
         _mapper = mapper;
         _sysConfig = sysConfig;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -85,10 +87,6 @@ public class AdminSupportTicketController : ControllerBase
         return Ok(_mapper.Map<SupportTicketResponse>(ticket));
     }
 
-    public class ReplyRequest
-    {
-        public string Message { get; set; } = null!;
-    }
 
     [HttpPost("{id}/reply")]
     public async Task<ActionResult> Reply(int id, [FromBody] ReplyRequest body)
@@ -98,8 +96,6 @@ public class AdminSupportTicketController : ControllerBase
         if (string.IsNullOrEmpty(adminIdStr) || !int.TryParse(adminIdStr, out var adminId)) return Unauthorized();
         var ok = await _service.ReplyAsync(id, body.Message, adminId);
         if (!ok) return StatusCode(500, new { message = "Failed to reply" });
-
-        // Send email notification to ticket owner
         try
         {
             var ticket = await _service.GetByIdWithAccountAsync(id);
@@ -134,9 +130,9 @@ public class AdminSupportTicketController : ControllerBase
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Không chặn luồng nếu gửi mail thất bại
+            _logger.LogError(ex, ex.Message);
         }
 
         return Ok(new { message = "Replied and emailed (if possible)" });

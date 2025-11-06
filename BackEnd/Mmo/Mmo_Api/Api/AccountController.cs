@@ -1,5 +1,3 @@
-using Mmo_Api.Helper;
-
 namespace Mmo_Api.ApiController;
 
 [Route("api/accounts")]
@@ -11,15 +9,17 @@ public class AccountController : ControllerBase
     private readonly ITokenServices _tokenServices;
     private readonly IRoleServices _roleServices;
     private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<AccountController> _logger;
 
     public AccountController(IAccountServices accountServices, IMapper mapper, ITokenServices tokenServices,
-        IRoleServices roleServices, IWebHostEnvironment environment)
+        IRoleServices roleServices, IWebHostEnvironment environment, ILogger<AccountController> logger)
     {
         _accountServices = accountServices;
         _mapper = mapper;
         _tokenServices = tokenServices;
         _roleServices = roleServices;
         _environment = environment;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -148,19 +148,14 @@ public class AccountController : ControllerBase
             {
                 var trimmedPhone = phone.Trim();
 
-                // Length validation
                 if (trimmedPhone.Length < 7 || trimmedPhone.Length > 20)
                     return BadRequest(new { message = "Phone must be between 7 and 20 characters" });
-
-                // Format validation: only numbers, spaces, dashes, plus signs, and parentheses
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"^[0-9+\-\s()]*$"))
                     return BadRequest(new
                     {
                         message =
                             "Phone number contains invalid characters. Only numbers, spaces, dashes, plus signs, and parentheses are allowed"
                     });
-
-                // Must contain at least one digit
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"[0-9]"))
                     return BadRequest(new { message = "Phone number must contain at least one digit" });
 
@@ -169,8 +164,18 @@ public class AccountController : ControllerBase
 
             if (avatar != null)
             {
-                // Delete old image if exists
-                if (!string.IsNullOrEmpty(account.ImageUrl)) HelperImage.DeleteImage(account.ImageUrl);
+                if (!string.IsNullOrEmpty(account.ImageUrl))
+                    try
+                    {
+                        var oldImagePath = account.ImageUrl.TrimStart('/');
+                        var fullOldImagePath = Path.Combine(_environment.ContentRootPath, oldImagePath);
+                        if (System.IO.File.Exists(fullOldImagePath)) System.IO.File.Delete(fullOldImagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log warning but continue with new image upload
+                        _logger.LogWarning(ex, "Failed to delete old image {ImageUrl}", account.ImageUrl);
+                    }
 
                 // Use helper to validate and save to Images/Accounts
                 try
@@ -504,6 +509,7 @@ public class AccountController : ControllerBase
                 existingByEmail.ImageUrl = imageUrl;
                 existingByEmail.ImageUploadedAt = DateTime.UtcNow;
             }
+
             existingByEmail.UpdatedAt = DateTime.UtcNow;
             await _accountServices.UpdateAsync(existingByEmail);
 
@@ -513,7 +519,8 @@ public class AccountController : ControllerBase
 
         // Generate a unique username to avoid duplicate key violation
         var desiredUsername = (request.Username ?? request.Email?.Split('@').FirstOrDefault() ?? "user").Trim();
-        if (string.IsNullOrWhiteSpace(desiredUsername)) desiredUsername = $"user_{request.GoogleId.Substring(0, Math.Min(6, request.GoogleId.Length))}";
+        if (string.IsNullOrWhiteSpace(desiredUsername))
+            desiredUsername = $"user_{request.GoogleId.Substring(0, Math.Min(6, request.GoogleId.Length))}";
 
         var uniqueUsername = desiredUsername;
         var suffix = 0;

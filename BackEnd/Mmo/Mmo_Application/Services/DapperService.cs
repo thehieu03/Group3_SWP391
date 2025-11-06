@@ -1,4 +1,5 @@
 using Dapper;
+using Microsoft.Extensions.Logging;
 using System.Data;
 
 namespace Mmo_Application.Services;
@@ -18,10 +19,12 @@ public interface IDapperService
 public class DapperService : IDapperService
 {
     private readonly IDbConnection _connection;
+    private readonly ILogger<DapperService> _logger;
 
-    public DapperService(IDbConnection connection)
+    public DapperService(IDbConnection connection, ILogger<DapperService> logger)
     {
         _connection = connection;
+        _logger = logger;
     }
 
     public async Task<int> ExecuteAsync(string sql, object? parameters = null)
@@ -58,12 +61,12 @@ public class DapperService : IDapperService
             INSERT IGNORE INTO accountroles (accountId, roleId) 
             VALUES (@accountId, @roleId)";
 
-        Console.WriteLine($"[DEBUG] InsertAccountRoles SQL: {sql}");
-        Console.WriteLine(
-            $"[DEBUG] InsertAccountRoles Parameters: accountId={accountId}, roleIds=[{string.Join(", ", roleIds)}]");
+        _logger.LogDebug("InsertAccountRoles SQL: {Sql}", sql);
+        _logger.LogDebug("InsertAccountRoles Parameters: accountId={AccountId}, roleIds=[{RoleIds}]", 
+            accountId, string.Join(", ", roleIds));
 
         var affectedRows = await _connection.ExecuteAsync(sql, parameters);
-        Console.WriteLine($"[DEBUG] InsertAccountRoles affected rows: {affectedRows}");
+        _logger.LogDebug("InsertAccountRoles affected rows: {AffectedRows}", affectedRows);
 
         return affectedRows > 0;
     }
@@ -84,12 +87,12 @@ public class DapperService : IDapperService
         parameters.Add("@accountId", accountId);
         for (var i = 0; i < roleIds.Count; i++) parameters.Add($"@roleId{i}", roleIds[i]);
 
-        Console.WriteLine($"[DEBUG] DeleteAccountRoles SQL: {sql}");
-        Console.WriteLine(
-            $"[DEBUG] DeleteAccountRoles Parameters: accountId={accountId}, roleIds=[{string.Join(", ", roleIds)}]");
+        _logger.LogDebug("DeleteAccountRoles SQL: {Sql}", sql);
+        _logger.LogDebug("DeleteAccountRoles Parameters: accountId={AccountId}, roleIds=[{RoleIds}]", 
+            accountId, string.Join(", ", roleIds));
 
         var affectedRows = await _connection.ExecuteAsync(sql, parameters);
-        Console.WriteLine($"[DEBUG] DeleteAccountRoles affected rows: {affectedRows}");
+        _logger.LogDebug("DeleteAccountRoles affected rows: {AffectedRows}", affectedRows);
 
         return affectedRows >= 0;
     }

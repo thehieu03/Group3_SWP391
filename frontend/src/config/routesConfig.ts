@@ -23,6 +23,7 @@ const routesConfig = {
   getCategoryProductsUrl: (id: number) => `/category/${id}`,
   changePasswordUrl: "/changePassword",
   userOrder: "/userOrder",
+    sellerDashboard: "/seller/dashboard"
 };
 
 export default routesConfig;

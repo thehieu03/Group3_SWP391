@@ -17,12 +17,21 @@ import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
 import Share from "@pages/UserAndSeller/Share/Share.tsx";
 import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
 import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
-type AppRoute = {
-  path: string;
-  element: ReactNode;
-  layout: FC<{ children?: ReactNode }>;
-  requiredRoles?: string[];
+import SellerDashboard from "@pages/UserAndSeller/SellerDashboard/SellerDashboard.tsx";
+
+/**
+ * Định nghĩa cấu trúc route trong ứng dụng
+ */
+export type AppRoute = {
+  path: string; // Đường dẫn URL
+  element: ReactNode; // Component sẽ render
+  layout: FC<{ children?: ReactNode }>; // Layout wrapper
+  requiredRoles?: string[]; // Roles được phép truy cập (undefined = public)
 };
+
+// ============================================================================
+// PUBLIC ROUTES - Tất cả người dùng đều truy cập được (không cần đăng nhập)
+// ============================================================================
 const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.home,
@@ -60,7 +69,11 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
 ];
-const privateRoutes: AppRoute[] = [
+
+// ============================================================================
+// SHARED ROUTES - Dùng chung cho CUSTOMER, SELLER, ADMIN (cần đăng nhập)
+// ============================================================================
+const sharedRoutes: AppRoute[] = [
   {
     path: routesConfig.userProfile,
     element: <UserProfile />,
@@ -93,10 +106,21 @@ const privateRoutes: AppRoute[] = [
   },
 ];
 
+// ============================================================================
+// CUSTOMER ROUTES - Chỉ dành cho CUSTOMER
+// ============================================================================
+const customerRoutes: AppRoute[] = [
+  // Hiện tại chưa có route riêng cho CUSTOMER
+  // Các route của CUSTOMER nằm trong sharedRoutes
+];
+
+// ============================================================================
+// SELLER ROUTES - Chỉ dành cho SELLER (người bán)
+// ============================================================================
 const sellerRoutes: AppRoute[] = [
   {
     path: "/seller/dashboard",
-    element: <div>Seller Dashboard - Quản lý shop</div>,
+    element: <SellerDashboard />,
     layout: DefaultLayout,
     requiredRoles: ["SELLER"],
   },
@@ -114,6 +138,9 @@ const sellerRoutes: AppRoute[] = [
   },
 ];
 
+// ============================================================================
+// ADMIN ROUTES - Chỉ dành cho ADMIN (quản trị viên)
+// ============================================================================
 const adminRoutes: AppRoute[] = [
   {
     path: "/admin/dashboard",
@@ -128,36 +155,67 @@ const adminRoutes: AppRoute[] = [
     requiredRoles: ["ADMIN"],
   },
 ];
+
+// ============================================================================
+// HELPER FUNCTIONS - Kiểm tra quyền truy cập
+// ============================================================================
+
+/**
+ * Kiểm tra user có role phù hợp với requiredRoles không
+ * @param user - User object từ auth context
+ * @param requiredRoles - Mảng roles được yêu cầu
+ * @returns true nếu user có ít nhất 1 role trong requiredRoles
+ */
 export const hasRequiredRole = (
   user: User | null,
   requiredRoles?: string[]
 ): boolean => {
+  // Nếu không yêu cầu role nào => public route
   if (!requiredRoles || requiredRoles.length === 0) {
     return true;
   }
 
+  // Nếu user chưa đăng nhập hoặc không có role => không được phép
   if (!user || !user.roles || user.roles.length === 0) {
     return false;
   }
 
+  // Kiểm tra user có ít nhất 1 role trong danh sách requiredRoles
   return requiredRoles.some((role) => user.roles.includes(role));
 };
 
+/**
+ * Lấy danh sách routes mà user hiện tại có quyền truy cập
+ * @param user - User object từ auth context (null nếu chưa đăng nhập)
+ * @returns Mảng routes mà user có thể truy cập
+ */
 export const getAccessibleRoutes = (user: User | null): AppRoute[] => {
+  // Gộp tất cả routes lại
   const allRoutes = [
     ...publicRoutes,
-    ...privateRoutes,
+    ...sharedRoutes,
+    ...customerRoutes,
     ...sellerRoutes,
     ...adminRoutes,
   ];
 
+  // Lọc chỉ giữ lại routes mà user có quyền truy cập
   return allRoutes.filter((route) => {
+    // Public routes (không có requiredRoles) => luôn cho phép
     if (!route.requiredRoles) {
       return true;
     }
 
+    // Kiểm tra user có role phù hợp không
     return hasRequiredRole(user, route.requiredRoles);
   });
 };
 
-export { publicRoutes, privateRoutes, sellerRoutes, adminRoutes };
+// Export để sử dụng ở nơi khác
+export {
+  publicRoutes,
+  sharedRoutes,
+  customerRoutes,
+  sellerRoutes,
+  adminRoutes,
+};
