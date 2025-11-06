@@ -1,4 +1,4 @@
-namespace Mmo_Api.Api;
+﻿namespace Mmo_Api.Api;
 
 [Route("api/auth")]
 [ApiController]

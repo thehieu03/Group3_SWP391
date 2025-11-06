@@ -1,3 +1,5 @@
+using Mmo_Api.Helper;
+
 namespace Mmo_Api.ApiController;
 
 [Route("api/accounts")]
@@ -148,14 +150,19 @@ public class AccountController : ControllerBase
             {
                 var trimmedPhone = phone.Trim();
 
+                // Length validation
                 if (trimmedPhone.Length < 7 || trimmedPhone.Length > 20)
                     return BadRequest(new { message = "Phone must be between 7 and 20 characters" });
+
+                // Format validation: only numbers, spaces, dashes, plus signs, and parentheses
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"^[0-9+\-\s()]*$"))
                     return BadRequest(new
                     {
                         message =
                             "Phone number contains invalid characters. Only numbers, spaces, dashes, plus signs, and parentheses are allowed"
                     });
+
+                // Must contain at least one digit
                 if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedPhone, @"[0-9]"))
                     return BadRequest(new { message = "Phone number must contain at least one digit" });
 
@@ -574,5 +581,59 @@ public class AccountController : ControllerBase
         account.Password = await _accountServices.HashPasswordAsync("Password123!");
         var result = await _accountServices.UpdateAsync(account);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Cập nhật thông tin profile của user hiện tại
+    /// </summary>
+    /// <param name="request">Thông tin cần cập nhật</param>
+    /// <returns>Kết quả cập nhật</returns>
+    [HttpPut("profile")]
+    [Authorize] // Yêu cầu authentication
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> UpdateProfile([FromBody] ProfileUpdateRequest request)
+    {
+        try
+        {
+            // Kiểm tra model validation
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            // Kiểm tra request body
+            if (request == null) return BadRequest("Request body cannot be null");
+
+            // Kiểm tra ít nhất một field được cập nhật
+            if (string.IsNullOrEmpty(request.Username) &&
+                string.IsNullOrEmpty(request.Email) &&
+                string.IsNullOrEmpty(request.Phone))
+                return BadRequest("At least one field must be provided for update");
+
+            // Lấy user ID từ JWT token
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized("Invalid token");
+
+            // Cập nhật profile
+            var result = await _accountServices.UpdateProfileAsync(userId, request);
+
+            if (!result)
+            {
+                // Kiểm tra xem user có tồn tại không
+                var account = await _accountServices.GetByIdAsync(userId);
+                if (account == null) return NotFound("User not found");
+
+                // Nếu user tồn tại nhưng update thất bại, có thể do username/email đã tồn tại
+                return BadRequest("Update failed. Username or email may already exist");
+            }
+
+            return Ok(new { message = "Profile updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 }

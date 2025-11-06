@@ -1,3 +1,6 @@
+﻿using Mmo_Domain.Models;
+using Mmo_Domain.ModelRequest;
+
 namespace Mmo_Application.Services.Interface;
 
 public interface IAccountServices : IBaseServices<Account>
