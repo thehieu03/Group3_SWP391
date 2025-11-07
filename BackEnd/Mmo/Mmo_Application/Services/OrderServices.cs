@@ -1,11 +1,17 @@
-﻿using Mmo_Domain.ModelResponse;
+﻿using AutoMapper;
+using Mmo_Domain.IUnit;
+using Mmo_Domain.ModelResponse;
+using Mmo_Domain.Models;
 
 namespace Mmo_Application.Services;
 
 public class OrderServices:BaseServices<Order>,IOrderServices
 {
-    public OrderServices(IUnitOfWork unitOfWork) : base(unitOfWork)
+    private readonly IMapper _mapper;
+
+    public OrderServices(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
     {
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<OrderResponse>> GetUserOrdersAsync(int accountId)
@@ -50,22 +56,20 @@ public class OrderServices:BaseServices<Order>,IOrderServices
             var imageBase64 = product.Image != null ? Convert.ToBase64String(product.Image) : "";
             var imageUrl = !string.IsNullOrEmpty(imageBase64) ? $"data:image/jpeg;base64,{imageBase64}" : "/src/assets/soft2.png";
 
-            var orderResponse = new OrderResponse
-            {
-                Id = order.Id,
-                Name = product.Name,
-                Image = imageUrl,
-                Rating = rating,
-                Reviews = reviews,
-                Sold = sold,
-                Category = category.Name,
-                Seller = sellerAccount.Username,
-                PriceRange = priceRange,
-                TotalPrice = order.TotalPrice,
-                Quantity = order.Quantity,
-                Status = order.Status,
-                CreatedAt = DateTime.Now
-            };
+            var orderResponse = _mapper.Map<OrderResponse>(order);
+            // Fill computed and related fields not covered by default mapping
+            orderResponse.Name = product.Name;
+            orderResponse.Image = imageUrl;
+            orderResponse.Rating = rating;
+            orderResponse.Reviews = reviews;
+            orderResponse.Sold = sold;
+            orderResponse.Category = category.Name;
+            orderResponse.Seller = sellerAccount.Username;
+            orderResponse.PriceRange = priceRange;
+            orderResponse.TotalPrice = order.TotalPrice;
+            orderResponse.Quantity = order.Quantity;
+            orderResponse.Status = order.Status;
+            orderResponse.CreatedAt = DateTime.Now;
 
             orderResponses.Add(orderResponse);
         }

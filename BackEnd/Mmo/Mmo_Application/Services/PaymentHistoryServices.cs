@@ -1,3 +1,4 @@
+using AutoMapper;
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.ModelResponse;
 using Mmo_Domain.Models;
@@ -9,10 +10,12 @@ namespace Mmo_Application.Services;
 public class PaymentHistoryServices : IPaymentHistoryServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public PaymentHistoryServices(IUnitOfWork unitOfWork)
+    public PaymentHistoryServices(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<PaymentHistorySummary> GetPaymentHistoryByUserIdAsync(int userId, DateTime? startDate = null, DateTime? endDate = null, string? transactionType = null, int page = 1, int pageSize = 5)
@@ -67,16 +70,9 @@ public class PaymentHistoryServices : IPaymentHistoryServices
             .Take(pageSize)
             .ToListAsync();
 
-        var paymentHistoryResponses = transactions.Select(t => new PaymentHistoryResponse
-        {
-            Id = t.Id,
-            UserId = t.UserId ?? 0,
-            Type = t.Type,
-            Amount = t.Amount,
-            PaymentDescription = t.PaymentDescription,
-            Status = t.Status ?? "UNKNOWN",
-            CreatedAt = t.CreatedAt ?? DateTime.MinValue
-        }).ToList();
+        var paymentHistoryResponses = transactions
+            .Select(t => _mapper.Map<PaymentHistoryResponse>(t))
+            .ToList();
 
         // Use existing PaginationResponse
         var paginatedTransactions = new PaginationResponse<PaymentHistoryResponse>
