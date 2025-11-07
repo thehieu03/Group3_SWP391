@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { shopServices, type Shop } from '../../services/ShopServices';
 
-interface ApiError {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-      errors?: Record<string, unknown>;
-    };
-  };
+interface Shop {
+  id: number;
+  name: string;
+  owner: string;
+  email: string;
+  phone: string;
+  status: 'active' | 'inactive' | 'pending';
+  createdAt: string;
+  totalProducts: number;
+  totalSales: number;
 }
 
 const ShopManagement = () => {
@@ -16,77 +17,87 @@ const ShopManagement = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchShops = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const shopsData = await shopServices.getAllShopsAsync();
-        setShops(shopsData);
-      } catch (err: unknown) {
-        console.error('Error fetching shops:', err);
-        
-        // More detailed error logging
-        if (err instanceof Error && 'response' in err) {
-          const apiErr = err as ApiError;
-          console.error('API Error Details:', {
-            status: apiErr.response?.status,
-            data: apiErr.response?.data,
-            message: apiErr.response?.data?.message
-          });
-        }
-        
-        const errorMessage = err instanceof Error && 'response' in err 
-          ? (err as ApiError).response?.data?.message 
-          : 'Không thể tải danh sách shop';
-        setError(errorMessage || 'Không thể tải danh sách shop');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchShops();
+    // TODO: Fetch shops from API
+    // Simulate loading shops
+    setTimeout(() => {
+      setShops([
+        {
+          id: 1,
+          name: 'TechStore',
+          owner: 'seller1',
+          email: 'seller1@example.com',
+          phone: '0987654321',
+          status: 'active',
+          createdAt: '2024-01-01',
+          totalProducts: 25,
+          totalSales: 15000000,
+        },
+        {
+          id: 2,
+          name: 'GameShop',
+          owner: 'seller2',
+          email: 'seller2@example.com',
+          phone: '0123456789',
+          status: 'pending',
+          createdAt: '2024-01-02',
+          totalProducts: 0,
+          totalSales: 0,
+        },
+        {
+          id: 3,
+          name: 'DigitalStore',
+          owner: 'seller3',
+          email: 'seller3@example.com',
+          phone: '0555666777',
+          status: 'inactive',
+          createdAt: '2024-01-03',
+          totalProducts: 10,
+          totalSales: 5000000,
+        },
+      ]);
+      setLoading(false);
+    }, 1000);
   }, []);
 
   const filteredShops = shops.filter(shop => {
     const matchesSearch = shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (shop.ownerUsername && shop.ownerUsername.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = filterStatus === 'ALL' || 
-                          (filterStatus === 'active' && shop.isActive) ||
-                          (filterStatus === 'inactive' && !shop.isActive);
+                         shop.owner.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'ALL' || shop.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusBadgeColor = (isActive: boolean) => {
-    return isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'inactive':
+        return 'bg-red-100 text-red-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const getStatusDisplayName = (isActive: boolean) => {
-    return isActive ? 'Hoạt động' : 'Không hoạt động';
+  const getStatusDisplayName = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'Hoạt động';
+      case 'inactive':
+        return 'Không hoạt động';
+      case 'pending':
+        return 'Chờ duyệt';
+      default:
+        return status;
+    }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-          >
-            Thử lại
-          </button>
-        </div>
       </div>
     );
   }
@@ -100,6 +111,7 @@ const ShopManagement = () => {
         </button>
       </div>
 
+      {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -132,6 +144,7 @@ const ShopManagement = () => {
         </div>
       </div>
 
+      {/* Shops Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -161,30 +174,27 @@ const ShopManagement = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredShops.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-500">
-                    Không tìm thấy shop nào
-                  </td>
-                </tr>
-              ) : (
-                filteredShops.map((shop) => (
+              {filteredShops.map((shop) => (
                 <tr key={shop.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">{shop.name}</div>
-                      <div className="text-sm text-gray-500">{shop.description}</div>
+                      <div className="text-sm text-gray-500">{shop.email}</div>
+                      <div className="text-sm text-gray-500">{shop.phone}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {shop.ownerUsername || 'Chưa có'}
+                    {shop.owner}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {shop.productCount}
+                    {shop.totalProducts}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {shop.totalSales.toLocaleString('vi-VN')} VNĐ
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeColor(shop.isActive)}`}>
-                      {getStatusDisplayName(shop.isActive)}
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeColor(shop.status)}`}>
+                      {getStatusDisplayName(shop.status)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -198,8 +208,7 @@ const ShopManagement = () => {
                     </div>
                   </td>
                 </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>

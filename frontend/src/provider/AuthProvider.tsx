@@ -2,7 +2,7 @@ import AuthContext from "@contexts/AuthContext.tsx";
 import { type ReactNode, useEffect, useState } from "react";
 import type { User } from "@models/modelResponse/LoginResponse.tsx";
 import Cookies from "js-cookie";
-import { authServices } from "@services/AuthServices.tsx";
+import { authServices } from "@services/AuthServices.ts";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -23,9 +23,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const userData = await authServices.getCurrentUserAsync();
           setUser(userData);
           setIsLoggedIn(true);
-          console.log("User loaded from server");
-        } catch (error) {
-          console.error("Error loading user from server:", error);
+        } catch  {
           logout();
         }
       }

@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { User } from "../models/modelResponse/LoginResponse";
+import type { User } from "@/models/modelResponse/LoginResponse";
 
 interface AuthContextType {
   isLoggedIn: boolean;

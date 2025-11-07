@@ -1,9 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.ModelResponse;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-
 namespace Mmo_Api.Api;
 
 [Route("api/dashboard")]

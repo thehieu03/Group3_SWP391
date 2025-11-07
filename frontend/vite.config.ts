@@ -57,6 +57,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/Images": {
+        target: "https://localhost:7031",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

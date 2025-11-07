@@ -1,8 +1,8 @@
 import React from 'react';
-import type { CategoriesResponse } from '../../models/modelResponse/CategoriesResponse';
-import indexHomeCategory from '../../assets/indexHomeCategory';
+import type { CategoriesResponse } from '@/models/modelResponse/CategoriesResponse';
+import indexHomeCategory from '@/assets/indexHomeCategory';
 import { useNavigate } from 'react-router-dom';
-import routesConfig from '../../config/routesConfig';
+import routesConfig from '@config/routesConfig.ts';
 import Image from '../Image';
 
 interface CategoryListProps {

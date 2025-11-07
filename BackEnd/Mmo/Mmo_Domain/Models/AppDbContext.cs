@@ -22,6 +22,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
+    public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; }
+
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Imagemessage> Imagemessages { get; set; }
@@ -54,6 +56,12 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Token> Tokens { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql(
+            "server=localhost;database=swp_group3;user=root;password=123456;sslmode=none;allowpublickeyretrieval=true",
+            ServerVersion.Parse("9.4.0-mysql"));
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -70,7 +78,9 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.GoogleId, "googleId").IsUnique();
 
-            entity.HasIndex(e => e.Username, "username").IsUnique();
+            entity.HasIndex(e => e.Username, "idx_accounts_username");
+
+            entity.HasIndex(e => e.ImageUrl, "idx_imageUrl").HasAnnotation("MySql:IndexPrefixLength", new[] { 255 });
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Balance)
@@ -85,12 +95,24 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("email");
             entity.Property(e => e.GoogleId).HasColumnName("googleId");
-            entity.Property(e => e.IdentificationB)
-                .HasColumnType("mediumblob")
-                .HasColumnName("identificationB");
-            entity.Property(e => e.IdentificationF)
-                .HasColumnType("mediumblob")
-                .HasColumnName("identificationF");
+            entity.Property(e => e.IdentificationBuploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("identificationBUploadedAt");
+            entity.Property(e => e.IdentificationBurl)
+                .HasMaxLength(500)
+                .HasColumnName("identificationBUrl");
+            entity.Property(e => e.IdentificationFuploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("identificationFUploadedAt");
+            entity.Property(e => e.IdentificationFurl)
+                .HasMaxLength(500)
+                .HasColumnName("identificationFUrl");
+            entity.Property(e => e.ImageUploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("imageUploadedAt");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imageUrl");
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("isActive");
@@ -160,6 +182,16 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("updatedAt");
         });
 
+        modelBuilder.Entity<Efmigrationshistory>(entity =>
+        {
+            entity.HasKey(e => e.MigrationId).HasName("PRIMARY");
+
+            entity.ToTable("__efmigrationshistory");
+
+            entity.Property(e => e.MigrationId).HasMaxLength(150);
+            entity.Property(e => e.ProductVersion).HasMaxLength(32);
+        });
+
         modelBuilder.Entity<Feedback>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -169,6 +201,8 @@ public partial class AppDbContext : DbContext
             entity.HasIndex(e => e.AccountId, "accountId");
 
             entity.HasIndex(e => e.ProductId, "productId");
+
+            entity.HasIndex(e => e.OrderId, "unique_order_feedback").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
@@ -181,12 +215,18 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp")
                 .HasColumnName("createdAt");
+            entity.Property(e => e.OrderId).HasColumnName("orderId");
             entity.Property(e => e.ProductId).HasColumnName("productId");
             entity.Property(e => e.Rating).HasColumnName("rating");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.AccountId)
                 .HasConstraintName("feedbacks_ibfk_1");
+
+            entity.HasOne(d => d.Order).WithOne(p => p.Feedback)
+                .HasForeignKey<Feedback>(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("feedbacks_ibfk_3");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.ProductId)
@@ -203,9 +243,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.MessageId)
                 .ValueGeneratedNever()
                 .HasColumnName("messageId");
-            entity.Property(e => e.Image)
-                .HasColumnType("blob")
-                .HasColumnName("image");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imageUrl");
 
             entity.HasOne(d => d.Message).WithOne(p => p.Imagemessage)
                 .HasForeignKey<Imagemessage>(d => d.MessageId)
@@ -255,19 +295,19 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime");
             entity.Property(e => e.ProductVariantId).HasColumnName("productVariantId");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Status)
                 .HasDefaultValueSql("'PENDING'")
-                .HasColumnType("enum('PENDING','CONFIRMED')")
+                .HasColumnType("enum('PENDING','CONFIRMED','CANCELLED')")
                 .HasColumnName("status");
             entity.Property(e => e.TotalPrice)
                 .HasPrecision(15, 2)
                 .HasColumnName("totalPrice");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp")
-                .HasColumnName("createdAt");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.AccountId)
@@ -321,6 +361,8 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.CategoryId, "categoryId");
 
+            entity.HasIndex(e => e.ImageUrl, "idx_imageUrl").HasAnnotation("MySql:IndexPrefixLength", new[] { 255 });
+
             entity.HasIndex(e => e.ShopId, "shopId");
 
             entity.HasIndex(e => e.SubcategoryId, "subcategoryId");
@@ -345,9 +387,12 @@ public partial class AppDbContext : DbContext
                 .HasPrecision(3, 2)
                 .HasDefaultValueSql("'-1.00'")
                 .HasColumnName("fee");
-            entity.Property(e => e.Image)
-                .HasColumnType("blob")
-                .HasColumnName("image");
+            entity.Property(e => e.ImageUploadedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("imageUploadedAt");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(500)
+                .HasColumnName("imageUrl");
             entity.Property(e => e.IsActive)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("isActive");
@@ -496,15 +541,16 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("description")
                 .UseCollation("utf8mb3_general_ci")
                 .HasCharSet("utf8mb3");
-            entity.Property(e => e.IsActive)
-                .HasDefaultValueSql("'0'")
-                .HasColumnName("isActive");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
             entity.Property(e => e.ReportCount)
                 .HasDefaultValueSql("'0'")
                 .HasColumnName("reportCount");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'PENDING'")
+                .HasColumnType("enum('PENDING','APPROVED','BANNED')")
+                .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -570,6 +616,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .HasColumnName("phone");
+            entity.Property(e => e.Status)
+                .HasDefaultValueSql("'PENDING'")
+                .HasColumnType("enum('PENDING','PROCESSING','CLOSED')")
+                .HasColumnName("status");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");
@@ -626,7 +676,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccessToken)
-                .HasMaxLength(255)
+                .HasColumnType("text")
                 .HasColumnName("accessToken");
             entity.Property(e => e.AccountId).HasColumnName("accountId");
             entity.Property(e => e.CreatedAt)
@@ -637,7 +687,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("timestamp")
                 .HasColumnName("expiresAt");
             entity.Property(e => e.RefreshToken)
-                .HasMaxLength(255)
+                .HasColumnType("text")
                 .HasColumnName("refreshToken");
 
             entity.HasOne(d => d.Account).WithMany(p => p.Tokens)

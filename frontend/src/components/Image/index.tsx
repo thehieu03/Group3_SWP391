@@ -1,4 +1,5 @@
-import { forwardRef, useState, type ImgHTMLAttributes } from "react";
+import { forwardRef, useMemo, useState, type ImgHTMLAttributes } from "react";
+import { toAbsoluteImageUrl } from "@/utils/apiBase";
 import images from "../../../assets/noImage.png";
 
 type ImageProps = ImgHTMLAttributes<HTMLImageElement> & {
@@ -12,9 +13,11 @@ const Image = forwardRef<HTMLImageElement, ImageProps>(
       setFallbackSrc(customFallback);
     };
 
-    const effectiveSrc = (fallbackSrc ||
-      (src as string) ||
-      customFallback) as string;
+    const effectiveSrc = useMemo(() => {
+      const raw = (fallbackSrc || (src as string) || customFallback) as string;
+      if (!raw) return customFallback as string;
+      return toAbsoluteImageUrl(raw);
+    }, [fallbackSrc, src, customFallback]);
 
     return (
       <img

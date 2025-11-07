@@ -1,14 +1,4 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Mmo_Application.Services;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.IUnit;
-using Mmo_Domain.Models;
-using Mmo_Infrastructure.Unit;
-
+﻿using Microsoft.Extensions.FileProviders;
 namespace Mmo_Api.Boostraping;
 
 public static class RegisterMiddleware
@@ -19,10 +9,16 @@ public static class RegisterMiddleware
         var connStr = configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddControllers().AddOData(options =>
-        {
-            options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
-        });
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.WriteIndented = true;
+            })
+            .AddOData(options =>
+            {
+                options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
+            });
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -54,6 +50,9 @@ public static class RegisterMiddleware
         {
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("ADMIN"));
+
+            options.AddPolicy("UserOrAdminSeller", policy =>
+                policy.RequireRole("USER", "ADMIN", "SELLER"));
             
             options.AddPolicy("UserOrAdmin", policy =>
                 policy.RequireRole("USER", "ADMIN"));
@@ -83,6 +82,16 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
+        // Removed image service DI; using static HelperImage methods instead
+
+
+        builder.Services.AddScoped<IDbConnection>(provider =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            return new MySqlConnection(connectionString);
+        });
+        builder.Services.AddScoped<IDapperService, DapperService>();
 
         return builder;
     }
@@ -95,10 +104,24 @@ public static class RegisterMiddleware
             app.UseSwaggerUI();
         }
 
-        app.MapControllers();
+        // HTTPS redirection first
         app.UseHttpsRedirection();
+
+        // Serve static files from default wwwroot (if any)
+        app.UseStaticFiles();
+
+        // Explicitly serve the Images folder at /Images
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Images")),
+            RequestPath = "/Images"
+        });
+
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapControllers();
+
         app.Run();
         return app;
     }

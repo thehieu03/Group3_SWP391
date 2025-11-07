@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { adminProductServices } from "../../services/AdminProductServices";
+import { adminProductServices } from "@services/AdminProductServices.ts";
 import type {
   AdminProductResponse,
   AdminProductListResponse,
-} from "../../models/modelResponse/AdminProductResponse";
+} from "@/models/modelResponse/AdminProductResponse";
 import type { ProductListRequest } from "../../models/modelRequest/ProductRequest";
+import { formatPrice, formatDateOnly } from "@/helpers";
+import Image from "@/components/Image";
 
 const AdminProductManagement = () => {
   const [products, setProducts] = useState<AdminProductResponse[]>([]);
@@ -56,9 +58,8 @@ const AdminProductManagement = () => {
       setProducts(response.products);
       setTotalPages(response.totalPages);
       setTotal(response.total);
-    } catch (err) {
+    } catch {
       setError("Không thể tải danh sách sản phẩm");
-      console.error("Error loading products:", err);
     } finally {
       setLoading(false);
     }
@@ -73,13 +74,13 @@ const AdminProductManagement = () => {
       ]);
       setCategories(categoriesData);
       setShops(shopsData);
-    } catch (err) {
-      console.error("Error loading filter options:", err);
+    } catch {
+      // Failed to load filter options
     }
   };
 
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, [
     currentPage,
     searchTerm,
@@ -91,7 +92,7 @@ const AdminProductManagement = () => {
   ]);
 
   useEffect(() => {
-    loadFilterOptions();
+    void loadFilterOptions();
   }, []);
 
   // Handle actions
@@ -99,8 +100,8 @@ const AdminProductManagement = () => {
     try {
       await adminProductServices.toggleProductStatusAsync(id, !currentStatus);
       loadProducts(); // Reload data
-    } catch (err) {
-      console.error("Error toggling product status:", err);
+    } catch {
+      // Failed to toggle product status
     }
   };
 
@@ -109,21 +110,10 @@ const AdminProductManagement = () => {
       try {
         await adminProductServices.deleteProductAsync(id);
         loadProducts(); // Reload data
-      } catch (err) {
-        console.error("Error deleting product:", err);
+      } catch {
+        // Failed to delete product
       }
     }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
   return (
@@ -227,8 +217,11 @@ const AdminProductManagement = () => {
             </label>
             <select
               value={sortBy}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) =>
+                setSortBy(
+                  e.target.value as "name" | "price" | "createdAt" | "updatedAt"
+                )
+              }
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="name">Tên</option>
@@ -243,8 +236,7 @@ const AdminProductManagement = () => {
             </label>
             <select
               value={sortOrder}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e) => setSortOrder(e.target.value as any)}
+              onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="asc">Tăng dần</option>
@@ -335,19 +327,25 @@ const AdminProductManagement = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            {product.images.length > 0 ? (
-                              <img
-                                className="h-10 w-10 rounded-lg object-cover"
-                                src={product.images[0]}
-                                alt={product.name}
-                              />
-                            ) : (
-                              <div className="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                                <span className="text-gray-400 text-xs">
-                                  No Image
-                                </span>
-                              </div>
-                            )}
+                            {(() => {
+                              const first =
+                                product.primaryImageUrl ||
+                                (product.imageUrls && product.imageUrls[0]) ||
+                                (product.images && product.images[0]);
+                              return first ? (
+                                <Image
+                                  className="h-10 w-10 rounded-lg object-cover"
+                                  src={first}
+                                  alt={product.name}
+                                />
+                              ) : (
+                                <div className="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                                  <span className="text-gray-400 text-xs">
+                                    No Image
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
@@ -400,7 +398,7 @@ const AdminProductManagement = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(product.createdAt)}
+                        {formatDateOnly(product.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">

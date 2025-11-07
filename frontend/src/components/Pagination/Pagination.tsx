@@ -7,12 +7,12 @@ interface PaginationProps {
     className?: string;
 }
 
-const Pagination: FC<PaginationProps> = ({ 
-    currentPage, 
-    totalPages, 
-    onPageChange, 
-    className = "" 
-}) => {
+const Pagination: FC<PaginationProps> = ({
+                                             currentPage,
+                                             totalPages,
+                                             onPageChange,
+                                             className = ""
+                                         }) => {
     const getVisiblePages = () => {
         const delta = 2;
         const range = [];
@@ -70,8 +70,8 @@ const Pagination: FC<PaginationProps> = ({
                         page === currentPage
                             ? 'bg-emerald-600 text-white'
                             : page === '...'
-                            ? 'text-gray-400 cursor-default'
-                            : 'text-gray-700 hover:bg-gray-100 hover:text-emerald-600'
+                                ? 'text-gray-400 cursor-default'
+                                : 'text-gray-700 hover:bg-gray-100 hover:text-emerald-600'
                     }`}
                 >
                     {page}

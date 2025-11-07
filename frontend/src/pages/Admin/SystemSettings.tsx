@@ -1,22 +1,26 @@
-import { useState, useEffect } from 'react';
-import type { SystemsConfigResponse } from '../../models/modelResponse/SystemsConfigResponse';
+import { useState, useEffect } from "react";
+import type { SystemsConfigResponse } from "../../models/modelResponse/SystemsConfigResponse";
+import Button from "@components/Button/Button.tsx";
 
 const SystemSettings = () => {
   const [config, setConfig] = useState<SystemsConfigResponse>({
-    email: '',
+    email: "",
     fee: 0,
-    googleAppPassword: '',
+    googleAppPassword: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     setTimeout(() => {
       setConfig({
-        email: 'admin@taphoammo.com',
+        email: "admin@taphoammo.com",
         fee: 5.0,
-        googleAppPassword: '********',
+        googleAppPassword: "********",
       });
       setLoading(false);
     }, 1000);
@@ -24,9 +28,9 @@ const SystemSettings = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      [name]: name === 'fee' ? parseFloat(value) || 0 : value
+      [name]: name === "fee" ? parseFloat(value) || 0 : value,
     }));
   };
 
@@ -35,18 +39,16 @@ const SystemSettings = () => {
     setMessage(null);
 
     try {
-      console.log('Saving config:', config);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setMessage({
-        type: 'success',
-        text: 'Cập nhật cài đặt hệ thống thành công!'
+        type: "success",
+        text: "Cập nhật cài đặt hệ thống thành công!",
       });
-    } catch (error) {
+    } catch {
       setMessage({
-        type: 'error',
-        text: 'Có lỗi xảy ra khi cập nhật cài đặt. Vui lòng thử lại.'
+        type: "error",
+        text: "Có lỗi xảy ra khi cập nhật cài đặt. Vui lòng thử lại.",
       });
     } finally {
       setSaving(false);
@@ -63,11 +65,15 @@ const SystemSettings = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Cài đặt hệ thống</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        Cài đặt hệ thống
+      </h1>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Thông tin cấu hình</h2>
-        
+        <h2 className="text-lg font-medium text-gray-900 mb-4">
+          Thông tin cấu hình
+        </h2>
+
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -82,7 +88,8 @@ const SystemSettings = () => {
               placeholder="Nhập email hệ thống"
             />
             <p className="text-sm text-gray-500 mt-1">
-              Email này sẽ được sử dụng để gửi thông báo và liên lạc với người dùng
+              Email này sẽ được sử dụng để gửi thông báo và liên lạc với người
+              dùng
             </p>
           </div>
 
@@ -125,52 +132,64 @@ const SystemSettings = () => {
         </div>
 
         {message && (
-          <div className={`mt-4 p-4 rounded-md ${
-            message.type === 'success'
-              ? 'bg-green-100 text-green-800 border border-green-200'
-              : 'bg-red-100 text-red-800 border border-red-200'
-          }`}>
+          <div
+            className={`mt-4 p-4 rounded-md ${
+              message.type === "success"
+                ? "bg-green-100 text-green-800 border border-green-200"
+                : "bg-red-100 text-red-800 border border-red-200"
+            }`}
+          >
             {message.text}
           </div>
         )}
 
         <div className="mt-6 flex justify-end">
-          <button
+          <Button
             onClick={handleSave}
             disabled={saving}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               saving
-                ? 'bg-gray-400 cursor-not-allowed text-white'
-                : 'bg-green-500 hover:bg-green-600 text-white'
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-green-500 hover:bg-green-600 text-white"
             }`}
           >
-            {saving ? 'Đang lưu...' : 'Lưu cài đặt'}
-          </button>
+            {saving ? "Đang lưu..." : "Lưu cài đặt"}
+          </Button>
         </div>
       </div>
 
       <div className="mt-8 bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Cài đặt bổ sung</h2>
-        
+        <h2 className="text-lg font-medium text-gray-900 mb-4">
+          Cài đặt bổ sung
+        </h2>
+
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-900">Bảo trì hệ thống</h3>
-              <p className="text-sm text-gray-500">Tạm dừng hệ thống để bảo trì</p>
+              <h3 className="text-sm font-medium text-gray-900">
+                Bảo trì hệ thống
+              </h3>
+              <p className="text-sm text-gray-500">
+                Tạm dừng hệ thống để bảo trì
+              </p>
             </div>
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm">
+            <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm">
               Bật chế độ bảo trì
-            </button>
+            </Button>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-900">Backup dữ liệu</h3>
-              <p className="text-sm text-gray-500">Tạo bản sao lưu dữ liệu hệ thống</p>
+              <h3 className="text-sm font-medium text-gray-900">
+                Backup dữ liệu
+              </h3>
+              <p className="text-sm text-gray-500">
+                Tạo bản sao lưu dữ liệu hệ thống
+              </p>
             </div>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm">
               Tạo backup
-            </button>
+            </Button>
           </div>
 
           <div className="flex items-center justify-between">
@@ -178,9 +197,9 @@ const SystemSettings = () => {
               <h3 className="text-sm font-medium text-gray-900">Xóa cache</h3>
               <p className="text-sm text-gray-500">Xóa bộ nhớ đệm hệ thống</p>
             </div>
-            <button className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm">
+            <Button className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm">
               Xóa cache
-            </button>
+            </Button>
           </div>
         </div>
       </div>

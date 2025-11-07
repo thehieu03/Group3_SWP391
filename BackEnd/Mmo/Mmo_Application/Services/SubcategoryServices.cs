@@ -4,6 +4,7 @@ public class SubcategoryServices : BaseServices<Subcategory>, ISubcategoryServic
 {
     public SubcategoryServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<bool> DeactivateSubcategoriesByCategoryIdAsync(int categoryId)

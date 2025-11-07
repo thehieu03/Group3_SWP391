@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Mmo_Domain.ModelResponse;
 
@@ -13,7 +9,8 @@ public class AccountResponse
     public string Email { get; set; } = null!;
     public string? Phone { get; set; }
     public decimal? Balance { get; set; }
+    public string? ImageUrl { get; set; }
     public bool? IsActive { get; set; }
     public DateTime? CreatedAt { get; set; }
-    public List<string> Roles { get; set; } = new List<string>();
+    public List<string> Roles { get; set; } = new();
 }

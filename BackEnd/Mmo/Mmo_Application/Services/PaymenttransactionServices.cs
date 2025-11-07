@@ -6,6 +6,7 @@ public class PaymenttransactionServices :BaseServices<Paymenttransaction>, IPaym
 {
     public PaymenttransactionServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<bool> ProcessSuccessfulTransactionAsync(int transactionId)

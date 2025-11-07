@@ -6,8 +6,11 @@ const SupportTickets = () => {
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketResponse | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('ALL');
 
   useEffect(() => {
+    // TODO: Fetch support tickets from API
+    // Simulate loading tickets
     setTimeout(() => {
       setTickets([
         {
@@ -63,10 +66,12 @@ const SupportTickets = () => {
   };
 
   const handleReply = (ticketId: number) => {
+    // TODO: Implement reply functionality
     console.log('Replying to ticket:', ticketId);
   };
 
   const handleClose = (ticketId: number) => {
+    // TODO: Implement close ticket functionality
     console.log('Closing ticket:', ticketId);
   };
 
@@ -87,6 +92,7 @@ const SupportTickets = () => {
         </div>
       </div>
 
+      {/* Search */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <input
           type="text"
@@ -97,6 +103,7 @@ const SupportTickets = () => {
         />
       </div>
 
+      {/* Tickets List */}
       <div className="space-y-4">
         {filteredTickets.map((ticket) => (
           <div key={ticket.id} className="bg-white rounded-lg shadow p-6">
@@ -146,6 +153,7 @@ const SupportTickets = () => {
         ))}
       </div>
 
+      {/* Ticket Detail Modal */}
       {selectedTicket && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
