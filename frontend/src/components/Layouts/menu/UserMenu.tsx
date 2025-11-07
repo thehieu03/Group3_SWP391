@@ -1,7 +1,7 @@
-import Button from "../../Button/Button.tsx";
-import Image from "../../Image";
-import { useAuth } from "../../../hooks/useAuth.tsx";
-import routesConfig from "../../../config/routesConfig.tsx";
+import Button from "@components/Button/Button.tsx";
+import Image from "@components/Image";
+import { useAuth } from "@hooks/useAuth.tsx";
+import routesConfig from "@config/routesConfig.tsx";
 const UserMenu = () => {
   const { user, logout } = useAuth();
   const handleLogout = () => {

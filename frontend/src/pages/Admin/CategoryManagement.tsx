@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { CategoriesResponse } from '../../models/modelResponse/CategoriesResponse';
-import type { SubcategoryResponse } from '../../models/modelResponse/SubcategoryResponse';
-import { categoryServices } from '../../services/CategoryServices';
-import { subcategoryServices } from '../../services/SubcategoryServices';
-import Pagination from '../../components/Pagination/Pagination';
+import type { CategoriesResponse } from '@models/modelResponse/CategoriesResponse';
+import type { SubcategoryResponse } from '@models/modelResponse/SubcategoryResponse';
+import { categoryServices } from '@services/CategoryServices';
+import { subcategoryServices } from '@services/SubcategoryServices';
+import Pagination from '@components/Pagination/Pagination';
+import Button from '@components/Button/Button';
 
 interface ApiError {
   response?: {
@@ -20,11 +21,9 @@ const CategoryManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showSubcategories, setShowSubcategories] = useState<number | null>(null);
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [isAddingSubcategory, setIsAddingSubcategory] = useState(false);
   const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [isEditingSubcategory, setIsEditingSubcategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingCategoryName, setEditingCategoryName] = useState<string>('');
@@ -93,10 +92,11 @@ const CategoryManagement = () => {
     void fetchCategories();
   }, [currentPage, itemsPerPage, statusFilter]);
 
-  // load subcat by catId
+  // load subcat by catId - include inactive for admin
   const fetchSubcategoriesForCategory = async (categoryId: number) => {
     try {
       setLoadingSubcategories(prev => ({ ...prev, [categoryId]: true }));
+      // Pass includeInactive=true so admin can see inactive subcategories
       const subcats = await subcategoryServices.getAllSubcategories(categoryId, true);
       setCategorySubcategories(prev => ({ ...prev, [categoryId]: subcats }));
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -146,25 +146,6 @@ const CategoryManagement = () => {
     setTotalItems(paginatedData.totalItems);
   };
 
-  // create new category
-  const handleAddCategory = async () => {
-    if (!newCategoryName.trim()) {
-      setCategoryNameError('Tên danh mục không được để trống');
-      return;
-    }
-    
-    setCategoryNameError('');
-    
-    try {
-      await categoryServices.createCategory(newCategoryName.trim());
-      await refreshCategories();
-      localStorage.setItem('categoryUpdated', 'true');
-      setNewCategoryName('');
-      setIsAddingCategory(false);
-    } catch (err: unknown) {
-      alert(getErrorMessage(err, 'Không thể tạo danh mục'));
-    }
-  };
 
   // update category 
   const handleEditCategory = async () => {
@@ -307,12 +288,12 @@ const CategoryManagement = () => {
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
-          <button
+          <Button
             onClick={() => window.location.reload()}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
           >
             Thử lại
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -346,12 +327,6 @@ const CategoryManagement = () => {
             </div>
           </div>
         </div>
-        <button
-          onClick={() => setIsAddingCategory(true)}
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
-        >
-          Thêm danh mục
-        </button>
       </div>
 
       {/* Search and Filter bar */}
@@ -383,83 +358,22 @@ const CategoryManagement = () => {
         </div>
       </div>
 
-      {isAddingCategory && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4">
-          <div className="bg-white rounded-lg p-16 w-full max-w-2xl shadow-xl border">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Thêm danh mục mới</h3>
-              <button
-                onClick={() => {
-                  setIsAddingCategory(false);
-                  setNewCategoryName('');
-                  setCategoryNameError('');
-                }}
-                className="text-gray-400 hover:text-gray-600 text-xl"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tên danh mục
-              </label>
-              <input
-                type="text"
-                value={newCategoryName}
-                onChange={(e) => {
-                  setNewCategoryName(e.target.value);
-                  setCategoryNameError('');
-                }}
-                placeholder="Nhập tên danh mục"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                  categoryNameError ? 'border-red-500' : 'border-gray-300'
-                }`}
-                autoFocus
-              />
-              {categoryNameError && (
-                <p className="text-red-500 text-sm mt-1">{categoryNameError}</p>
-              )}
-            </div>
-            
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => {
-                  setIsAddingCategory(false);
-                  setNewCategoryName('');
-                  setCategoryNameError('');
-                }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleAddCategory}
-                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-              >
-                Thêm danh mục
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {isEditingCategory && (
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4">
           <div className="bg-white rounded-lg p-16 w-full max-w-2xl shadow-xl border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">Sửa danh mục</h3>
-              <button
+              <Button
                 onClick={() => {
                   setIsEditingCategory(false);
                   setEditingCategoryName('');
                   setEditingCategoryId(null);
                   setCategoryNameError('');
                 }}
-                className="text-gray-400 hover:text-gray-600 text-xl"
+                className="text-gray-400 hover:text-gray-600 text-xl bg-transparent border-0 p-0"
               >
                 ×
-              </button>
+              </Button>
             </div>
             
             <div className="mb-6">
@@ -485,7 +399,7 @@ const CategoryManagement = () => {
             </div>
             
             <div className="flex justify-end space-x-3">
-              <button
+              <Button
                 onClick={() => {
                   setIsEditingCategory(false);
                   setEditingCategoryName('');
@@ -495,13 +409,13 @@ const CategoryManagement = () => {
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
               >
                 Hủy
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleEditCategory}
                 className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
                 Cập nhật
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -525,13 +439,7 @@ const CategoryManagement = () => {
               </svg>
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có danh mục nào</h3>
-            <p className="text-gray-500 mb-4">Bắt đầu bằng cách thêm danh mục đầu tiên của bạn.</p>
-            <button
-              onClick={() => setIsAddingCategory(true)}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
-            >
-              Thêm danh mục đầu tiên
-            </button>
+            <p className="text-gray-500 mb-4">Không có danh mục nào để hiển thị.</p>
           </div>
         ) : (
           filteredCategories.map((category) => (
@@ -547,19 +455,19 @@ const CategoryManagement = () => {
                   </span>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <button
+                  <Button
                     onClick={() => openEditCategoryPopup(category.id, category.name)}
-                    className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded hover:bg-blue-50"
+                    className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded hover:bg-blue-50 bg-transparent border-0"
                   >
                     Sửa
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => openAddSubcategoryPopup(category.id, category.name)}
-                    className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded hover:bg-blue-50"
+                    className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded hover:bg-blue-50 bg-transparent border-0"
                   >
                     Thêm subcat
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => {
                       if (showSubcategories === category.id) {
                         setShowSubcategories(null);
@@ -570,11 +478,11 @@ const CategoryManagement = () => {
                         }
                       }
                     }}
-                    className="text-gray-600 hover:text-gray-800 text-sm px-2 py-1 rounded hover:bg-gray-50"
+                    className="text-gray-600 hover:text-gray-800 text-sm px-2 py-1 rounded hover:bg-gray-50 bg-transparent border-0"
                   >
                     {showSubcategories === category.id ? 'Ẩn' : 'Hiện'} subcat
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => toggleCategoryStatus(category.id)}
                     className={`px-3 py-1 text-xs rounded-md ${
                       category.isActive 
@@ -583,7 +491,7 @@ const CategoryManagement = () => {
                     }`}
                   >
                     {category.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -610,24 +518,22 @@ const CategoryManagement = () => {
                               </span>
                             </div>
                             <div className="flex items-center space-x-3">
-                              <button
+                              <Button
                                 onClick={() => openEditSubcategoryPopup(subcategory.id, subcategory.name, category.id)}
-                                className="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 rounded hover:bg-blue-50"
+                                className="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 rounded hover:bg-blue-50 bg-transparent border-0"
                               >
                                 Sửa
-                              </button>
-                              {category.isActive && (
-                                <button
-                                  onClick={() => toggleSubcategoryStatus(subcategory.id, category.id)}
-                                  className={`px-2 py-1 text-xs rounded-md ${
-                                    subcategory.isActive 
-                                      ? 'bg-red-100 text-red-800 hover:bg-red-200' 
-                                      : 'bg-green-100 text-green-800 hover:bg-green-200'
-                                  }`}
-                                >
-                                  {subcategory.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
-                                </button>
-                              )}
+                              </Button>
+                              <Button
+                                onClick={() => toggleSubcategoryStatus(subcategory.id, category.id)}
+                                className={`px-2 py-1 text-xs rounded-md ${
+                                  subcategory.isActive 
+                                    ? 'bg-red-100 text-red-800 hover:bg-red-200' 
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                }`}
+                              >
+                                {subcategory.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                              </Button>
                             </div>
                           </div>
                         ))
@@ -660,7 +566,7 @@ const CategoryManagement = () => {
           <div className="bg-white rounded-lg p-8 w-full max-w-2xl shadow-xl border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">Thêm subcat</h3>
-              <button
+              <Button
                 onClick={() => {
                   setIsAddingSubcategory(false);
                   setNewSubcategoryName('');
@@ -668,10 +574,10 @@ const CategoryManagement = () => {
                   setSelectedCategoryName('');
                   setSubcategoryNameError('');
                 }}
-                className="text-gray-400 hover:text-gray-600 text-xl"
+                className="text-gray-400 hover:text-gray-600 text-xl bg-transparent border-0 p-0"
               >
                 ×
-              </button>
+              </Button>
             </div>
             
             <div className="mb-4">
@@ -709,7 +615,7 @@ const CategoryManagement = () => {
             </div>
             
             <div className="flex justify-end space-x-3">
-              <button
+              <Button
                 onClick={() => {
                   setIsAddingSubcategory(false);
                   setNewSubcategoryName('');
@@ -720,13 +626,13 @@ const CategoryManagement = () => {
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
               >
                 Hủy
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAddSubcategory}
                 className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
                 Thêm subcat
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -737,7 +643,7 @@ const CategoryManagement = () => {
           <div className="bg-white rounded-lg p-8 w-full max-w-2xl shadow-xl border">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">Sửa subcat</h3>
-              <button
+              <Button
                 onClick={() => {
                   setIsEditingSubcategory(false);
                   setEditingSubcategoryName('');
@@ -745,10 +651,10 @@ const CategoryManagement = () => {
                   setEditingSubcategoryCategoryId(null);
                   setSubcategoryNameError('');
                 }}
-                className="text-gray-400 hover:text-gray-600 text-xl"
+                className="text-gray-400 hover:text-gray-600 text-xl bg-transparent border-0 p-0"
               >
                 ×
-              </button>
+              </Button>
             </div>
             
             <div className="mb-6">
@@ -774,7 +680,7 @@ const CategoryManagement = () => {
             </div>
             
             <div className="flex justify-end space-x-3">
-              <button
+              <Button
                 onClick={() => {
                   setIsEditingSubcategory(false);
                   setEditingSubcategoryName('');
@@ -785,13 +691,13 @@ const CategoryManagement = () => {
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
               >
                 Hủy
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleEditSubcategory}
                 className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
                 Cập nhật
-              </button>
+              </Button>
             </div>
           </div>
         </div>

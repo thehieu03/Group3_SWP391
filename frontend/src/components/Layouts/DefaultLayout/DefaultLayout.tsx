@@ -1,6 +1,6 @@
-import Header from "../components/Header/Header.tsx";
+import Header from "@components/Layouts/components/Header/Header.tsx";
 import type { FC, ReactNode } from "react";
-import Footer from "../components/Footer/Footer.tsx";
+import Footer from "@components/Layouts/components/Footer/Footer.tsx";
 type DefaultLayoutProps = {
   children?: ReactNode;
 };

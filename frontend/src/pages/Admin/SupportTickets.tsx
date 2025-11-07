@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import type { SupportTicketResponse } from '../../models/modelResponse/SupportTicketResponse';
+import type { SupportTicketResponse } from '@models/modelResponse/SupportTicketResponse';
 
 const SupportTickets = () => {
   const [tickets, setTickets] = useState<SupportTicketResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketResponse | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('ALL');
 
   useEffect(() => {
     // TODO: Fetch support tickets from API

@@ -1,6 +1,6 @@
 import React from "react";
-import type { ProductResponse } from "../../models/modelResponse/ProductResponse";
-import Image from "../Image";
+import type { ProductResponse } from "@models/modelResponse/ProductResponse";
+import Image from "@components/Image";
 
 interface HomeSearchItemProps {
   product: ProductResponse;

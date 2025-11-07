@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from "react";
-import Button from "../Button/Button";
+import Button from "@components/Button/Button";
 
 export type ProductCardData = {
     id: string;

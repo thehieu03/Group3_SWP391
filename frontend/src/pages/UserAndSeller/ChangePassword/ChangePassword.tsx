@@ -60,8 +60,9 @@ const ChangePassword = () => {
             setTimeout(() => {
                 navigate("/login", { replace: true });
             }, 1000);
-        } catch (err: any) {
-            setMessage({ type: "error", text: err.message });
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            setMessage({ type: "error", text: error.message || "Đã xảy ra lỗi" });
         } finally {
             setLoading(false);
         }

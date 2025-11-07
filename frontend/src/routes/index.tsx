@@ -4,7 +4,7 @@ import DefaultLayout from "@components/Layouts/DefaultLayout/DefaultLayout.tsx";
 import HeaderAndFooter from "@components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
 import AdminLayoutNoHeader from "@components/Layouts/AdminLayoutNoHeader.tsx";
 import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
-import CategoryProducts from "@pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
+import Products from "@pages/Products/Products.tsx";
 import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
 import AdminPanel from "@pages/Admin/AdminPanel.tsx";
@@ -18,6 +18,9 @@ import Share from "@pages/UserAndSeller/Share/Share.tsx";
 import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
 import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
 import SellerDashboard from "@pages/UserAndSeller/SellerDashboard/SellerDashboard.tsx";
+import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
+import SellerLayout from "@components/Layouts/SellerLayout/SellerLayout.tsx";
+import SellerShop from "@pages/UserAndSeller/SellerShop/SellerShop.tsx";
 
 /**
  * Định nghĩa cấu trúc route trong ứng dụng
@@ -45,7 +48,7 @@ const publicRoutes: AppRoute[] = [
   },
   {
     path: routesConfig.categoryProducts + "/:id",
-    element: <CategoryProducts />,
+    element: <Products />,
     layout: DefaultLayout,
   },
   {
@@ -104,6 +107,12 @@ const sharedRoutes: AppRoute[] = [
     layout: DefaultLayout,
     requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
+  {
+    path: routesConfig.paymentHistory,
+    element: <PaymentHistory />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
 ];
 
 // ============================================================================
@@ -121,19 +130,25 @@ const sellerRoutes: AppRoute[] = [
   {
     path: "/seller/dashboard",
     element: <SellerDashboard />,
-    layout: DefaultLayout,
+    layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
   {
     path: "/seller/products",
     element: <div>Quản lý sản phẩm</div>,
-    layout: DefaultLayout,
+    layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
   {
     path: "/seller/orders",
     element: <div>Quản lý đơn hàng</div>,
-    layout: DefaultLayout,
+    layout: SellerLayout,
+    requiredRoles: ["SELLER"],
+  },
+  {
+    path: "/seller/shop",
+    element: <SellerShop />,
+    layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
 ];

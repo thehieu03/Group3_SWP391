@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { paymentHistoryServices } from "../../../services/PaymentHistoryServices";
-import { useAuth } from "../../../hooks/useAuth";
-import type { PaymentHistorySummary } from "../../../models/modelResponse/PaymentHistoryResponse";
-import Pagination from "../../../components/Pagination/Pagination";
+import { paymentHistoryServices } from "@services/PaymentHistoryServices";
+import { useAuth } from "@hooks/useAuth";
+import type { PaymentHistorySummary } from "@models/modelResponse/PaymentHistoryResponse";
+import Pagination from "@components/Pagination/Pagination";
+import Button from "@components/Button/Button";
 
 const PaymentHistory: React.FC = () => {
     const { user, isLoggedIn } = useAuth();
@@ -17,7 +18,7 @@ const PaymentHistory: React.FC = () => {
     
     // Pagination states
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const pageSize = 5;
+    const [pageSize, setPageSize] = useState<number>(5);
 
 
     useEffect(() => {
@@ -41,16 +42,23 @@ const PaymentHistory: React.FC = () => {
                     pageSize
                 );
                 setPaymentData(data);
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('Error fetching payment history:', err);
-                setError('Không thể tải lịch sử giao dịch');
+                const errorMessage = err instanceof Error ? err.message : 'Không thể tải lịch sử giao dịch';
+                setError(errorMessage);
+                setPaymentData(null);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPaymentHistory();
-    }, [isLoggedIn, user, startDate, endDate, transactionType, currentPage]);
+    }, [isLoggedIn, user, startDate, endDate, transactionType, currentPage, pageSize]);
+
+    // Reset to first page when filters or page size change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [startDate, endDate, transactionType, pageSize]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -117,12 +125,12 @@ const PaymentHistory: React.FC = () => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <p className="text-red-600 mb-4">{error}</p>
-                    <button 
+                    <Button 
                         onClick={() => window.location.reload()}
                         className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
                     >
                         Thử lại
-                    </button>
+                    </Button>
                 </div>
             </div>
         );
@@ -138,6 +146,17 @@ const PaymentHistory: React.FC = () => {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
+
+    // If no payment data and not loading/error, show empty state
+    if (!loading && !error && !paymentData) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-gray-600 mb-4">Không có dữ liệu giao dịch</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 py-8">
@@ -181,31 +200,33 @@ const PaymentHistory: React.FC = () => {
                                 </select>
                             </div>
                             <div className="flex items-end">
-                                <button
+                                <Button
                                     onClick={clearFilters}
                                     className="w-full px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
                                 >
                                     Xóa bộ lọc
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
                     
                     {/* Balance Information */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                            <div className="text-sm text-blue-600 mb-1">Số dư hiện tại</div>
-                            <div className="text-2xl font-bold text-blue-800">
-                                {formatAmount(paymentData?.totalBalance || 0)} VNĐ
+                    {paymentData && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <div className="text-sm text-blue-600 mb-1">Số dư hiện tại</div>
+                                <div className="text-2xl font-bold text-blue-800">
+                                    {formatAmount(paymentData.totalBalance || 0)} VNĐ
+                                </div>
+                            </div>
+                            <div className="bg-orange-50 p-4 rounded-lg">
+                                <div className="text-sm text-orange-600 mb-1">Tiền tạm giữ</div>
+                                <div className="text-2xl font-bold text-orange-800">
+                                    {formatAmount(paymentData.moneyOnHold || 0)} VNĐ
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-orange-50 p-4 rounded-lg">
-                            <div className="text-sm text-orange-600 mb-1">Tiền tạm giữ</div>
-                            <div className="text-2xl font-bold text-orange-800">
-                                {formatAmount(paymentData?.moneyOnHold || 0)} VNĐ
-                            </div>
-                        </div>
-                    </div>
+                    )}
 
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
@@ -218,14 +239,14 @@ const PaymentHistory: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {paymentData?.transactions?.length === 0 ? (
+                                {!paymentData || !paymentData.transactions || paymentData.transactions.length === 0 ? (
                                     <tr>
                                         <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
                                             Chưa có giao dịch nào
                                         </td>
                                     </tr>
                                 ) : (
-                                    paymentData?.transactions?.map((transaction) => (
+                                    paymentData.transactions.map((transaction) => (
                                         <tr key={transaction.id} className="border-b hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm text-gray-700">
                                                 {formatDate(transaction.createdAt)}
@@ -248,6 +269,26 @@ const PaymentHistory: React.FC = () => {
                         </table>
                     </div>
                     
+                    {paymentData && (
+                        <div className="mt-4 flex items-center justify-between">
+                            <div className="text-sm text-gray-600">
+                                Hiển thị {paymentData.transactions?.length || 0} trong tổng số {paymentData.totalItems || 0} giao dịch
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <label className="text-sm text-gray-600">Hiển thị:</label>
+                                <select
+                                    value={pageSize}
+                                    onChange={(e) => setPageSize(Number(e.target.value))}
+                                    className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
+                    
                     {paymentData && paymentData.totalPages > 1 && (
                         <div className="mt-6">
                             <Pagination
@@ -256,13 +297,6 @@ const PaymentHistory: React.FC = () => {
                                 onPageChange={handlePageChange}
                                 className="mt-6"
                             />
-                        </div>
-                    )}
-                    
-                    {/* Pagination Info */}
-                    {paymentData && (
-                        <div className="mt-4 text-center text-sm text-gray-600">
-                            Hiển thị {paymentData.transactions?.length || 0} trong tổng số {paymentData.totalItems || 0} giao dịch
                         </div>
                     )}
                 </div>

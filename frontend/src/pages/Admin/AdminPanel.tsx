@@ -18,7 +18,7 @@ import AdminOrderManagement from "./OrderManagement/AdminOrderManagement.tsx";
 import SystemSettings from "./SystemSettings";
 import SupportTickets from "./SupportTicket/SupportTickets.tsx";
 import AdminProductManagement from "./AdminProductManagement";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import routesConfig from "@config/routesConfig.ts";
 

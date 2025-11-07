@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { SystemsConfigResponse } from "../../models/modelResponse/SystemsConfigResponse";
+import type { SystemsConfigResponse } from "@models/modelResponse/SystemsConfigResponse";
 import Button from "@components/Button/Button.tsx";
 
 const SystemSettings = () => {

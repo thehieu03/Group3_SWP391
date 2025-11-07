@@ -1,6 +1,6 @@
 import type { CategoriesResponse } from "@models/modelResponse/CategoriesResponse.tsx";
 import type { PaginationResponse } from "@models/modelResponse/PaginationResponse.tsx";
-import { httpGet, httpPost, httpPatch, httpPut } from "@utils/http.tsx";
+import { httpGet, httpPost, httpPatch, httpPut } from "@utils/http";
 
 interface CreateCategoryRequest {
   categoryName: string;
@@ -12,7 +12,9 @@ interface UpdateCategoryRequest {
 
 class CategoryServices {
   async getAllCategoryAsync(): Promise<CategoriesResponse[]> {
-    const data = await httpGet<PaginationResponse<CategoriesResponse>>("categories");
+    // For customer-facing pages, only get active categories
+    // The backend now defaults to active categories, but we explicitly pass isActive=true for clarity
+    const data = await httpGet<PaginationResponse<CategoriesResponse>>("categories?isActive=true");
     return data.data;
   }
 

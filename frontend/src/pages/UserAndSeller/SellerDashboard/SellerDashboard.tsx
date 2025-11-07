@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { dashboardServices } from "@services/DashboardServices.tsx";
+import { dashboardServices } from "@services/DashboardServices.ts";
 import type { SellerDashboardResponse } from "@models/modelResponse/SellerDashboardResponse.tsx";
 import { useDebounce } from "@hooks/index.tsx";
-import { categoryServices } from "@services/CategoryServices.tsx";
+import { categoryServices } from "@services/CategoryServices.ts";
 import type { CategoriesResponse } from "@models/modelResponse/CategoriesResponse.tsx";
 import Pagination from "@components/Pagination/Pagination";
 
@@ -48,14 +48,14 @@ const SellerDashboard: React.FC = () => {
           pageSize
         );
         setData(res);
-      } catch (e) {
+      } catch {
         setError("Không thể tải dashboard data");
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [debouncedSearchTerm, statusFilter, categoryFilter, currentPage]);
+  }, [debouncedSearchTerm, statusFilter, categoryFilter, currentPage, pageSize]);
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN').format(amount);
   const formatDate = (d: string | null) => d ? new Date(d).toLocaleString('vi-VN') : '';

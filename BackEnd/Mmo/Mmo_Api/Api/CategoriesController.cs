@@ -39,9 +39,16 @@ namespace Mmo_Api.Api
                     return Ok(CreateEmptyPaginationResponse(pageSize ?? DefaultPageSize));
                 }
 
+                // Default to only active categories for public endpoints (when isActive is not explicitly provided)
+                // This ensures customers only see active categories, while admins can explicitly request all categories
                 if (isActive.HasValue)
                 {
                     categories = categories.Where(c => c.IsActive == isActive.Value).ToList();
+                }
+                else
+                {
+                    // Default to only active categories when isActive is not provided
+                    categories = categories.Where(c => c.IsActive == true).ToList();
                 }
 
                 var dataResponse = _mapper.Map<List<CategoryResponse>>(categories);

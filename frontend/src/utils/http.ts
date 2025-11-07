@@ -85,4 +85,13 @@ export async function httpDelete<T>(
   return res.data;
 }
 
+export async function httpPatch<T, D = unknown>(
+  path: string,
+  data?: D,
+  options?: AxiosRequestConfig
+): Promise<T> {
+  const res = await http.patch<T>(path, data, options);
+  return res.data;
+}
+
 export default http;

@@ -1,6 +1,6 @@
 import { forwardRef, useMemo, useState, type ImgHTMLAttributes } from "react";
-import { toAbsoluteImageUrl } from "@/utils/apiBase";
-import images from "../../../assets/noImage.png";
+import { toAbsoluteImageUrl } from "@utils/apiBase";
+import images from "@assets/noImage.png";
 
 type ImageProps = ImgHTMLAttributes<HTMLImageElement> & {
   fallback?: string;

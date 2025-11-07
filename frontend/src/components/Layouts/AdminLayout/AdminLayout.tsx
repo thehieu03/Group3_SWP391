@@ -9,7 +9,7 @@ import {
   faHeadset,
   faCog,
 } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "@hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import routesConfig from "@config/routesConfig.ts";
 

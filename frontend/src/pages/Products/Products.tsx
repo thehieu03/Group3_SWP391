@@ -1,17 +1,17 @@
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import useDebounce from "../../hooks/useDebounce";
+import useDebounce from "@hooks/useDebounce";
 import { useParams, useNavigate } from "react-router-dom";
-import Button from "../../components/Button/Button";
-import ProductCard from "../../components/ProductCard/ProductCard";
-import Pagination from "../../components/Pagination/Pagination";
-import type { ProductCardData } from "../../components/ProductCard/ProductCard";
-import type { ProductResponse } from "../../models/modelResponse/ProductResponse.tsx";
-import type { SubcategoryResponse } from "../../models/modelResponse/SubcategoryResponse.tsx";
-import type { PaginationResponse } from "../../models/modelResponse/PaginationResponse.tsx";
-import { productServices } from "../../services/ProductServices.tsx";
-import { subcategoryServices } from "../../services/SubcategoryServices.tsx";
-import { categoryServices } from "../../services/CategoryServices.tsx";
+import Button from "@components/Button/Button";
+import ProductCard from "@components/ProductCard/ProductCard";
+import Pagination from "@components/Pagination/Pagination";
+import type { ProductCardData } from "@components/ProductCard/ProductCard";
+import type { ProductResponse } from "@models/modelResponse/ProductResponse";
+import type { SubcategoryResponse } from "@models/modelResponse/SubcategoryResponse";
+import type { PaginationResponse } from "@models/modelResponse/PaginationResponse";
+import { productServices } from "@services/ProductServices";
+import { subcategoryServices } from "@services/SubcategoryServices";
+import { categoryServices } from "@services/CategoryServices";
 
 const Products: FC = () => {
     const navigate = useNavigate();
@@ -129,6 +129,7 @@ const Products: FC = () => {
 
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCategory]);
 
 
@@ -220,12 +221,12 @@ const Products: FC = () => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <p className="text-red-600 mb-4">{error}</p>
-                    <button 
+                    <Button 
                         onClick={() => window.location.reload()}
                         className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
                     >
                         Thử lại
-                    </button>
+                    </Button>
                 </div>
             </div>
         );
@@ -315,6 +316,7 @@ const Products: FC = () => {
                                     onChange={(e) => setPageSize(Number(e.target.value))}
                                     className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 >
+                                    <option value={5}>5</option>
                                     <option value={10}>10</option>
                                     <option value={20}>20</option>
                                 </select>

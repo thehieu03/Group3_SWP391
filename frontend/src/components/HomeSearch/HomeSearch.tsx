@@ -1,15 +1,15 @@
 import { type FormEvent, useState, useEffect, useRef } from "react";
-import logoMenu from "../../assets/logoMenu.jpg";
-import Button from "../Button/Button.tsx";
+import logoMenu from "@assets/logoMenu.jpg";
+import Button from "@components/Button/Button.tsx";
 import { FaSearch } from "react-icons/fa";
 import TippyHeadless from "@tippyjs/react/headless";
-import { useDebounce } from "../../hooks";
+import { useDebounce } from "@hooks/index.tsx";
 import { productServices } from "@services/ProductServices.ts";
-import type { ProductResponse } from "@/models/modelResponse/ProductResponse";
+import type { ProductResponse } from "@models/modelResponse/ProductResponse";
 import HomeSearchItem from "./HomeSearchItem";
 import { useNavigate } from "react-router-dom";
 import routesConfig from "@config/routesConfig.ts";
-import Image from "../Image";
+import Image from "@components/Image";
 
 const HomeSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");

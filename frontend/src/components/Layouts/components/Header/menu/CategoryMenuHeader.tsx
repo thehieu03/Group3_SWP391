@@ -6,7 +6,6 @@ import Tippy from "@tippyjs/react";
 import type { Tools } from "@models/Tools.ts";
 import Button from "@components/Button/Button.tsx";
 import routesConfig from "@config/routesConfig.ts";
-import { useNavigate } from "react-router-dom";
 
 
 const tools: Tools[] = [
@@ -43,7 +42,6 @@ type CategoryMenuHeaderProps = {
 };
 
 const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
-  const navigate = useNavigate();
   const [categoriesItems, setCategoriesItems] = useState<CategoriesResponse[]>(
     []
   );

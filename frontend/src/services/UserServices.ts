@@ -5,7 +5,7 @@ import type {
   UpdateProfileResponse,
   UserForAdmin,
   PaginatedUsersResponse,
-} from "../models";
+} from "@models/index.ts";
 
 class UserServices {
   async changePasswordAsync(

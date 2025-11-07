@@ -44,7 +44,7 @@ const SupportTickets = () => {
       const res = await adminSupportTicketServices.getAllTicketsAsync();
       setTickets(res.value);
       setStats(res.stats);
-    } catch (err) {
+    } catch {
       setError("Không thể tải danh sách ticket. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ const SupportTickets = () => {
       await updateTicketStatus(replyingTicket.id, "PROCESSING");
       setReplyMessage("");
       setReplyingTicket(null);
-    } catch (e) {
+    } catch {
       setError("Gửi phản hồi thất bại. Vui lòng thử lại.");
     } finally {
       setSendingReply(false);
@@ -114,7 +114,7 @@ const SupportTickets = () => {
       if (selectedTicket && selectedTicket.id === id) {
         setSelectedTicket({ ...selectedTicket, status });
       }
-    } catch (e) {
+    } catch {
       setError("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
     } finally {
       setUpdatingId(null);

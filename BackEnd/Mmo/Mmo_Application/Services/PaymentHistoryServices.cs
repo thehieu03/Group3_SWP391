@@ -1,9 +1,4 @@
 using AutoMapper;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-using Mmo_Domain.IUnit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Mmo_Application.Services;
 

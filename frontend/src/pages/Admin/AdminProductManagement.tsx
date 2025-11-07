@@ -4,7 +4,7 @@ import type {
   AdminProductResponse,
   AdminProductListResponse,
 } from "@/models/modelResponse/AdminProductResponse";
-import type { ProductListRequest } from "../../models/modelRequest/ProductRequest";
+import type { ProductListRequest } from "@models/modelRequest/ProductRequest";
 import { formatPrice, formatDateOnly } from "@/helpers";
 import Image from "@/components/Image";
 
@@ -81,6 +81,7 @@ const AdminProductManagement = () => {
 
   useEffect(() => {
     void loadProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentPage,
     searchTerm,
