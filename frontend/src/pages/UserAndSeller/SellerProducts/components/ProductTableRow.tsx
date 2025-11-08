@@ -79,7 +79,16 @@ const ProductTableRow = memo(
           )}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-          {formatPrice(product.price)}
+          {product.minPrice !== null && product.minPrice !== undefined && 
+           product.maxPrice !== null && product.maxPrice !== undefined ? (
+            product.minPrice === product.maxPrice ? (
+              formatPrice(product.minPrice)
+            ) : (
+              `${formatPrice(product.minPrice)} - ${formatPrice(product.maxPrice)}`
+            )
+          ) : (
+            formatPrice(product.price)
+          )}
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
           <span className={`text-sm font-medium ${stockColorClass}`}>

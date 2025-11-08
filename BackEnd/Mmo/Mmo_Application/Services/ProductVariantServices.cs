@@ -30,7 +30,7 @@ public class ProductVariantServices : BaseServices<Productvariant>, IProductVari
         // Validate Product exists
         var product = await _unitOfWork.GenericRepository<Product>().GetByIdAsync(request.ProductId.Value);
         if (product == null)
-            return (false, "Product not found", null);
+            return (false, $"Product not found with ID: {request.ProductId.Value}", null);
 
         // Validate variant name is not empty
         if (string.IsNullOrWhiteSpace(request.Name))
@@ -60,15 +60,18 @@ public class ProductVariantServices : BaseServices<Productvariant>, IProductVari
             var saveResult = await _unitOfWork.SaveChangeAsync();
 
             if (saveResult <= 0)
-                return (false, "Failed to save variant to database", null);
+                return (false, $"Failed to save variant to database. SaveResult: {saveResult}", null);
 
-            // Lấy ID từ entity sau khi đã save
+            // Lấy ID từ entity sau khi đã save (EF Core sẽ set ID tự động)
             var variantId = variant.Id;
+            if (variantId <= 0)
+                return (false, $"Variant ID is invalid after save. VariantId: {variantId}", null);
+
             return (true, null, variantId);
         }
         catch (Exception ex)
         {
-            return (false, $"Error creating product variant: {ex.Message}", null);
+            return (false, $"Error creating product variant: {ex.Message}. StackTrace: {ex.StackTrace}", null);
         }
     }
 

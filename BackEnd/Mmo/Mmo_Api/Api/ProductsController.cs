@@ -8,23 +8,23 @@ namespace Mmo_Api.Api;
 public class ProductsController : ControllerBase
 {
     private readonly IProductServices _productServices;
-    private readonly IRabbitMQService _rabbitMQService;
     private readonly IProductVariantServices _productVariantServices;
+    private readonly IProductStorageServices _productStorageServices;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<ProductsController>? _logger;
 
     public ProductsController(
         IProductServices productServices, 
-        IRabbitMQService rabbitMQService,
         IProductVariantServices productVariantServices,
+        IProductStorageServices productStorageServices,
         IMapper mapper, 
         IWebHostEnvironment environment, 
         ILogger<ProductsController>? logger = null)
     {
         _productServices = productServices;
-        _rabbitMQService = rabbitMQService;
         _productVariantServices = productVariantServices;
+        _productStorageServices = productStorageServices;
         _mapper = mapper;
         _environment = environment;
         _logger = logger;
@@ -104,7 +104,8 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery] int id)
     {
-        var productResult = await _productServices.GetByIdAsync(id);
+        // Sử dụng GetProductByIdWithRelatedAsync để include variants và các related entities
+        var productResult = await _productServices.GetProductByIdWithRelatedAsync(id);
         if (productResult == null) return NotFound();
 
         var productResponse = _mapper.Map<ProductResponse>(productResult);
@@ -128,22 +129,32 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image)
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ProductResponse>> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image, [FromForm] string? variants)
     {
-        _logger?.LogInformation("CreateProduct called with Request: {@Request}", new
-        {
-            productRequest?.Name,
-            productRequest?.Description,
-            productRequest?.CategoryId,
-            productRequest?.SubcategoryId,
-            productRequest?.ShopId,
-            HasImage = image != null
-        });
-
         if (productRequest == null)
         {
-            _logger?.LogWarning("CreateProduct: productRequest is null");
             return BadRequest(new { message = "Product request is null" });
+        }
+
+        // Parse variants - ưu tiên từ parameter variants (JSON string), nếu không có thì dùng productRequest.Variants
+        if (!string.IsNullOrEmpty(variants))
+        {
+            try
+            {
+                var jsonOptions = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    AllowTrailingCommas = true,
+                    ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip
+                };
+                
+                productRequest.Variants = System.Text.Json.JsonSerializer.Deserialize<List<ProductVariantRequest>>(variants, jsonOptions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Invalid variants JSON format", error = ex.Message });
+            }
         }
 
         if (!ModelState.IsValid)
@@ -151,13 +162,12 @@ public class ProductsController : ControllerBase
             var errors = ModelState
                 .Where(x => x.Value?.Errors.Count > 0)
                 .Select(x => new { Field = x.Key, Errors = x.Value?.Errors.Select(e => e.ErrorMessage) });
-            _logger?.LogWarning("CreateProduct: ModelState is invalid. Errors: {@Errors}", errors);
             return BadRequest(new { message = "Invalid request data", errors });
         }
 
         try
         {
-            // Handle image upload if provided (cần xử lý trước khi đưa vào queue)
+            // Handle image upload if provided
             string? imageUrl = null;
             if (image != null)
             {
@@ -172,8 +182,8 @@ public class ProductsController : ControllerBase
                 imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Products, image, _environment);
             }
 
-            // Tạo message để đưa vào queue
-            var productMessage = new ProductCreateMessage
+            // Bước 1: Tạo Product trực tiếp
+            var product = new Mmo_Domain.Models.Product
             {
                 ShopId = productRequest.ShopId,
                 CategoryId = productRequest.CategoryId,
@@ -181,27 +191,69 @@ public class ProductsController : ControllerBase
                 Name = productRequest.Name,
                 Description = productRequest.Description,
                 Details = productRequest.Details,
-                ImageUrl = imageUrl
+                ImageUrl = imageUrl,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
-            // Parse variants nếu có (từ FormData - có thể là JSON string)
-            // Variants sẽ được parse từ FormData trong consumer
-            // Ở đây chỉ cần lưu thông tin cơ bản, variants sẽ được xử lý trong consumer
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                product.ImageUploadedAt = DateTime.UtcNow;
+            }
 
-            // Publish message vào RabbitMQ queue để xử lý theo thứ tự
-            var messageJson = productMessage.ToJson();
-            _rabbitMQService.PublishProductCreationMessage(messageJson);
+            var saveResult = await _productServices.AddAsync(product);
+            if (saveResult <= 0)
+            {
+                return BadRequest(new { message = "Failed to create product" });
+            }
 
-            _logger?.LogInformation("Product creation request queued. Product: {ProductName}", productRequest.Name);
+            // Lấy ProductId từ entity sau khi đã save (EF Core sẽ set ID tự động)
+            var productId = product.Id;
+            if (productId <= 0)
+            {
+                return BadRequest(new { message = "Failed to get product ID after creation" });
+            }
 
-            return Ok(new { 
-                message = "Product creation request has been queued and will be processed in order",
-                status = "queued"
-            });
+            // Bước 2: Tạo Variants nếu có
+            if (productRequest.Variants != null && productRequest.Variants.Any())
+            {
+                foreach (var variantRequest in productRequest.Variants)
+                {
+                    // Validate variant request
+                    if (variantRequest == null || string.IsNullOrWhiteSpace(variantRequest.Name))
+                        continue;
+
+                    if (!variantRequest.Price.HasValue || variantRequest.Price.Value < 0)
+                        continue;
+
+                    var variantCreateRequest = new ProductVariantRequest
+                    {
+                        ProductId = productId,
+                        Name = variantRequest.Name,
+                        Price = variantRequest.Price,
+                        Stock = variantRequest.Stock
+                    };
+
+                    var (variantSuccess, variantError, variantId) = await _productVariantServices.CreateProductVariantAsync(variantCreateRequest);
+                    if (!variantSuccess || !variantId.HasValue || variantId.Value <= 0)
+                        continue;
+                }
+            }
+
+            // Load lại product với variants để trả về đầy đủ thông tin (bao gồm MinPrice và MaxPrice)
+            var createdProduct = await _productServices.GetProductByIdWithRelatedAsync(productId);
+            if (createdProduct == null)
+            {
+                return BadRequest(new { message = "Failed to load created product" });
+            }
+
+            // Map sang ProductResponse - MinPrice và MaxPrice sẽ được tính tự động từ variants
+            var productResponse = _mapper.Map<ProductResponse>(createdProduct);
+            return Ok(productResponse);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "CreateProduct: Error creating product");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }

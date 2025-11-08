@@ -30,6 +30,7 @@ public class DashboardController : ControllerBase
         }
     }
 
+    [HttpGet("seller")]
     [HttpGet("seller-overview")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

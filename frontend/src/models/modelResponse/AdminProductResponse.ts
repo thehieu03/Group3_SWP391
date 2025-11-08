@@ -2,7 +2,9 @@ export interface AdminProductResponse {
   id: number;
   name: string;
   description: string;
-  price: number;
+  price: number; // Keep for backward compatibility
+  minPrice?: number | null;
+  maxPrice?: number | null;
   categoryId: number;
   categoryName: string;
   subcategoryId?: number;

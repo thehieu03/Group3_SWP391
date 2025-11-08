@@ -24,7 +24,9 @@ const mapProductToAdminProduct = (
     id: product.id,
     name: product.name,
     description: product.description || "",
-    price: product.minPrice || product.maxPrice || 0,
+    price: product.minPrice || product.maxPrice || 0, // Keep for backward compatibility
+    minPrice: product.minPrice || undefined,
+    maxPrice: product.maxPrice || undefined,
     categoryId: product.categoryId || 0,
     categoryName: product.categoryName || "",
     subcategoryId: product.subcategoryId || undefined,

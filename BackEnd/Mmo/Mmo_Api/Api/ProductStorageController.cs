@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Mmo_Domain.ModelRequest;
 using Mmo_Application.Services.Interface;
 
@@ -76,7 +78,6 @@ public class ProductStorageController : ControllerBase
 
     [HttpGet("variant/{productVariantId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetProductStoragesByVariantId(int productVariantId)
     {
         _logger?.LogInformation("GetProductStoragesByVariantId called with ProductVariantId: {ProductVariantId}", productVariantId);
@@ -84,15 +85,14 @@ public class ProductStorageController : ControllerBase
         try
         {
             var storages = await _productStorageServices.GetStoragesByVariantIdAsync(productVariantId);
-            if (storages == null || !storages.Any())
-            {
-                return NotFound(new { message = "No storages found for this product variant" });
-            }
-
+            
+            // Return empty array if no storages found instead of 404
+            var storageList = storages?.ToList() ?? new List<Mmo_Domain.Models.Productstorage>();
+            
             return Ok(new { 
                 productVariantId = productVariantId,
-                count = storages.Count(),
-                storages = storages.Select(s => new { s.Id, s.Result })
+                count = storageList.Count,
+                storages = storageList.Select(s => new { s.Id, s.Result })
             });
         }
         catch (Exception ex)

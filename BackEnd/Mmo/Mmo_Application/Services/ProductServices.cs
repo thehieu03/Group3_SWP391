@@ -21,6 +21,13 @@ public class ProductServices : BaseServices<Product>, IProductServices
             .ToListAsync();
     }
 
+    public async Task<Product?> GetProductByIdWithRelatedAsync(int productId)
+    {
+        return await _unitOfWork.GenericRepository<Product>()
+            .Get(filter: p => p.Id == productId, includeProperties: "Shop,Category,Subcategory,Productvariants,Feedbacks")
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<bool> UpdateProductStatusAsync(int productId, bool isActive)
     {
         var product = await _unitOfWork.GenericRepository<Product>().GetByIdAsync(productId);

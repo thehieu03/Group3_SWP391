@@ -14,11 +14,14 @@ namespace Mmo_Application.Services;
 
 public class RabbitMQService : IRabbitMQService, IDisposable
 {
-    private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private IConnection? _connection;
+    private IModel? _channel;
     private readonly string _queueName = "product_creation_queue";
     private readonly ILogger<RabbitMQService>? _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConfiguration _configuration;
+    private readonly object _lockObject = new object();
+    private bool _isConnected = false;
 
     public RabbitMQService(
         ILogger<RabbitMQService>? logger, 
@@ -27,52 +30,93 @@ public class RabbitMQService : IRabbitMQService, IDisposable
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _configuration = configuration;
+        // Connection will be established lazily when needed
+    }
 
-        // RabbitMQ connection configuration từ appsettings.json
-        var rabbitMQConfig = configuration.GetSection("RabbitMQ");
-        var factory = new ConnectionFactory
+    private bool EnsureConnection()
+    {
+        // Check if RabbitMQ is disabled in configuration
+        var rabbitMQConfig = _configuration.GetSection("RabbitMQ");
+        var isEnabled = rabbitMQConfig.GetValue<bool>("Enabled", true);
+        if (!isEnabled)
         {
-            HostName = rabbitMQConfig["Host"] ?? "localhost",
-            UserName = rabbitMQConfig["Username"] ?? "guest",
-            Password = rabbitMQConfig["Password"] ?? "guest",
-            Port = int.TryParse(rabbitMQConfig["Port"], out var port) ? port : 5672
-        };
-
-        try
-        {
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-
-            // Declare queue with durable = true để đảm bảo messages không bị mất khi server restart
-            // exclusive = false để nhiều consumers có thể kết nối
-            // autoDelete = false để queue không bị xóa khi không có consumers
-            _channel.QueueDeclare(
-                queue: _queueName,
-                durable: true,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null
-            );
-
-            // Set QoS để xử lý 1 message tại một thời điểm (sequential processing)
-            _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-
-            _logger?.LogInformation("RabbitMQ connection established. Queue: {QueueName}", _queueName);
+            _logger?.LogDebug("RabbitMQ is disabled in configuration");
+            return false;
         }
-        catch (Exception ex)
+
+        if (_isConnected && _connection?.IsOpen == true && _channel?.IsOpen == true)
         {
-            _logger?.LogError(ex, "Failed to establish RabbitMQ connection");
-            throw;
+            return true;
+        }
+
+        lock (_lockObject)
+        {
+            if (_isConnected && _connection?.IsOpen == true && _channel?.IsOpen == true)
+            {
+                return true;
+            }
+
+            try
+            {
+                var factory = new ConnectionFactory
+                {
+                    HostName = rabbitMQConfig["Host"] ?? "localhost",
+                    UserName = rabbitMQConfig["Username"] ?? "guest",
+                    Password = rabbitMQConfig["Password"] ?? "guest",
+                    Port = int.TryParse(rabbitMQConfig["Port"], out var port) ? port : 5672,
+                    RequestedConnectionTimeout = TimeSpan.FromSeconds(5) // Shorter timeout
+                };
+
+                _connection = factory.CreateConnection();
+                _channel = _connection.CreateModel();
+
+                // Declare queue with durable = true để đảm bảo messages không bị mất khi server restart
+                // exclusive = false để nhiều consumers có thể kết nối
+                // autoDelete = false để queue không bị xóa khi không có consumers
+                _channel.QueueDeclare(
+                    queue: _queueName,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null
+                );
+
+                // Set QoS để xử lý 1 message tại một thời điểm (sequential processing)
+                _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+                _isConnected = true;
+                _logger?.LogInformation("RabbitMQ connection established. Queue: {QueueName}", _queueName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log as warning instead of error since this is expected when RabbitMQ is unavailable
+                _logger?.LogWarning(ex, "RabbitMQ connection unavailable. The application will continue without RabbitMQ support. " +
+                    "To disable RabbitMQ entirely, set RabbitMQ:Enabled to false in appsettings.json");
+                _isConnected = false;
+                _connection?.Dispose();
+                _channel?.Dispose();
+                _connection = null;
+                _channel = null;
+                return false;
+            }
         }
     }
 
     public void PublishProductCreationMessage(string message)
     {
+        if (!EnsureConnection())
+        {
+            _logger?.LogWarning("Cannot publish message: RabbitMQ connection is not available");
+            return;
+        }
+
         try
         {
             var body = Encoding.UTF8.GetBytes(message);
 
-            var properties = _channel.CreateBasicProperties();
+            var properties = _channel!.CreateBasicProperties();
             properties.Persistent = true; // Đảm bảo message không bị mất khi server restart
 
             _channel.BasicPublish(
@@ -87,13 +131,20 @@ public class RabbitMQService : IRabbitMQService, IDisposable
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to publish message to queue: {QueueName}", _queueName);
-            throw;
+            _isConnected = false;
+            // Don't throw - allow application to continue
         }
     }
 
     public void StartConsumingProductCreationQueue()
     {
-        var consumer = new EventingBasicConsumer(_channel);
+        if (!EnsureConnection())
+        {
+            _logger?.LogWarning("Cannot start consuming: RabbitMQ connection is not available");
+            return;
+        }
+
+        var consumer = new EventingBasicConsumer(_channel!);
 
         consumer.Received += async (model, ea) =>
         {
@@ -110,7 +161,10 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                 if (productMessage == null)
                 {
                     _logger?.LogError("Failed to parse product creation message");
-                    _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                    if (_channel?.IsOpen == true)
+                    {
+                        _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                    }
                     return;
                 }
 
@@ -145,7 +199,10 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                 if (productId <= 0)
                 {
                     _logger?.LogError("Failed to create product: {ProductName}", productMessage.Name);
-                    _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: true);
+                    if (_channel?.IsOpen == true)
+                    {
+                        _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: true);
+                    }
                     return;
                 }
 
@@ -237,7 +294,10 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                 }
 
                 // Acknowledge message sau khi xử lý thành công
-                _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
+                if (_channel?.IsOpen == true)
+                {
+                    _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
+                }
 
                 _logger?.LogInformation("Product creation message processed successfully. ProductId: {ProductId}", productId);
             }
@@ -246,25 +306,52 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                 _logger?.LogError(ex, "Error processing product creation message: {Message}", message);
 
                 // Reject message và requeue để thử lại
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: true);
+                if (_channel?.IsOpen == true)
+                {
+                    try
+                    {
+                        _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: true);
+                    }
+                    catch (Exception ackEx)
+                    {
+                        _logger?.LogError(ackEx, "Failed to nack message");
+                    }
+                }
             }
         };
 
-        _channel.BasicConsume(
-            queue: _queueName,
-            autoAck: false, // Manual acknowledgment để đảm bảo message được xử lý
-            consumer: consumer
-        );
+        if (_channel?.IsOpen == true)
+        {
+            _channel.BasicConsume(
+                queue: _queueName,
+                autoAck: false, // Manual acknowledgment để đảm bảo message được xử lý
+                consumer: consumer
+            );
 
-        _logger?.LogInformation("Started consuming from queue: {QueueName}", _queueName);
+            _logger?.LogInformation("Started consuming from queue: {QueueName}", _queueName);
+        }
     }
 
     public void Dispose()
     {
-        _channel?.Close();
-        _connection?.Close();
-        _channel?.Dispose();
-        _connection?.Dispose();
+        lock (_lockObject)
+        {
+            try
+            {
+                _channel?.Close();
+                _connection?.Close();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error closing RabbitMQ connection during dispose");
+            }
+            finally
+            {
+                _channel?.Dispose();
+                _connection?.Dispose();
+                _isConnected = false;
+            }
+        }
     }
 }
 

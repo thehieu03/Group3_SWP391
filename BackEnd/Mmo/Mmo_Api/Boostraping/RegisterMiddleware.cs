@@ -133,9 +133,24 @@ public static class RegisterMiddleware
         app.MapControllers();
 
         // Start RabbitMQ consumer để xử lý product creation queue
-        var rabbitMQService = app.Services.GetRequiredService<IRabbitMQService>();
-        rabbitMQService.StartConsumingProductCreationQueue();
-        app.Logger.LogInformation("RabbitMQ consumer started for product creation queue");
+        var rabbitMQEnabled = configuration.GetSection("RabbitMQ").GetValue<bool>("Enabled", true);
+        if (rabbitMQEnabled)
+        {
+            try
+            {
+                var rabbitMQService = app.Services.GetRequiredService<IRabbitMQService>();
+                rabbitMQService.StartConsumingProductCreationQueue();
+                app.Logger.LogInformation("RabbitMQ consumer started for product creation queue");
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogWarning(ex, "Failed to start RabbitMQ consumer. Application will continue without RabbitMQ support.");
+            }
+        }
+        else
+        {
+            app.Logger.LogInformation("RabbitMQ is disabled in configuration. Skipping consumer startup.");
+        }
 
         app.Run();
         return app;

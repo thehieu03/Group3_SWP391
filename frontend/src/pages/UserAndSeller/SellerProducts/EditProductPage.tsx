@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { AdminProductResponse } from "@/models/modelResponse/AdminProductResponse";
 import type { ProductVariantResponse } from "@/models/modelResponse/ProductVariantResponse";
@@ -10,6 +10,7 @@ import { subcategoryServices } from "@services/SubcategoryServices";
 import type { CategoriesResponse } from "@/models/modelResponse/CategoriesResponse";
 import type { SubcategoryResponse } from "@/models/modelResponse/SubcategoryResponse";
 import type { ProductVariantRequest } from "@/models/modelRequest/ProductRequest";
+import * as XLSX from "xlsx";
 
 interface VariantWithStorage {
   variant: ProductVariantResponse;
@@ -91,7 +92,9 @@ const EditProductPage = () => {
           id: productData.id,
           name: productData.name,
           description: productData.description || "",
-          price: productData.minPrice || productData.maxPrice || 0,
+          price: productData.minPrice || productData.maxPrice || 0, // Keep for backward compatibility
+          minPrice: productData.minPrice || undefined,
+          maxPrice: productData.maxPrice || undefined,
           categoryId: productData.categoryId || 0,
           categoryName: productData.categoryName || "",
           subcategoryId: productData.subcategoryId || undefined,
@@ -246,6 +249,217 @@ const EditProductPage = () => {
     []
   );
 
+  // Excel import functionality
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportExcel = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleExcelFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      // Validate file type
+      const validTypes = [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+        "application/vnd.ms-excel", // .xls
+        "text/csv", // .csv
+      ];
+      const isValidType =
+        validTypes.includes(file.type) ||
+        file.name.endsWith(".xlsx") ||
+        file.name.endsWith(".xls") ||
+        file.name.endsWith(".csv");
+
+      if (!isValidType) {
+        alert("Vui lòng chọn file Excel (.xlsx, .xls) hoặc CSV");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = event.target?.result;
+          if (!data) {
+            alert("Không thể đọc file");
+            return;
+          }
+
+          // Parse Excel file
+          const workbook = XLSX.read(data, { type: "binary" });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+
+          // Convert to JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1,
+            defval: "",
+          }) as (string | number)[][];
+
+          if (jsonData.length < 2) {
+            alert("File Excel phải có ít nhất 1 dòng dữ liệu (không tính header)");
+            return;
+          }
+
+          // Parse variants from Excel
+          const headerRow = jsonData[0] as string[];
+          const dataRows = jsonData.slice(1);
+
+          // Find column indices (case-insensitive)
+          const nameColIndex = headerRow.findIndex(
+            (h) => h && h.toString().toLowerCase().includes("tên")
+          );
+          const priceColIndex = headerRow.findIndex(
+            (h) => h && h.toString().toLowerCase().includes("giá")
+          );
+          const stockColIndex = headerRow.findIndex(
+            (h) =>
+              h &&
+              (h.toString().toLowerCase().includes("số lượng") ||
+                h.toString().toLowerCase().includes("stock"))
+          );
+          const storageColIndex = headerRow.findIndex(
+            (h) =>
+              h &&
+              (h.toString().toLowerCase().includes("storage") ||
+                h.toString().toLowerCase().includes("json"))
+          );
+
+          if (nameColIndex === -1 || priceColIndex === -1 || stockColIndex === -1) {
+            alert(
+              "File Excel phải có các cột: Tên, Giá, Số lượng. Vui lòng kiểm tra lại header."
+            );
+            return;
+          }
+
+          const parsedVariants: VariantWithStorage[] = [];
+          let hasDuplicateUsername = false;
+
+          for (let i = 0; i < dataRows.length; i++) {
+            const row = dataRows[i];
+            const name = String(row[nameColIndex] || "").trim();
+            const price = parseFloat(String(row[priceColIndex] || "0"));
+            const stock = parseInt(String(row[stockColIndex] || "0"), 10);
+            const storageJson =
+              storageColIndex !== -1
+                ? String(row[storageColIndex] || "").trim()
+                : "";
+
+            // Skip empty rows
+            if (!name && price === 0 && stock === 0) continue;
+
+            // Validate required fields
+            if (!name) {
+              alert(`Dòng ${i + 2}: Thiếu tên variant`);
+              continue;
+            }
+            if (isNaN(price) || price <= 0) {
+              alert(`Dòng ${i + 2}: Giá không hợp lệ`);
+              continue;
+            }
+            if (isNaN(stock) || stock < 0) {
+              alert(`Dòng ${i + 2}: Số lượng không hợp lệ`);
+              continue;
+            }
+
+            // Create a temporary variant (new variant, will be created on submit)
+            // Use negative id to mark as new variant
+            const tempId = -(parsedVariants.length + 1);
+            const variant: ProductVariantResponse = {
+              id: tempId,
+              productId: productId || 0,
+              name,
+              price,
+              stock,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+
+            // Validate storage JSON if provided
+            let validatedStorageJson = "";
+            if (storageJson) {
+              try {
+                const parsedStorage = JSON.parse(storageJson);
+                if (Array.isArray(parsedStorage)) {
+                  // Check for duplicate usernames in storage JSON
+                  const usernames = parsedStorage
+                    .map((item) => item?.username?.toLowerCase().trim())
+                    .filter((username) => username);
+                  
+                  const uniqueUsernames = new Set(usernames);
+                  if (usernames.length !== uniqueUsernames.size) {
+                    alert(
+                      `Dòng ${i + 2}: Variant "${name}" có tài khoản trùng lặp trong Storage JSON. Import đã bị hủy. Vui lòng kiểm tra lại file Excel.`
+                    );
+                    hasDuplicateUsername = true;
+                    break; // Break out of loop to cancel import
+                  }
+                  
+                  validatedStorageJson = storageJson;
+                } else {
+                  alert(
+                    `Dòng ${i + 2}: Storage JSON phải là một mảng. Bỏ qua storage cho variant này.`
+                  );
+                }
+              } catch (parseError) {
+                alert(
+                  `Dòng ${i + 2}: Storage JSON không hợp lệ. Bỏ qua storage cho variant này.`
+                );
+              }
+            }
+
+            parsedVariants.push({
+              variant,
+              storageJson: validatedStorageJson,
+            });
+          }
+
+          // Cancel import if there was duplicate username
+          if (hasDuplicateUsername) {
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+            }
+            return;
+          }
+
+          if (parsedVariants.length === 0) {
+            alert("Không tìm thấy variant hợp lệ trong file Excel");
+            return;
+          }
+
+          // Mặc định thêm vào (không thay thế)
+          setVariantsWithStorage([...variantsWithStorage, ...parsedVariants]);
+
+          alert(`Đã import thành công ${parsedVariants.length} variant từ file Excel`);
+        } catch (error) {
+          console.error("Error parsing Excel file:", error);
+          alert(
+            `Lỗi khi đọc file Excel: ${
+              error instanceof Error ? error.message : "Lỗi không xác định"
+            }`
+          );
+        } finally {
+          // Reset file input
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        }
+      };
+
+      reader.onerror = () => {
+        alert("Lỗi khi đọc file");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      };
+
+      reader.readAsBinaryString(file);
+    },
+    [variantsWithStorage, productId]
+  );
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -308,7 +522,9 @@ const EditProductPage = () => {
           }
 
           return {
-            id: item.variant.id,
+            // Only include id if it's positive (existing variant)
+            // Negative id means new variant, don't include id
+            id: item.variant.id > 0 ? item.variant.id : undefined,
             name: item.variant.name,
             price: item.variant.price,
             stock: item.variant.stock || undefined,
@@ -586,9 +802,60 @@ const EditProductPage = () => {
 
         {/* Product Variants */}
         <div className="border-t pt-4 mt-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            Biến thể sản phẩm
-          </h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Biến thể sản phẩm
+            </h3>
+            <button
+              type="button"
+              onClick={handleImportExcel}
+              className="px-3 py-1 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center gap-1"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              Import Excel
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            onChange={handleExcelFileChange}
+            className="hidden"
+          />
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-xs font-semibold text-yellow-800 mb-1">
+              📋 Hướng dẫn Import Excel:
+            </p>
+            <ul className="text-xs text-yellow-700 list-disc list-inside space-y-1">
+              <li>
+                File Excel phải có header ở dòng đầu tiên với các cột:{" "}
+                <strong>Tên</strong>, <strong>Giá</strong>,{" "}
+                <strong>Số lượng</strong>, <strong>Storage JSON</strong>{" "}
+                (tùy chọn)
+              </li>
+              <li>
+                Dòng 2 trở đi chứa dữ liệu variants (mỗi dòng = 1 variant)
+              </li>
+              <li>
+                Storage JSON (nếu có) phải là một mảng JSON hợp lệ, ví dụ:{" "}
+                <code className="bg-yellow-100 px-1 rounded">
+                  {`[{"username": "user1", "password": "pass1", "status": false}]`}
+                </code>
+              </li>
+            </ul>
+          </div>
           {loadingVariants ? (
             <p className="text-sm text-gray-500">Đang tải biến thể...</p>
           ) : variantsWithStorage.length === 0 ? (
