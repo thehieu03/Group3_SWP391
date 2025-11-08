@@ -334,6 +334,9 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp")
                 .HasColumnName("createdAt");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp")
+                .HasColumnName("updatedAt");
             entity.Property(e => e.PaymentDescription)
                 .HasMaxLength(100)
                 .HasColumnName("paymentDescription")
@@ -344,9 +347,15 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("enum('PENDING','SUCCESS','FAILED','CANCELLED')")
                 .HasColumnName("status");
             entity.Property(e => e.Type)
-                .HasColumnType("enum('Mua Hàng','Nạp tiền','Chia sẻ')")
+                .HasColumnType("enum('PURCHASE','DEPOSIT','WITHDRAWAL')")
                 .HasColumnName("type");
             entity.Property(e => e.UserId).HasColumnName("userId");
+            entity.Property(e => e.ReferenceCode)
+                .HasMaxLength(100)
+                .HasColumnName("referenceCode");
+            entity.Property(e => e.RawPayload)
+                .HasColumnType("text")
+                .HasColumnName("rawPayload");
 
             entity.HasOne(d => d.User).WithMany(p => p.Paymenttransactions)
                 .HasForeignKey(d => d.UserId)

@@ -19,21 +19,9 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         var account = await _unitOfWork.GenericRepository<Account>().GetByIdAsync(userId);
         var totalBalance = account?.Balance ?? 0;
 
-        // Get pending orders to calculate money on hold
-        var pendingOrders = await _unitOfWork.GenericRepository<Order>().GetQuery()
-            .Where(o => o.AccountId == userId && o.Status == "PENDING")
-            .ToListAsync();
-        
-        // Get pending payment transactions to calculate money on hold
-        var pendingTransactions = await _unitOfWork.GenericRepository<Paymenttransaction>().GetQuery()
-            .Where(p => p.UserId == userId && p.Status == "PENDING")
-            .ToListAsync();
-        
-        var moneyOnHold = pendingOrders.Sum(o => o.TotalPrice) + pendingTransactions.Sum(p => p.Amount);
-
-        // Get payment transactions for the user with filters
+        // Get payment transactions for the user with filters - chỉ lấy giao dịch đã thành công
         var transactionsQuery = _unitOfWork.GenericRepository<Paymenttransaction>().GetQuery()
-            .Where(p => p.UserId == userId);
+            .Where(p => p.UserId == userId && p.Status == "SUCCESS");
 
         // Apply date filters
         if (startDate.HasValue)
@@ -84,7 +72,6 @@ public class PaymentHistoryServices : IPaymentHistoryServices
         return new PaymentHistorySummary
         {
             TotalBalance = totalBalance,
-            MoneyOnHold = moneyOnHold,
             Transactions = paginatedTransactions.Data.ToList(),
             CurrentPage = paginatedTransactions.CurrentPage,
             TotalPages = paginatedTransactions.TotalPages,

@@ -19,5 +19,11 @@ public partial class Paymenttransaction
 
     public DateTime? CreatedAt { get; set; }
 
+    public DateTime? UpdatedAt { get; set; }
+
+    public string? ReferenceCode { get; set; }
+
+    public string? RawPayload { get; set; }
+
     public virtual Account? User { get; set; }
 }

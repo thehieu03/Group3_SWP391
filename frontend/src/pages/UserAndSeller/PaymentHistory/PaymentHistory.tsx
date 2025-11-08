@@ -77,11 +77,11 @@ const PaymentHistory: React.FC = () => {
 
     const getTransactionTypeClass = (type: string) => {
         switch (type) {
-            case 'Nạp tiền':
+            case 'DEPOSIT':
                 return 'deposit';
-            case 'Mua Hàng':
+            case 'PURCHASE':
                 return 'purchase';
-            case 'Rút tiền':
+            case 'WITHDRAWAL':
                 return 'withdraw';
             default:
                 return 'deposit';
@@ -90,11 +90,11 @@ const PaymentHistory: React.FC = () => {
 
     const getTransactionTypeLabel = (type: string) => {
         switch (type) {
-            case 'Nạp tiền':
+            case 'DEPOSIT':
                 return 'Deposit';
-            case 'Mua Hàng':
+            case 'PURCHASE':
                 return 'Purchase';
-            case 'Rút tiền':
+            case 'WITHDRAWAL':
                 return 'Withdrawal';
             default:
                 return 'Deposit';
@@ -102,11 +102,11 @@ const PaymentHistory: React.FC = () => {
     };
 
     const getAmountClass = (type: string) => {
-        return type === 'Nạp tiền' ? 'positive' : 'negative';
+        return type === 'DEPOSIT' ? 'positive' : 'negative';
     };
 
     const getAmountSign = (type: string) => {
-        return type === 'Nạp tiền' ? '+' : '-';
+        return type === 'DEPOSIT' ? '+' : '-';
     };
 
     if (loading) {
@@ -194,9 +194,9 @@ const PaymentHistory: React.FC = () => {
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Tất cả</option>
-                                    <option value="Nạp tiền">Nạp tiền</option>
-                                    <option value="Mua Hàng">Mua Hàng</option>
-                                    <option value="Rút tiền">Rút tiền</option>
+                                    <option value="DEPOSIT">Nạp tiền</option>
+                                    <option value="PURCHASE">Mua Hàng</option>
+                                    <option value="WITHDRAWAL">Rút tiền</option>
                                 </select>
                             </div>
                             <div className="flex items-end">
@@ -212,17 +212,11 @@ const PaymentHistory: React.FC = () => {
                     
                     {/* Balance Information */}
                     {paymentData && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="mb-6">
                             <div className="bg-blue-50 p-4 rounded-lg">
                                 <div className="text-sm text-blue-600 mb-1">Số dư hiện tại</div>
                                 <div className="text-2xl font-bold text-blue-800">
                                     {formatAmount(paymentData.totalBalance || 0)} VNĐ
-                                </div>
-                            </div>
-                            <div className="bg-orange-50 p-4 rounded-lg">
-                                <div className="text-sm text-orange-600 mb-1">Tiền tạm giữ</div>
-                                <div className="text-2xl font-bold text-orange-800">
-                                    {formatAmount(paymentData.moneyOnHold || 0)} VNĐ
                                 </div>
                             </div>
                         </div>

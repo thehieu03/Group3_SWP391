@@ -52,11 +52,6 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
   {
-    path: routesConfig.deposit,
-    element: <Deposit />,
-    layout: DefaultLayout,
-  },
-  {
     path: routesConfig.registerShop,
     element: <RegisterShop />,
     layout: DefaultLayout,
@@ -110,6 +105,12 @@ const sharedRoutes: AppRoute[] = [
   {
     path: routesConfig.paymentHistory,
     element: <PaymentHistory />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.deposit,
+    element: <Deposit />,
     layout: DefaultLayout,
     requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },

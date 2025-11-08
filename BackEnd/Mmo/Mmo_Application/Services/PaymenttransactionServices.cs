@@ -33,18 +33,15 @@ public class PaymenttransactionServices :BaseServices<Paymenttransaction>, IPaym
             account.Balance = 0;
         }
 
-        switch (transactionType.ToLower())
+        switch (transactionType.ToUpper())
         {
-            case "rút tiền":
-            case "withdrawal":
+            case "WITHDRAWAL":
                 account.Balance -= amount; 
                 break;
-            case "nạp tiền":
-            case "deposit":
+            case "DEPOSIT":
                 account.Balance += amount; 
                 break;
-            case "mua hàng":
-            case "purchase":
+            case "PURCHASE":
                 account.Balance -= amount; 
                 break;
             default:

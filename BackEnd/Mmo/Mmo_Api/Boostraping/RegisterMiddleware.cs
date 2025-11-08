@@ -85,6 +85,11 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IEmailService, EmailService>();
         // Removed image service DI; using static HelperImage methods instead
 
+        // Payment services
+        builder.Services.AddScoped<IVietQRService, VietQRService>();
+        builder.Services.AddHttpClient();
+        builder.Services.AddScoped<ISePayService, SePayService>();
+        builder.Services.AddHostedService<PaymentPollingService>();
 
         builder.Services.AddScoped<IDbConnection>(provider =>
         {
