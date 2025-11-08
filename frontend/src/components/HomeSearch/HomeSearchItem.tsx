@@ -11,9 +11,8 @@ const HomeSearchItem: React.FC<HomeSearchItemProps> = ({
   product,
   onClick,
 }) => {
-  // Convert image to string if it's not already a string, and handle null/undefined
-  const imageSrc =
-    typeof product.image === "string" ? product.image : undefined;
+  // Use imageUrl from product
+  const imageSrc = product.imageUrl ?? undefined;
 
   return (
     <div

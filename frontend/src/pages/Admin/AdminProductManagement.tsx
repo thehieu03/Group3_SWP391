@@ -7,6 +7,7 @@ import type {
 import type { ProductListRequest } from "@models/modelRequest/ProductRequest";
 import { formatPrice, formatDateOnly } from "@/helpers";
 import Image from "@/components/Image";
+import { useDebounce } from "@hooks/index.tsx";
 
 const AdminProductManagement = () => {
   const [products, setProducts] = useState<AdminProductResponse[]>([]);
@@ -21,6 +22,7 @@ const AdminProductManagement = () => {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
   const [shopFilter, setShopFilter] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<boolean | null>(null);
@@ -44,7 +46,7 @@ const AdminProductManagement = () => {
       const params: ProductListRequest = {
         page: currentPage,
         limit,
-        search: searchTerm || undefined,
+        search: debouncedSearchTerm || undefined,
         categoryId: categoryFilter || undefined,
         shopId: shopFilter || undefined,
         isActive: statusFilter !== null ? statusFilter : undefined,
@@ -79,12 +81,17 @@ const AdminProductManagement = () => {
     }
   };
 
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
+
   useEffect(() => {
     void loadProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentPage,
-    searchTerm,
+    debouncedSearchTerm,
     categoryFilter,
     shopFilter,
     statusFilter,

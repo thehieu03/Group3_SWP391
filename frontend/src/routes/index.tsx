@@ -18,6 +18,8 @@ import Share from "@pages/UserAndSeller/Share/Share.tsx";
 import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
 import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
 import SellerDashboard from "@pages/UserAndSeller/SellerDashboard/SellerDashboard.tsx";
+import SellerProducts from "@pages/UserAndSeller/SellerProducts/SellerProducts.tsx";
+import EditProductPage from "@pages/UserAndSeller/SellerProducts/EditProductPage.tsx";
 import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
 import SellerLayout from "@components/Layouts/SellerLayout/SellerLayout.tsx";
 import SellerShop from "@pages/UserAndSeller/SellerShop/SellerShop.tsx";
@@ -42,7 +44,7 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
   {
-    path: routesConfig.productDetails,
+    path: routesConfig.productDetails + "/:id",
     element: <ProductDetails />,
     layout: HeaderAndFooter,
   },
@@ -135,7 +137,13 @@ const sellerRoutes: AppRoute[] = [
   },
   {
     path: "/seller/products",
-    element: <div>Quản lý sản phẩm</div>,
+    element: <SellerProducts />,
+    layout: SellerLayout,
+    requiredRoles: ["SELLER"],
+  },
+  {
+    path: "/seller/products/edit/:id",
+    element: <EditProductPage />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },

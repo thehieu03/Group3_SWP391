@@ -5,7 +5,7 @@ export interface ProductResponse {
   subcategoryId?: number | null;
   name: string;
   description?: string | null;
-  image?: string | null | Uint8Array;
+  imageUrl?: string | null;
   isActive: boolean | null;
   details?: string | null;
   fee?: number | null;

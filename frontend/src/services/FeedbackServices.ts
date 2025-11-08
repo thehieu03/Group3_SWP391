@@ -1,9 +1,13 @@
-import { httpPost } from "@utils/http.ts";
-import type { FeedbackRequest } from "@models/modelRequest";
+import type { FeedbackResponse } from "@models/modelResponse/FeedbackResponse";
+import { httpGet } from "@utils/http";
 
 class FeedbackServices {
-  async createFeedbackAsync(feedbackData: FeedbackRequest): Promise<string> {
-    const response = await httpPost<string>("feedbacks", feedbackData);
+  async getFeedbacksByProductIdAsync(
+    productId: number
+  ): Promise<FeedbackResponse[]> {
+    const response = await httpGet<FeedbackResponse[]>(
+      `feedbacks/product/${productId}`
+    );
     return response;
   }
 }

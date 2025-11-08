@@ -20,6 +20,7 @@ export interface AdminProductResponse {
   updatedAt: string;
   totalOrders: number;
   totalRevenue: number;
+  details?: string;
 }
 
 export interface AdminProductListResponse {

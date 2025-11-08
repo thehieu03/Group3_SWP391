@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using Mmo_Application.Services.Interface;
+
 namespace Mmo_Api.Boostraping;
 
 public static class RegisterMiddleware
@@ -84,6 +86,9 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IDashboardServices, DashboardServices>();
         builder.Services.AddScoped<IEmailService, EmailService>();
         // Removed image service DI; using static HelperImage methods instead
+        
+        // RabbitMQ Service - Singleton để duy trì connection
+        builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 
         builder.Services.AddScoped<IDbConnection>(provider =>
@@ -121,6 +126,11 @@ public static class RegisterMiddleware
         app.UseAuthorization();
 
         app.MapControllers();
+
+        // Start RabbitMQ consumer để xử lý product creation queue
+        var rabbitMQService = app.Services.GetRequiredService<IRabbitMQService>();
+        rabbitMQService.StartConsumingProductCreationQueue();
+        app.Logger.LogInformation("RabbitMQ consumer started for product creation queue");
 
         app.Run();
         return app;

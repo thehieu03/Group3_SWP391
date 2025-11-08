@@ -19,6 +19,15 @@ public class ShopServices : BaseServices<Shop>, IShopServices
             .ToListAsync();
     }
 
+    public async Task<Shop?> GetByAccountIdAsync(int accountId)
+    {
+        var query = _unitOfWork.GenericRepository<Shop>().Get(
+            filter: s => s.AccountId == accountId,
+            includeProperties: "Account,Products,Replies"
+        );
+        return await Task.FromResult(query.FirstOrDefault());
+    }
+
     public async Task<bool> UpdateShopStatusAsync(int shopId, string status)
     {
         try

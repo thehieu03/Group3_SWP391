@@ -29,4 +29,26 @@ public class FeedbackController : ControllerBase
         var result = await _feedbackServices.AddAsync(dataAdd);
         return result > 0 ? Ok("Add success") : StatusCode(StatusCodes.Status500InternalServerError);
     }
+
+    [HttpGet("product/{productId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<FeedbackResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<FeedbackResponse>>> GetFeedbacksByProductId(int productId)
+    {
+        try
+        {
+            var feedbacks = await _feedbackServices.GetByProductIdAsync(productId);
+
+            if (feedbacks == null || !feedbacks.Any())
+                return NotFound(new { message = $"No feedbacks found for product ID {productId}" });
+
+            var resultResponse = _mapper.Map<IEnumerable<FeedbackResponse>>(feedbacks);
+            return Ok(resultResponse);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
 }

@@ -111,8 +111,8 @@ const Deposit = () => {
           textAlign: "center",
         }}
       >
-        • Tối thiểu: 50.000 VNĐ <br />
-        • Chỉ nhập số nguyên (không có phần thập phân)
+        • Tối thiểu: 50.000 VNĐ <br />• Chỉ nhập số nguyên (không có phần thập
+        phân)
       </p>
 
       {showPopup && qrUrl && (

@@ -43,6 +43,7 @@ public class MapperClass : Profile
             .ForMember(dest => dest.ComplaintRate, opt => opt.MapFrom(src => 0))
             .ReverseMap();
         CreateMap<Product, ProductRequest>().ReverseMap();
+        CreateMap<Productvariant, ProductVariantResponse>().ReverseMap();
         CreateMap<Order, OrderResponse>().ReverseMap();
         CreateMap<ProfileUpdateRequest, Account>().ReverseMap();
         CreateMap<Account, UserResponse>().ReverseMap();
@@ -84,6 +85,16 @@ public class MapperClass : Profile
             .ForMember(d => d.BuyerName, o => o.MapFrom(src => src.Account!.Username))
             .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity));
         CreateMap<Feedback, FeedbackRequest>().ReverseMap();
+        CreateMap<Feedback, FeedbackResponse>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId))
+            .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderId))
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
+            .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.AccountUsername, opt => opt.MapFrom(src => src.Account != null ? src.Account.Username : null))
+            .ForMember(dest => dest.AccountEmail, opt => opt.MapFrom(src => src.Account != null ? src.Account.Email : null));
 
         CreateMap<Supportticket, SupportTicketResponse>()
             .ForMember(d => d.Id, o => o.MapFrom(src => src.Id))

@@ -38,6 +38,16 @@ class ShopServices {
     return response;
   }
 
+  async getShopByAccountIdAsync(accountId: number): Promise<Shop | null> {
+    try {
+      const response = await httpGet<Shop>(`shops/account/${accountId}`);
+      return response;
+    } catch (error) {
+      console.error("Error getting shop by account ID:", error);
+      return null;
+    }
+  }
+
   async getShopsPagedAsync(
     page: number,
     pageSize: number,

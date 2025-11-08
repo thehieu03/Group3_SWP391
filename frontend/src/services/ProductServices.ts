@@ -1,6 +1,7 @@
 import type { ProductResponse } from "@models/modelResponse/ProductResponse";
 import type { PaginationResponse } from "@models/modelResponse/PaginationResponse";
-import { httpGet } from "@utils/http";
+import { httpGet, httpPut, httpPost } from "@utils/http";
+import type { ProductRequest } from "@models/modelRequest/ProductRequest";
 
 interface GetProductsByCategoryParams {
   categoryId: number;
@@ -26,6 +27,13 @@ class ProductServices {
     return response;
   }
 
+  async getProductByIdAsync(productId: number): Promise<ProductResponse> {
+    const response = await httpGet<ProductResponse>(
+      `products/getProductById?id=${productId}`
+    );
+    return response;
+  }
+
   async searchProductsAsync(searchTerm: string): Promise<ProductResponse[]> {
     const encodedSearchTerm = encodeURIComponent(searchTerm);
     const response = await httpGet<ProductResponse[]>(
@@ -43,10 +51,13 @@ class ProductServices {
     return response;
   }
 
-  async getProductsByCategory(params: GetProductsByCategoryParams): Promise<PaginationResponse<ProductResponse>> {
+  async getProductsByCategory(
+    params: GetProductsByCategoryParams
+  ): Promise<PaginationResponse<ProductResponse>> {
     const q = new URLSearchParams();
     q.set("categoryId", String(params.categoryId));
-    if (params?.subcategoryId != null) q.set("subcategoryId", String(params.subcategoryId));
+    if (params?.subcategoryId != null)
+      q.set("subcategoryId", String(params.subcategoryId));
     if (params?.searchTerm) q.set("searchTerm", params.searchTerm);
     if (params?.sortBy) q.set("sortBy", params.sortBy);
     const path = `products?${q.toString()}`;
@@ -58,7 +69,7 @@ class ProductServices {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
       const paginatedProducts = allProducts.slice(startIndex, endIndex);
-      
+
       return {
         data: paginatedProducts,
         currentPage: currentPage,
@@ -66,7 +77,7 @@ class ProductServices {
         totalItems: allProducts.length,
         itemsPerPage: pageSize,
         hasNextPage: endIndex < allProducts.length,
-        hasPreviousPage: currentPage > 1
+        hasPreviousPage: currentPage > 1,
       };
     } catch (err: unknown) {
       const error = err as { response?: { status?: number } };
@@ -79,31 +90,34 @@ class ProductServices {
           totalItems: 0,
           itemsPerPage: pageSize,
           hasNextPage: false,
-          hasPreviousPage: false
+          hasPreviousPage: false,
         };
       }
       throw err;
     }
   }
 
-  async getProductsBySubcategories(params: GetProductsBySubcategoriesParams): Promise<PaginationResponse<ProductResponse>> {
+  async getProductsBySubcategories(
+    params: GetProductsBySubcategoriesParams
+  ): Promise<PaginationResponse<ProductResponse>> {
     const MAX_PAGE_SIZE = 1000;
     const results = await Promise.all(
-      params.subcategoryIds.map(subcategoryId => 
+      params.subcategoryIds.map((subcategoryId) =>
         this.getProductsByCategory({
           categoryId: params.categoryId,
           subcategoryId: subcategoryId,
           searchTerm: params.searchTerm,
           sortBy: params.sortBy,
           page: 1,
-          pageSize: MAX_PAGE_SIZE
+          pageSize: MAX_PAGE_SIZE,
         })
       )
     );
 
-    const allProducts = results.flatMap(result => result.data);
-    const uniqueProducts = allProducts.filter((product, index, self) => 
-      index === self.findIndex(p => p.id === product.id)
+    const allProducts = results.flatMap((result) => result.data);
+    const uniqueProducts = allProducts.filter(
+      (product, index, self) =>
+        index === self.findIndex((p) => p.id === product.id)
     );
     const startIndex = ((params.page || 1) - 1) * (params.pageSize || 8);
     const endIndex = startIndex + (params.pageSize || 8);
@@ -116,8 +130,146 @@ class ProductServices {
       totalItems: uniqueProducts.length,
       itemsPerPage: params.pageSize || 8,
       hasNextPage: endIndex < uniqueProducts.length,
-      hasPreviousPage: (params.page || 1) > 1
+      hasPreviousPage: (params.page || 1) > 1,
     };
+  }
+
+  async getProductsByShopIdAsync(shopId: number): Promise<ProductResponse[]> {
+    const response = await httpGet<ProductResponse[]>(
+      `products/shop/${shopId}`
+    );
+    return response;
+  }
+
+  async updateProductStatusAsync(
+    productId: number,
+    isActive: boolean
+  ): Promise<void> {
+    await httpPut<void, { productId: number; isActive: boolean }>(
+      `products/${productId}/status`,
+      {
+        productId,
+        isActive,
+      }
+    );
+  }
+
+  async updateProductAsync(
+    productId: number,
+    productData: Partial<ProductRequest>,
+    image?: File
+  ): Promise<void> {
+    const formData = new FormData();
+
+    // Required fields
+    if (productData.name) formData.append("name", productData.name);
+    if (productData.description)
+      formData.append("description", productData.description);
+    if (productData.categoryId !== undefined)
+      formData.append("categoryId", productData.categoryId.toString());
+    if (productData.shopId !== undefined)
+      formData.append("shopId", productData.shopId.toString());
+
+    // Optional fields
+    if (
+      productData.subcategoryId !== undefined &&
+      productData.subcategoryId !== null
+    )
+      formData.append("subcategoryId", productData.subcategoryId.toString());
+    if (productData.details) formData.append("details", productData.details);
+
+    // Product Variants
+    if (productData.variants && productData.variants.length > 0) {
+      formData.append("variants", JSON.stringify(productData.variants));
+    }
+
+    if (image) {
+      formData.append("image", image);
+    }
+
+    console.log("[ProductServices] Updating product:", {
+      productId,
+      formData: {
+        name: productData.name,
+        description: productData.description,
+        categoryId: productData.categoryId,
+        subcategoryId: productData.subcategoryId,
+        shopId: productData.shopId,
+        details: productData.details,
+        hasImage: !!image,
+      },
+    });
+
+    try {
+      // Don't set Content-Type header manually - browser will set it with boundary for FormData
+      await httpPut<void, FormData>(`products/${productId}`, formData);
+    } catch (error: unknown) {
+      console.error("[ProductServices] Update product error:", error);
+      const err = error as { response?: { data?: unknown; status?: number } };
+      if (err.response) {
+        console.error("[ProductServices] Error response:", err.response.data);
+        console.error("[ProductServices] Error status:", err.response.status);
+      }
+      throw error;
+    }
+  }
+
+  async createProductAsync(
+    productData: Partial<ProductRequest>,
+    image?: File
+  ): Promise<void> {
+    const formData = new FormData();
+
+    // Required fields
+    if (productData.name) formData.append("name", productData.name);
+    if (productData.description)
+      formData.append("description", productData.description);
+    if (productData.categoryId !== undefined)
+      formData.append("categoryId", productData.categoryId.toString());
+    if (productData.shopId !== undefined)
+      formData.append("shopId", productData.shopId.toString());
+
+    // Optional fields
+    if (
+      productData.subcategoryId !== undefined &&
+      productData.subcategoryId !== null
+    )
+      formData.append("subcategoryId", productData.subcategoryId.toString());
+    if (productData.details) formData.append("details", productData.details);
+
+    // Product Variants and Storages
+    if (productData.variants && productData.variants.length > 0) {
+      formData.append("variants", JSON.stringify(productData.variants));
+    }
+
+    if (image) {
+      formData.append("image", image);
+    }
+
+    console.log("[ProductServices] Creating product:", {
+      formData: {
+        name: productData.name,
+        description: productData.description,
+        categoryId: productData.categoryId,
+        subcategoryId: productData.subcategoryId,
+        shopId: productData.shopId,
+        details: productData.details,
+        hasImage: !!image,
+        variants: productData.variants,
+      },
+    });
+
+    try {
+      await httpPost<void, FormData>("products", formData);
+    } catch (error: unknown) {
+      console.error("[ProductServices] Create product error:", error);
+      const err = error as { response?: { data?: unknown; status?: number } };
+      if (err.response) {
+        console.error("[ProductServices] Error response:", err.response.data);
+        console.error("[ProductServices] Error status:", err.response.status);
+      }
+      throw error;
+    }
   }
 }
 export const productServices = new ProductServices();

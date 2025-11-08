@@ -5,7 +5,6 @@ import {
   faUsers,
   faStore,
   faFolder,
-  faMoneyBillWave,
   faHeadset,
   faCog,
   faShoppingBag,
@@ -14,7 +13,6 @@ import AdminDashboard from "./AdminDashboard";
 import UserManagement from "./UserManagement/UserManagement.tsx";
 import ShopManagement from "./ShopManagement/ShopManagement.tsx";
 import CategoryManagement from "./CategoryManagement";
-import AdminOrderManagement from "./OrderManagement/AdminOrderManagement.tsx";
 import SystemSettings from "./SystemSettings";
 import SupportTickets from "./SupportTicket/SupportTickets.tsx";
 import AdminProductManagement from "./AdminProductManagement";
@@ -44,8 +42,6 @@ const AdminPanel = () => {
         return <CategoryManagement />;
       case "products":
         return <AdminProductManagement />;
-      case "transactions":
-        return <AdminOrderManagement />;
       case "support":
         return <SupportTickets />;
       case "settings":
@@ -110,16 +106,6 @@ const AdminPanel = () => {
                   label: "Quản lý sản phẩm",
                   icon: (
                     <FontAwesomeIcon icon={faShoppingBag} className="text-lg" />
-                  ),
-                },
-                {
-                  id: "transactions",
-                  label: "Lịch sử giao dịch",
-                  icon: (
-                    <FontAwesomeIcon
-                      icon={faMoneyBillWave}
-                      className="text-lg"
-                    />
                   ),
                 },
                 {

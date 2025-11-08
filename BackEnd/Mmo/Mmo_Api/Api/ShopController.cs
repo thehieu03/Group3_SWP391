@@ -61,7 +61,6 @@ public class ShopController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -358,6 +357,34 @@ public class ShopController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { message = $"Lỗi hệ thống: {ex.Message}" });
+        }
+    }
+
+    [HttpGet("account/{accountId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ShopResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ShopResponse>> GetShopByAccountId(int accountId)
+    {
+        try
+        {
+            var shop = await _shopServices.GetByAccountIdAsync(accountId);
+            
+            if (shop == null)
+                return NotFound(new { message = $"No shop found for account ID {accountId}" });
+
+            var shopResponse = _mapper.Map<ShopResponse>(shop);
+            shopResponse.OwnerUsername = shop.Account?.Username ?? "Unknown";
+            shopResponse.ProductCount = shop.Products?.Count ?? 0;
+            shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
+            shopResponse.IdentificationFurl = shop.Account?.IdentificationFurl;
+            shopResponse.IdentificationBurl = shop.Account?.IdentificationBurl;
+
+            return Ok(shopResponse);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 }
