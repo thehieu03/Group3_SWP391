@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Mmo_Application.Services;
 
@@ -36,7 +34,7 @@ public class OrderServices : BaseServices<Order>, IOrderServices
         var feedback = await _unitOfWork.GenericRepository<Feedback>()
             .Get(f => f.OrderId == orderId)
             .FirstOrDefaultAsync();
-
+        
         return feedback != null;
     }
 }

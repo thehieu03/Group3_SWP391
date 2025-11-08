@@ -1,5 +1,4 @@
 // Export all response models
-export * from "./UserResponse";
 export * from "./LoginResponse";
 export * from "./ProductResponse";
 export * from "./CategoriesResponse";
