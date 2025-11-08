@@ -31,7 +31,6 @@ class PaymentHistoryServices {
         // Return empty payment history if not found
         return {
           totalBalance: 0,
-          moneyOnHold: 0,
           transactions: [],
           currentPage: 1,
           totalPages: 0,

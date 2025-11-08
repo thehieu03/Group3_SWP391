@@ -90,6 +90,11 @@ public static class RegisterMiddleware
         // RabbitMQ Service - Singleton để duy trì connection
         builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
+        // Payment services
+        builder.Services.AddScoped<IVietQRService, VietQRService>();
+        builder.Services.AddHttpClient();
+        builder.Services.AddScoped<ISePayService, SePayService>();
+        builder.Services.AddHostedService<PaymentPollingService>();
 
         builder.Services.AddScoped<IDbConnection>(provider =>
         {

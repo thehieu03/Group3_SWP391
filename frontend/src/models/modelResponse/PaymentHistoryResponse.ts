@@ -1,7 +1,7 @@
 export interface PaymentHistoryResponse {
     id: number;
     userId: number;
-    type: 'Mua Hàng' | 'Nạp tiền' | 'Rút tiền';
+    type: 'PURCHASE' | 'DEPOSIT' | 'WITHDRAWAL';
     amount: number;
     paymentDescription: string;
     status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
@@ -10,7 +10,6 @@ export interface PaymentHistoryResponse {
 
 export interface PaymentHistorySummary {
     totalBalance: number;
-    moneyOnHold: number;
     transactions: PaymentHistoryResponse[];
     currentPage: number;
     totalPages: number;

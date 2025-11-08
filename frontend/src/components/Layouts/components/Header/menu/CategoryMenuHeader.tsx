@@ -170,9 +170,11 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
       </Tippy>
 
       {isLogin && (
-        <Button to={routesConfig.deposit} className={MENU_ITEM_CLASS}>
-          Nạp tiền
-        </Button>
+        <Tippy content="Nạp tiền" placement="bottom-end">
+          <Button to={routesConfig.deposit} className={MENU_ITEM_CLASS}>
+            Nạp tiền
+          </Button>
+        </Tippy>
       )}
     </div>
   );
