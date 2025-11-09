@@ -8,6 +8,7 @@ import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
 import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
 import Login from "../pages/UserAndSeller/Login/Login.tsx";
 import Register from "../pages/UserAndSeller/Register/Register.tsx";
+import ShopDetail from "../pages/UserAndSeller/ShopDetail/ShopDetail.tsx";
 import AdminPanel from "../pages/Admin/AdminPanel.tsx";
 import ProductApproval from "../pages/Admin/ProductApproval.tsx";
 import SellerDashboard from "../pages/Seller/SellerDashboard.tsx";
@@ -65,6 +66,12 @@ const privateRoutes: AppRoute[] = [
     element: <UserProfile />,
     layout: DefaultLayout,
     requiredRoles: ['BUYER', 'SELLER', 'ADMIN'],
+  },
+  {
+    path: routesConfig.shopDetail + '/:id',
+    element: <ShopDetail />,
+    layout: DefaultLayout,
+    requiredRoles: ['BUYER', 'CUSTOMER'],
   },
 ];
 

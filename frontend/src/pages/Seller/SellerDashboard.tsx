@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sellerProductServices } from '../../services/SellerProductServices';
+import { shopServices, type Shop, type UpdateShopRequest } from '../../services/ShopServices';
 import { useAuth } from '../../hooks/useAuth';
 
 const SellerDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(true);
+    const [shop, setShop] = useState<Shop | null>(null);
+    const [shopLoading, setShopLoading] = useState<boolean>(true);
+    const [isEditingShop, setIsEditingShop] = useState<boolean>(false);
+    const [savingShop, setSavingShop] = useState<boolean>(false);
+    const [shopSuccessMessage, setShopSuccessMessage] = useState<string | null>(null);
+    const [editShopData, setEditShopData] = useState<UpdateShopRequest>({
+        name: '',
+        description: '',
+        isActive: true,
+    });
     const [stats, setStats] = useState({
         totalProducts: 0,
         approvedProducts: 0,
@@ -14,14 +25,43 @@ const SellerDashboard = () => {
         totalOrders: 0
     });
 
-    // Get shopId from user - you may need to adjust this based on your user model
-    const shopId = 1; // Replace with actual shopId from user context
+    // Get shopId from shop
+    const shopId = shop?.id || 1; // Fallback to 1 if shop not loaded yet
 
     useEffect(() => {
+        fetchShop();
         fetchDashboardStats();
     }, []);
 
+    useEffect(() => {
+        if (shop?.id) {
+            fetchDashboardStats();
+        }
+    }, [shop?.id]);
+
+    const fetchShop = async () => {
+        setShopLoading(true);
+        try {
+            // Get shop for current seller using the new endpoint
+            const myShop = await shopServices.getMyShopAsync();
+            if (myShop) {
+                setShop(myShop);
+                setEditShopData({
+                    name: myShop.name,
+                    description: myShop.description || '',
+                    isActive: myShop.isActive,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching shop:', error);
+        } finally {
+            setShopLoading(false);
+        }
+    };
+
     const fetchDashboardStats = async () => {
+        if (!shopId) return;
+        
         setLoading(true);
         try {
             // Fetch all products
@@ -41,6 +81,68 @@ const SellerDashboard = () => {
             console.error('Error fetching dashboard stats:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleEditShop = () => {
+        if (shop) {
+            setEditShopData({
+                name: shop.name,
+                description: shop.description || '',
+                isActive: shop.isActive,
+            });
+        }
+        setIsEditingShop(true);
+    };
+
+    const handleCancelEditShop = () => {
+        if (shop) {
+            setEditShopData({
+                name: shop.name,
+                description: shop.description || '',
+                isActive: shop.isActive,
+            });
+        }
+        setIsEditingShop(false);
+    };
+
+    const handleSaveShop = async () => {
+        if (!shop?.id) return;
+
+        if (!editShopData.name?.trim()) {
+            alert('Tên shop không được để trống');
+            return;
+        }
+
+        try {
+            setSavingShop(true);
+            setShopSuccessMessage(null);
+            // Use the new endpoint for seller to update their own shop
+            const updatedShop = await shopServices.updateMyShopAsync(editShopData);
+            setShop(updatedShop);
+            setIsEditingShop(false);
+            setShopSuccessMessage('Cập nhật thông tin shop thành công!');
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setShopSuccessMessage(null);
+            }, 3000);
+        } catch (error: any) {
+            console.error('Error updating shop:', error);
+            alert(error.response?.data?.message || 'Không thể cập nhật thông tin shop');
+        } finally {
+            setSavingShop(false);
+        }
+    };
+
+    const handleShopInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value, type } = e.target;
+        if (type === 'checkbox') {
+            const checked = (e.target as HTMLInputElement).checked;
+            setEditShopData(prev => ({ ...prev, [name]: checked }));
+        } else {
+            setEditShopData(prev => ({ ...prev, [name]: value }));
         }
     };
 
@@ -183,6 +285,294 @@ const SellerDashboard = () => {
                     Đây là tổng quan về shop của bạn
                 </p>
             </div>
+
+            {/* Shop Information Section */}
+            {shopLoading ? (
+                <div style={{
+                    backgroundColor: 'white',
+                    padding: '24px',
+                    borderRadius: '12px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    marginBottom: '32px',
+                    textAlign: 'center'
+                }}>
+                    <div style={{ display: 'inline-block' }}>Đang tải thông tin shop...</div>
+                </div>
+            ) : shop ? (
+                <div style={{
+                    backgroundColor: 'white',
+                    padding: '24px',
+                    borderRadius: '12px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    marginBottom: '32px'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '20px'
+                    }}>
+                        <h2 style={{
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            color: '#111827',
+                            margin: 0
+                        }}>
+                            Thông tin shop
+                        </h2>
+                        {!isEditingShop && (
+                            <button
+                                onClick={handleEditShop}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#10b981',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#059669';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#10b981';
+                                }}
+                            >
+                                Chỉnh sửa
+                            </button>
+                        )}
+                    </div>
+
+                    {shopSuccessMessage && (
+                        <div style={{
+                            padding: '12px 16px',
+                            backgroundColor: '#d1fae5',
+                            border: '1px solid #10b981',
+                            borderRadius: '6px',
+                            color: '#065f46',
+                            fontSize: '14px',
+                            marginBottom: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                        }}>
+                            <span>✅</span>
+                            <span>{shopSuccessMessage}</span>
+                        </div>
+                    )}
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                        gap: '20px'
+                    }}>
+                        <div>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                color: '#6b7280',
+                                marginBottom: '8px'
+                            }}>
+                                Tên shop
+                            </label>
+                            {isEditingShop ? (
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={editShopData.name || ''}
+                                    onChange={handleShopInputChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px 12px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '6px',
+                                        fontSize: '14px'
+                                    }}
+                                />
+                            ) : (
+                                <div style={{
+                                    padding: '8px 12px',
+                                    backgroundColor: '#f9fafb',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#111827'
+                                }}>
+                                    {shop.name}
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                color: '#6b7280',
+                                marginBottom: '8px'
+                            }}>
+                                Trạng thái
+                            </label>
+                            {isEditingShop ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <input
+                                        type="checkbox"
+                                        name="isActive"
+                                        checked={editShopData.isActive ?? false}
+                                        onChange={handleShopInputChange}
+                                        style={{
+                                            width: '18px',
+                                            height: '18px',
+                                            cursor: 'pointer'
+                                        }}
+                                    />
+                                    <span style={{ fontSize: '14px', color: '#111827' }}>
+                                        {editShopData.isActive ? 'Hoạt động' : 'Không hoạt động'}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div style={{
+                                    padding: '8px 12px',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    display: 'inline-block',
+                                    backgroundColor: shop.isActive ? '#d1fae5' : '#fee2e2',
+                                    color: shop.isActive ? '#065f46' : '#991b1b'
+                                }}>
+                                    {shop.isActive ? 'Hoạt động' : 'Không hoạt động'}
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                color: '#6b7280',
+                                marginBottom: '8px'
+                            }}>
+                                Số lượng sản phẩm
+                            </label>
+                            <div style={{
+                                padding: '8px 12px',
+                                backgroundColor: '#f9fafb',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                color: '#111827'
+                            }}>
+                                {shop.productCount || 0}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '20px' }}>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#6b7280',
+                            marginBottom: '8px'
+                        }}>
+                            Mô tả shop
+                        </label>
+                        {isEditingShop ? (
+                            <textarea
+                                name="description"
+                                value={editShopData.description || ''}
+                                onChange={handleShopInputChange}
+                                rows={4}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontFamily: 'inherit',
+                                    resize: 'vertical'
+                                }}
+                                placeholder="Nhập mô tả shop"
+                            />
+                        ) : (
+                            <div style={{
+                                padding: '8px 12px',
+                                backgroundColor: '#f9fafb',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                color: '#111827',
+                                minHeight: '60px',
+                                whiteSpace: 'pre-wrap'
+                            }}>
+                                {shop.description || 'Chưa có mô tả'}
+                            </div>
+                        )}
+                    </div>
+
+                    {isEditingShop && (
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            gap: '12px',
+                            marginTop: '20px',
+                            paddingTop: '20px',
+                            borderTop: '1px solid #e5e7eb'
+                        }}>
+                            <button
+                                onClick={handleCancelEditShop}
+                                disabled={savingShop}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: 'white',
+                                    color: '#374151',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.2s',
+                                    opacity: savingShop ? 0.5 : 1
+                                }}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleSaveShop}
+                                disabled={savingShop || !editShopData.name?.trim()}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: savingShop || !editShopData.name?.trim() ? '#9ca3af' : '#10b981',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: savingShop || !editShopData.name?.trim() ? 'not-allowed' : 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    transition: 'background-color 0.2s'
+                                }}
+                            >
+                                {savingShop ? 'Đang lưu...' : 'Lưu thay đổi'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div style={{
+                    backgroundColor: 'white',
+                    padding: '24px',
+                    borderRadius: '12px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    marginBottom: '32px',
+                    textAlign: 'center',
+                    color: '#6b7280'
+                }}>
+                    <p>Chưa có thông tin shop. Vui lòng liên hệ admin để tạo shop.</p>
+                </div>
+            )}
 
             {/* Stats Cards */}
             <div style={{

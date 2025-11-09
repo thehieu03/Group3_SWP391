@@ -1,0 +1,11 @@
+.shop-detail-container {
+  min-height: calc(100vh - 200px);
+  padding: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .shop-detail-container {
+    padding: 10px;
+  }
+}
+

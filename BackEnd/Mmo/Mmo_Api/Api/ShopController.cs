@@ -4,6 +4,7 @@ using Mmo_Application.Services.Interface;
 using Mmo_Domain.Models;
 using Mmo_Domain.ModelResponse;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Mmo_Api.Api;
 
@@ -163,6 +164,108 @@ public class ShopController : ControllerBase
 
 			var deleted = await _shopServices.DeleteAsync(shop);
 			return deleted ? Ok(new { message = "Shop deleted successfully" }) : BadRequest("Failed to delete shop");
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, $"Internal server error: {ex.Message}");
+		}
+	}
+
+	/// <summary>
+	/// Lấy thông tin shop của seller hiện tại
+	/// </summary>
+	[HttpGet("my-shop")]
+	[Authorize(Policy = "SellerOnly")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status403Forbidden)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<ActionResult<ShopResponse>> GetMyShop()
+	{
+		try
+		{
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int accountId))
+			{
+				return Unauthorized("Invalid token");
+			}
+
+			var shop = await _shopServices.GetByAccountIdAsync(accountId);
+			if (shop == null)
+			{
+				return NotFound("Shop not found for this seller");
+			}
+
+			var shopResponse = _mapper.Map<ShopResponse>(shop);
+			shopResponse.OwnerUsername = shop.Account?.Username;
+			shopResponse.ProductCount = shop.Products?.Count ?? 0;
+
+			return Ok(shopResponse);
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, $"Internal server error: {ex.Message}");
+		}
+	}
+
+	/// <summary>
+	/// Cập nhật thông tin shop của seller hiện tại
+	/// </summary>
+	[HttpPut("my-shop")]
+	[Authorize(Policy = "SellerOnly")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status403Forbidden)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> UpdateMyShop([FromBody] Shop request)
+	{
+		try
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int accountId))
+			{
+				return Unauthorized("Invalid token");
+			}
+
+			var shop = await _shopServices.GetByAccountIdAsync(accountId);
+			if (shop == null)
+			{
+				return NotFound("Shop not found for this seller");
+			}
+
+			// Chỉ cho phép cập nhật Name, Description, IsActive
+			// Không cho phép thay đổi AccountId
+			if (!string.IsNullOrWhiteSpace(request.Name))
+			{
+				shop.Name = request.Name;
+			}
+			if (request.Description != null)
+			{
+				shop.Description = request.Description;
+			}
+			if (request.IsActive.HasValue)
+			{
+				shop.IsActive = request.IsActive.Value;
+			}
+			shop.UpdatedAt = DateTime.UtcNow;
+
+			var updated = await _shopServices.UpdateAsync(shop);
+			if (!updated)
+			{
+				return BadRequest("Failed to update shop");
+			}
+
+			var shopResponse = _mapper.Map<ShopResponse>(shop);
+			shopResponse.OwnerUsername = shop.Account?.Username;
+			shopResponse.ProductCount = shop.Products?.Count ?? 0;
+
+			return Ok(shopResponse);
 		}
 		catch (Exception ex)
 		{

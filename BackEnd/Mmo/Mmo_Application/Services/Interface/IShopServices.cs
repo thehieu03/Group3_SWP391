@@ -1,6 +1,8 @@
-﻿namespace Mmo_Application.Services.Interface;
+﻿using Mmo_Domain.Models;
 
-public interface IShopServices   :IBaseServices<Shop>
+namespace Mmo_Application.Services.Interface;
+
+public interface IShopServices : IBaseServices<Shop>
 {
-    
+    Task<Shop?> GetByAccountIdAsync(int accountId);
 }

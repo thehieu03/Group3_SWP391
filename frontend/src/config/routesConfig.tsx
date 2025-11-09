@@ -23,9 +23,11 @@ const routesConfig  =  {
     sellerOrders:'/seller/orders',
     sellerShopInfo:'/seller/shop-info',
     sellerStatistics:'/seller/statistics',
+    shopDetail:'/shop-detail',
     getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
     getProductUrl: (id: number) => `/product/${id}`,
-    getCategoryProductsUrl: (id: number) => `/category/${id}`
+    getCategoryProductsUrl: (id: number) => `/category/${id}`,
+    getShopDetailUrl: (id: number) => `/shop-detail/${id}`
 };
 
 
