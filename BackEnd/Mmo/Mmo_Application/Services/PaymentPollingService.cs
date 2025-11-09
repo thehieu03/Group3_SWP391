@@ -103,12 +103,12 @@ public class PaymentPollingService : BackgroundService, IPaymentPollingService
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in payment polling service");
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
         }
     }

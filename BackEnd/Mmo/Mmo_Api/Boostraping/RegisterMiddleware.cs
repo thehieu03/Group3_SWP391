@@ -94,6 +94,7 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IVietQRService, VietQRService>();
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<ISePayService, SePayService>();
+        builder.Services.AddScoped<IDepositService, DepositService>();
         builder.Services.AddHostedService<PaymentPollingService>();
 
         builder.Services.AddScoped<IDbConnection>(provider =>
