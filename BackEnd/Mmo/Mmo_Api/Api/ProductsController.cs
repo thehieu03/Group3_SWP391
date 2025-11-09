@@ -8,23 +8,26 @@ namespace Mmo_Api.Api;
 public class ProductsController : ControllerBase
 {
     private readonly IProductServices _productServices;
-    private readonly IRabbitMQService _rabbitMQService;
     private readonly IProductVariantServices _productVariantServices;
+    private readonly IProductStorageServices _productStorageServices;
+    private readonly ISystemsconfigServices _systemsconfigServices;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<ProductsController>? _logger;
 
     public ProductsController(
         IProductServices productServices, 
-        IRabbitMQService rabbitMQService,
         IProductVariantServices productVariantServices,
+        IProductStorageServices productStorageServices,
+        ISystemsconfigServices systemsconfigServices,
         IMapper mapper, 
         IWebHostEnvironment environment, 
         ILogger<ProductsController>? logger = null)
     {
         _productServices = productServices;
-        _rabbitMQService = rabbitMQService;
         _productVariantServices = productVariantServices;
+        _productStorageServices = productStorageServices;
+        _systemsconfigServices = systemsconfigServices;
         _mapper = mapper;
         _environment = environment;
         _logger = logger;
@@ -128,7 +131,7 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image)
+    public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image, [FromForm] string? variants)
     {
         _logger?.LogInformation("CreateProduct called with Request: {@Request}", new
         {
@@ -146,6 +149,21 @@ public class ProductsController : ControllerBase
             return BadRequest(new { message = "Product request is null" });
         }
 
+        // Parse variants from JSON string if provided
+        if (!string.IsNullOrEmpty(variants))
+        {
+            try
+            {
+                productRequest.Variants = System.Text.Json.JsonSerializer.Deserialize<List<ProductVariantRequest>>(variants);
+                _logger?.LogInformation("CreateProduct: Parsed {Count} variants from JSON", productRequest.Variants?.Count ?? 0);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning("CreateProduct: Failed to parse variants JSON: {Error}", ex.Message);
+                return BadRequest(new { message = "Invalid variants JSON format", error = ex.Message });
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             var errors = ModelState
@@ -157,7 +175,7 @@ public class ProductsController : ControllerBase
 
         try
         {
-            // Handle image upload if provided (cần xử lý trước khi đưa vào queue)
+            // Handle image upload if provided
             string? imageUrl = null;
             if (image != null)
             {
@@ -172,8 +190,29 @@ public class ProductsController : ControllerBase
                 imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Products, image, _environment);
             }
 
-            // Tạo message để đưa vào queue
-            var productMessage = new ProductCreateMessage
+            // Lấy fee từ Systemsconfig
+            decimal? productFee = null;
+            try
+            {
+                var systemConfigs = await _systemsconfigServices.GetAllAsync();
+                var systemConfig = systemConfigs.FirstOrDefault();
+                if (systemConfig != null && systemConfig.Fee.HasValue)
+                {
+                    productFee = systemConfig.Fee.Value;
+                    _logger?.LogInformation("Using fee from system config: {Fee}", productFee);
+                }
+                else
+                {
+                    _logger?.LogWarning("System config fee not found, using default fee");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to get fee from system config, using default");
+            }
+
+            // Bước 1: Tạo Product
+            var product = new Product
             {
                 ShopId = productRequest.ShopId,
                 CategoryId = productRequest.CategoryId,
@@ -181,22 +220,61 @@ public class ProductsController : ControllerBase
                 Name = productRequest.Name,
                 Description = productRequest.Description,
                 Details = productRequest.Details,
-                ImageUrl = imageUrl
+                ImageUrl = imageUrl,
+                Fee = productFee,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
-            // Parse variants nếu có (từ FormData - có thể là JSON string)
-            // Variants sẽ được parse từ FormData trong consumer
-            // Ở đây chỉ cần lưu thông tin cơ bản, variants sẽ được xử lý trong consumer
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                product.ImageUploadedAt = DateTime.UtcNow;
+            }
 
-            // Publish message vào RabbitMQ queue để xử lý theo thứ tự
-            var messageJson = productMessage.ToJson();
-            _rabbitMQService.PublishProductCreationMessage(messageJson);
+            var productId = await _productServices.AddAsync(product);
+            if (productId <= 0)
+            {
+                _logger?.LogError("Failed to create product: {ProductName}", productRequest.Name);
+                return BadRequest(new { message = "Failed to create product" });
+            }
 
-            _logger?.LogInformation("Product creation request queued. Product: {ProductName}", productRequest.Name);
+            _logger?.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}", 
+                productId, productRequest.Name);
+
+            // Bước 2: Tạo Variants nếu có
+            if (productRequest.Variants != null && productRequest.Variants.Any())
+            {
+                foreach (var variantRequest in productRequest.Variants)
+                {
+                    var variantCreateRequest = new ProductVariantRequest
+                    {
+                        ProductId = (int)productId,
+                        Name = variantRequest.Name,
+                        Price = variantRequest.Price,
+                        Stock = variantRequest.Stock
+                    };
+
+                    var (variantSuccess, variantError, variantId) = await _productVariantServices.CreateProductVariantAsync(variantCreateRequest);
+                    if (!variantSuccess)
+                    {
+                        _logger?.LogError("Failed to create variant: {VariantName}. Error: {Error}", 
+                            variantRequest.Name, variantError);
+                        continue;
+                    }
+
+                    _logger?.LogInformation("Variant created successfully. VariantId: {VariantId}, Name: {VariantName}", 
+                        variantId, variantRequest.Name);
+
+                    // Bước 3: Tạo Storages cho variant nếu có
+                    // Note: Storages thường được tạo riêng qua API khác, nhưng nếu cần có thể thêm logic ở đây
+                }
+            }
 
             return Ok(new { 
-                message = "Product creation request has been queued and will be processed in order",
-                status = "queued"
+                message = "Product created successfully",
+                productId = productId,
+                status = "success"
             });
         }
         catch (Exception ex)
