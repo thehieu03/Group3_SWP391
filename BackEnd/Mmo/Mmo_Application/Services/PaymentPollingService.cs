@@ -146,18 +146,20 @@ public class PaymentPollingService : BackgroundService, IPaymentPollingService
                 
                 if (matchedSePayTransaction != null)
                 {
-                    try
-                    {
-                        var rawPayloadJson = JsonSerializer.Serialize(matchedSePayTransaction, new JsonSerializerOptions
-                        {
-                            WriteIndented = false,
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                        });
-                        transaction.RawPayload = rawPayloadJson;
-                    }
-                    catch
-                    {
-                    }
+                    // Tạm thời comment out RawPayload vì cột chưa có trong database
+                    // Cần thêm cột rawPayload vào database trước khi uncomment
+                    // try
+                    // {
+                    //     var rawPayloadJson = JsonSerializer.Serialize(matchedSePayTransaction, new JsonSerializerOptions
+                    //     {
+                    //         WriteIndented = false,
+                    //         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    //     });
+                    //     transaction.RawPayload = rawPayloadJson;
+                    // }
+                    // catch
+                    // {
+                    // }
                 }
                 
                 await paymentService.UpdateAsync(transaction);

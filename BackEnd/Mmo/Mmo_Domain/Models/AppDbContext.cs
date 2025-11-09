@@ -57,10 +57,9 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Token> Tokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql(
-            "server=localhost;database=swp_group3;user=root;password=123456;sslmode=none;allowpublickeyretrieval=true",
-            ServerVersion.Parse("9.4.0-mysql"));
+            "server=localhost;database=swp_group3;user=root;password=vanh;sslmode=none;allowpublickeyretrieval=true",
+            ServerVersion.Parse("8.4.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -243,9 +242,8 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.MessageId)
                 .ValueGeneratedNever()
                 .HasColumnName("messageId");
-            entity.Property(e => e.ImageUrl)
-                .HasMaxLength(500)
-                .HasColumnName("imageUrl");
+            entity.Property(e => e.Image)
+                .HasColumnName("image");
 
             entity.HasOne(d => d.Message).WithOne(p => p.Imagemessage)
                 .HasForeignKey<Imagemessage>(d => d.MessageId)
@@ -353,9 +351,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ReferenceCode)
                 .HasMaxLength(100)
                 .HasColumnName("referenceCode");
-            entity.Property(e => e.RawPayload)
-                .HasColumnType("text")
-                .HasColumnName("rawPayload");
+            // Tạm thời comment out RawPayload vì cột chưa có trong database
+            // Cần thêm cột rawPayload vào database trước khi uncomment
+            // entity.Property(e => e.RawPayload)
+            //     .HasColumnType("text")
+            //     .HasColumnName("rawPayload");
+            entity.Ignore(e => e.RawPayload);
 
             entity.HasOne(d => d.User).WithMany(p => p.Paymenttransactions)
                 .HasForeignKey(d => d.UserId)

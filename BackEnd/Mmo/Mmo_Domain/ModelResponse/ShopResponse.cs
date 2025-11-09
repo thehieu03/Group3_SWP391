@@ -6,6 +6,7 @@ public class ShopResponse
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
     public string? Status { get; set; } = null;
+    public bool IsActive { get; set; } // Map từ Status: "APPROVED" = true, các status khác = false
 
     public string OwnerUsername { get; set; } = null!;
     public int? ProductCount { get; set; }

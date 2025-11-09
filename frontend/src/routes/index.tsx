@@ -17,6 +17,8 @@ import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
 import Share from "@pages/UserAndSeller/Share/Share.tsx";
 import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
 import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
+import Login from "@pages/UserAndSeller/Login/Login.tsx";
+import Register from "@pages/UserAndSeller/Register/RegisterNew.tsx";
 import SellerDashboard from "@pages/UserAndSeller/SellerDashboard/SellerDashboard.tsx";
 import SellerProducts from "@pages/UserAndSeller/SellerProducts/SellerProducts.tsx";
 import EditProductPage from "@pages/UserAndSeller/SellerProducts/EditProductPage.tsx";
@@ -56,6 +58,16 @@ const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.registerShop,
     element: <RegisterShop />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.login,
+    element: <Login />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.register,
+    element: <Register />,
     layout: DefaultLayout,
   },
   {

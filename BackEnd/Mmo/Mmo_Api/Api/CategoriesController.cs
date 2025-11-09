@@ -91,7 +91,17 @@ namespace Mmo_Api.Api
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving categories.");
+                // Log chi tiết lỗi để debug
+                Console.WriteLine($"[ERROR] CategoriesController.GetAllCategories: {ex.Message}");
+                Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"[ERROR] InnerException: {ex.InnerException.Message}");
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, new { 
+                    message = "An error occurred while retrieving categories.",
+                    error = ex.Message 
+                });
             }
         }
 

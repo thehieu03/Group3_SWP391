@@ -6,11 +6,18 @@ export interface Shop {
   name: string;
   description: string;
   status: "PENDING" | "APPROVED" | "BANNED";
+  isActive: boolean; // Map từ status: "APPROVED" = true
   createdAt: string;
   updatedAt: string;
   ownerUsername: string | null;
   productCount: number;
   complaintCount?: number;
+}
+
+export interface UpdateShopRequest {
+  name?: string;
+  description?: string;
+  // isActive không được seller cập nhật, chỉ admin mới có thể thay đổi status
 }
 
 export interface PaginatedShopsResponse {
@@ -238,6 +245,26 @@ class ShopServices {
     form.append("identificationB", request.identificationB);
 
     await httpPost<void, FormData>("shops/register", form);
+  }
+
+  async getMyShopAsync(): Promise<Shop | null> {
+    try {
+      // Get current seller's shop using the new endpoint
+      const shop = await httpGet<Shop>("shops/my-shop");
+      return shop;
+    } catch (error: any) {
+      console.error("Error getting my shop:", error);
+      // Return null if shop not found (404) or other errors
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  async updateMyShopAsync(data: UpdateShopRequest): Promise<Shop> {
+    const response = await httpPut<Shop, UpdateShopRequest>("shops/my-shop", data);
+    return response;
   }
 }
 

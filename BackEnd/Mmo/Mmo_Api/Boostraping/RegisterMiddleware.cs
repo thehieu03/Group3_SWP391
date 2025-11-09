@@ -1,5 +1,15 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Mmo_Application.Services.Interface;
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Mmo_Domain.Models;
+using System.Data;
+using MySqlConnector;
+using System.IO;
 
 namespace Mmo_Api.Boostraping;
 
@@ -24,10 +34,17 @@ public static class RegisterMiddleware
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
+            // Sử dụng ServerVersion.Parse thay vì AutoDetect để tránh lỗi khi database chưa sẵn sàng
             options.UseMySql(
-                connStr,
-                ServerVersion.AutoDetect(connStr),
-                mySqlOptions => mySqlOptions.EnableRetryOnFailure()
+                connStr!,
+                new MySqlServerVersion(new Version(9, 4, 0)),
+                mySqlOptions =>
+                {
+                    mySqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null);
+                }
             );
         });
         builder.Services.AddAutoMapper(typeof(Program).Assembly);

@@ -16,7 +16,6 @@ const SellerDashboard = () => {
     const [editShopData, setEditShopData] = useState<UpdateShopRequest>({
         name: '',
         description: '',
-        isActive: true,
     });
     const [stats, setStats] = useState({
         totalProducts: 0,
@@ -49,7 +48,6 @@ const SellerDashboard = () => {
                 setEditShopData({
                     name: myShop.name,
                     description: myShop.description || '',
-                    isActive: myShop.isActive,
                 });
             }
         } catch (error) {
@@ -89,7 +87,6 @@ const SellerDashboard = () => {
             setEditShopData({
                 name: shop.name,
                 description: shop.description || '',
-                isActive: shop.isActive,
             });
         }
         setIsEditingShop(true);
@@ -100,7 +97,6 @@ const SellerDashboard = () => {
             setEditShopData({
                 name: shop.name,
                 description: shop.description || '',
-                isActive: shop.isActive,
             });
         }
         setIsEditingShop(false);
@@ -415,38 +411,27 @@ const SellerDashboard = () => {
                                 color: '#6b7280',
                                 marginBottom: '8px'
                             }}>
-                                Trạng thái
+                                Trạng thái shop
                             </label>
-                            {isEditingShop ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <input
-                                        type="checkbox"
-                                        name="isActive"
-                                        checked={editShopData.isActive ?? false}
-                                        onChange={handleShopInputChange}
-                                        style={{
-                                            width: '18px',
-                                            height: '18px',
-                                            cursor: 'pointer'
-                                        }}
-                                    />
-                                    <span style={{ fontSize: '14px', color: '#111827' }}>
-                                        {editShopData.isActive ? 'Hoạt động' : 'Không hoạt động'}
-                                    </span>
-                                </div>
-                            ) : (
-                                <div style={{
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    display: 'inline-block',
-                                    backgroundColor: shop.isActive ? '#d1fae5' : '#fee2e2',
-                                    color: shop.isActive ? '#065f46' : '#991b1b'
-                                }}>
-                                    {shop.isActive ? 'Hoạt động' : 'Không hoạt động'}
-                                </div>
-                            )}
+                            <div style={{
+                                padding: '8px 12px',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                display: 'inline-block',
+                                backgroundColor: shop.isActive ? '#d1fae5' : '#fee2e2',
+                                color: shop.isActive ? '#065f46' : '#991b1b'
+                            }}>
+                                {shop.isActive ? '✅ Hoạt động' : '❌ Không hoạt động'}
+                            </div>
+                            <p style={{
+                                fontSize: '12px',
+                                color: '#6b7280',
+                                margin: '4px 0 0 0',
+                                fontStyle: 'italic'
+                            }}>
+                                (Chỉ admin mới có thể thay đổi trạng thái)
+                            </p>
                         </div>
 
                         <div>
@@ -464,9 +449,30 @@ const SellerDashboard = () => {
                                 backgroundColor: '#f9fafb',
                                 borderRadius: '6px',
                                 fontSize: '14px',
+                                color: '#111827',
+                                fontWeight: '600'
+                            }}>
+                                {shop.productCount || 0} sản phẩm
+                            </div>
+                        </div>
+                        <div>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                color: '#6b7280',
+                                marginBottom: '8px'
+                            }}>
+                                Ngày tạo shop
+                            </label>
+                            <div style={{
+                                padding: '8px 12px',
+                                backgroundColor: '#f9fafb',
+                                borderRadius: '6px',
+                                fontSize: '14px',
                                 color: '#111827'
                             }}>
-                                {shop.productCount || 0}
+                                {shop.createdAt ? new Date(shop.createdAt).toLocaleDateString('vi-VN') : 'N/A'}
                             </div>
                         </div>
                     </div>

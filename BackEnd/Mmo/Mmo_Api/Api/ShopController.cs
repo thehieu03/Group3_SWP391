@@ -41,6 +41,7 @@ public class ShopController : ControllerBase
                 shopResponse.OwnerUsername = shop.Account?.Username;
                 shopResponse.ProductCount = shop.Products?.Count ?? 0;
                 shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
+                shopResponse.IsActive = shop.Status == "APPROVED";
                 shopResponses.Add(shopResponse);
             }
 
@@ -82,6 +83,7 @@ public class ShopController : ControllerBase
             shopResponse.OwnerUsername = shop!.Account!.Username;
             shopResponse.ProductCount = shop.Products?.Count ?? 0;
             shopResponse.ComplaintCount = shop.Replies?.Count ?? 0; // Assuming complaints are stored in Replies
+            shopResponse.IsActive = shop.Status == "APPROVED";
 
             return Ok(shopResponse);
         }
@@ -379,6 +381,91 @@ public class ShopController : ControllerBase
             shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
             shopResponse.IdentificationFurl = shop.Account?.IdentificationFurl;
             shopResponse.IdentificationBurl = shop.Account?.IdentificationBurl;
+            shopResponse.IsActive = shop.Status == "APPROVED";
+
+            return Ok(shopResponse);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpGet("my-shop")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ShopResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ShopResponse>> GetMyShop()
+    {
+        try
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+                return Unauthorized(new { message = "Không xác thực được người dùng" });
+
+            var shop = await _shopServices.GetByAccountIdAsync(userId);
+            
+            if (shop == null)
+                return NotFound(new { message = "Bạn chưa có shop" });
+
+            var shopResponse = _mapper.Map<ShopResponse>(shop);
+            shopResponse.OwnerUsername = shop.Account?.Username ?? "Unknown";
+            shopResponse.ProductCount = shop.Products?.Count ?? 0;
+            shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
+            shopResponse.IsActive = shop.Status == "APPROVED";
+
+            return Ok(shopResponse);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpPut("my-shop")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ShopResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ShopResponse>> UpdateMyShop([FromBody] UpdateShopRequest request)
+    {
+        try
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+                return Unauthorized(new { message = "Không xác thực được người dùng" });
+
+            var shop = await _shopServices.GetByAccountIdAsync(userId);
+            if (shop == null)
+                return NotFound(new { message = "Bạn chưa có shop" });
+
+            // Chỉ cho phép seller cập nhật name và description
+            // Không cho phép cập nhật status (phải do admin)
+            if (!string.IsNullOrWhiteSpace(request.Name))
+                shop.Name = request.Name.Trim();
+            
+            if (request.Description != null)
+                shop.Description = request.Description.Trim();
+            
+            // IsActive được map từ Status trong frontend
+            // Status "APPROVED" = IsActive = true, các status khác = IsActive = false
+            // Không cho phép seller thay đổi status trực tiếp
+
+            shop.UpdatedAt = DateTime.UtcNow;
+
+            var updated = await _shopServices.UpdateAsync(shop);
+            if (!updated)
+                return BadRequest(new { message = "Không thể cập nhật thông tin shop" });
+
+            var shopResponse = _mapper.Map<ShopResponse>(shop);
+            shopResponse.OwnerUsername = shop.Account?.Username ?? "Unknown";
+            shopResponse.ProductCount = shop.Products?.Count ?? 0;
+            shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
+            shopResponse.IsActive = shop.Status == "APPROVED";
 
             return Ok(shopResponse);
         }

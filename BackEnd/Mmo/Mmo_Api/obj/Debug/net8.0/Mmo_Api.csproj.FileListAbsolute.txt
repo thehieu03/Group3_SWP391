@@ -9,6 +9,7 @@ D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Mmo_Api.pdb
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\AutoMapper.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\BCrypt.Net-Next.dll
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Dapper.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Humanizer.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Microsoft.AspNetCore.OData.dll
@@ -73,6 +74,7 @@ D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\NuGet.ProjectModel
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\NuGet.Protocol.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\NuGet.Versioning.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll
+D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\RabbitMQ.Client.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\SWP_Fall25\New folder\BackEnd\Mmo\Mmo_Api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll

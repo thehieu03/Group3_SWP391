@@ -20,6 +20,10 @@
   padding: 40px;
 }
 
+.auth-box-register {
+  max-width: 600px;
+}
+
 .auth-title {
   font-size: 28px;
   font-weight: 700;
@@ -83,6 +87,14 @@ input[type="password"]:focus {
   box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
 }
 
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+input[type="password"]:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /* Grid Layout */
 .grid-2 {
   display: grid;
@@ -106,6 +118,11 @@ input[type="password"]:focus {
   margin: 0;
   margin-top: 2px;
   flex-shrink: 0;
+}
+
+.agree input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .agree label {

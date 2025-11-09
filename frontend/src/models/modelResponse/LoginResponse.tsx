@@ -2,10 +2,10 @@ export interface User {
     id: number;
     username: string;
     email: string;
-    phone: string;
-    balance: number;
-    isActive: boolean;
-    createdAt: string;
+    phone: string | null;
+    balance: number | null;
+    isActive: boolean | null;
+    createdAt: string | null;
     roles: string[];
 }
 

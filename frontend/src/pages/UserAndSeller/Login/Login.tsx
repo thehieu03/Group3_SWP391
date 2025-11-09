@@ -4,7 +4,7 @@ import { authServices } from "../../../services/AuthServices";
 import type { LoginRequest } from "../../../models/modelRequest/LoginRequest";
 import { useAuth } from "../../../hooks/useAuth.tsx";
 import Cookies from "js-cookie";
-import routesConfig from "../../../config/routesConfig.tsx";
+import routesConfig from "../../../config/routesConfig.ts";
 import "./Login.css";
 
 const Login = () => {
@@ -41,9 +41,27 @@ const Login = () => {
       console.log("[LOGIN] Sending request...", requestData);
       const response = await authServices.loginAsync(requestData);
       console.log("[LOGIN] Response received:", response);
+      console.log("[LOGIN] Response keys:", Object.keys(response || {}));
+      console.log("[LOGIN] Response.user:", response?.user);
+      console.log("[LOGIN] Response.accessToken:", response?.accessToken);
 
-      if (!response || !response.accessToken || !response.user) {
-        throw new Error("Invalid response from server");
+      if (!response) {
+        throw new Error("No response from server");
+      }
+
+      if (!response.accessToken) {
+        console.error("[LOGIN] Missing accessToken in response");
+        throw new Error("Invalid response: missing accessToken");
+      }
+
+      if (!response.user) {
+        console.error("[LOGIN] Missing user in response");
+        throw new Error("Invalid response: missing user");
+      }
+
+      if (!response.user.roles || !Array.isArray(response.user.roles)) {
+        console.warn("[LOGIN] User roles is missing or not an array:", response.user.roles);
+        response.user.roles = response.user.roles || [];
       }
 
       // Xác định secure flag dựa trên protocol
@@ -100,10 +118,22 @@ const Login = () => {
 
       setSuccess(redirectMessage);
 
-      // Redirect sau 1.5 giây
+      console.log("[LOGIN] Redirecting to:", redirectPath);
+      console.log("[LOGIN] User roles:", response.user.roles);
+      
+      // Redirect ngay lập tức (không cần chờ)
+      // Sử dụng setTimeout với delay ngắn để đảm bảo state đã được update
       setTimeout(() => {
-        navigate(redirectPath);
-      }, 1500);
+        console.log("[LOGIN] Executing navigate to:", redirectPath);
+        try {
+          navigate(redirectPath, { replace: true });
+          console.log("[LOGIN] Navigate called successfully");
+        } catch (navError) {
+          console.error("[LOGIN] Navigate error:", navError);
+          // Fallback: sử dụng window.location
+          window.location.href = redirectPath;
+        }
+      }, 500);
     } catch (error: any) {
       console.error("[LOGIN] Failed:", error);
       console.error("[LOGIN] Error response:", error.response);
@@ -161,7 +191,8 @@ const Login = () => {
             placeholder="Nhập tên đăng nhập hoặc email"
             value={loginData.username}
             onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
-            onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+            onKeyPress={(e) => e.key === "Enter" && !isLoading && handleLogin()}
+            disabled={isLoading}
           />
 
           <label>Mật khẩu</label>
@@ -170,7 +201,8 @@ const Login = () => {
             placeholder="Nhập mật khẩu"
             value={loginData.password}
             onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-            onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+            onKeyPress={(e) => e.key === "Enter" && !isLoading && handleLogin()}
+            disabled={isLoading}
           />
 
           <div className="forgot-password">
@@ -183,6 +215,7 @@ const Login = () => {
               id="remember" 
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
             />
             <label htmlFor="remember" style={{ marginBottom: 0 }}>Ghi nhớ đăng nhập</label>
           </div>
@@ -195,18 +228,18 @@ const Login = () => {
             {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
-          <div className="or-text">Or</div>
+          <div className="or-text">Hoặc</div>
 
-          <button className="btn-google" onClick={handleGoogleLogin}>
+          <button className="btn-google" onClick={handleGoogleLogin} disabled={isLoading}>
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               alt="Google"
             />
-            Login with Google
+            Đăng nhập với Google
           </button>
 
           <div className="redirect-text">
-            Chưa có tài khoản? <Link to={routesConfig.registerShop} className="link-green">Đăng ký ngay</Link>
+            Chưa có tài khoản? <Link to={routesConfig.register} className="link-green">Đăng ký ngay</Link>
           </div>
         </div>
       </div>
@@ -215,4 +248,3 @@ const Login = () => {
 };
 
 export default Login;
-

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@hooks/useAuth";
-import { shopServices, type ShopForAdmin } from "@services/ShopServices";
+import { shopServices, type Shop, type UpdateShopRequest } from "@services/ShopServices";
 import Button from "@components/Button/Button";
 
 const SellerShop: React.FC = () => {
   const { user, isLoggedIn } = useAuth();
-  const [shop, setShop] = useState<ShopForAdmin | null>(null);
+  const [shop, setShop] = useState<Shop | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -24,47 +25,24 @@ const SellerShop: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Get all shops and find the one belonging to current user
-        const allShops = await shopServices.getAllShopsAsync();
-        const userShop = allShops.find(
-          (s) => s.ownerUsername === user.username
-        );
+        // Sử dụng endpoint my-shop thay vì getAllShopsAsync (yêu cầu ADMIN)
+        const myShop = await shopServices.getMyShopAsync();
 
-        if (!userShop) {
+        if (!myShop) {
           setError("Bạn chưa có shop. Vui lòng đăng ký shop trước.");
           setLoading(false);
           return;
         }
 
-        // Get detailed shop information
-        try {
-          const shopDetails = await shopServices.getShopDetailsAsync(userShop.id);
-          setShop(shopDetails);
-          setName(shopDetails.name);
-          setDescription(shopDetails.description || "");
-        } catch (detailError) {
-          // If getShopDetailsAsync fails, use the basic shop info
-          const basicShop: ShopForAdmin = {
-            id: userShop.id,
-            name: userShop.name,
-            description: userShop.description || "",
-            status: userShop.status,
-            createdAt: userShop.createdAt,
-            updatedAt: userShop.updatedAt || userShop.createdAt,
-            ownerUsername: userShop.ownerUsername,
-            productCount: userShop.productCount,
-            complaintCount: userShop.complaintCount || 0,
-          };
-          setShop(basicShop);
-          setName(basicShop.name);
-          setDescription(basicShop.description);
-        }
-      } catch (err: unknown) {
+        setShop(myShop);
+        setName(myShop.name);
+        setDescription(myShop.description || "");
+      } catch (err: any) {
         console.error("Error fetching shop:", err);
         const errorMessage =
-          err instanceof Error
-            ? err.message
-            : "Không thể tải thông tin shop";
+          err?.response?.data?.message ||
+          err?.message ||
+          "Không thể tải thông tin shop";
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -89,44 +67,44 @@ const SellerShop: React.FC = () => {
   const handleSave = async () => {
     if (!shop) return;
 
+    if (!name.trim()) {
+      setError("Tên shop không được để trống");
+      return;
+    }
+
     try {
+      setSaving(true);
       setError(null);
-      // Note: Update shop endpoint would need to be implemented in ShopServices
-      // For now, just show a message
-      setError("Chức năng cập nhật shop đang được phát triển");
+
+      const updateData: UpdateShopRequest = {
+        name: name.trim(),
+        description: description.trim() || undefined,
+      };
+
+      const updatedShop = await shopServices.updateMyShopAsync(updateData);
+      setShop(updatedShop);
       setEditing(false);
-    } catch (err: unknown) {
+      setError(null);
+    } catch (err: any) {
       console.error("Error updating shop:", err);
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể cập nhật shop";
+        err?.response?.data?.message ||
+        err?.message ||
+        "Không thể cập nhật shop";
       setError(errorMessage);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return "bg-green-100 text-green-800";
-      case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
-      case "BANNED":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+  const getStatusColor = (isActive: boolean) => {
+    return isActive
+      ? "bg-green-100 text-green-800"
+      : "bg-red-100 text-red-800";
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return "Đã duyệt";
-      case "PENDING":
-        return "Đang chờ duyệt";
-      case "BANNED":
-        return "Đã bị cấm";
-      default:
-        return status;
-    }
+  const getStatusLabel = (isActive: boolean) => {
+    return isActive ? "Hoạt động" : "Không hoạt động";
   };
 
   if (loading) {
@@ -194,15 +172,18 @@ const SellerShop: React.FC = () => {
             {/* Shop Status */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Trạng thái
+                Trạng thái shop
               </label>
               <span
                 className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                  shop.status
+                  shop.isActive
                 )}`}
               >
-                {getStatusLabel(shop.status)}
+                {getStatusLabel(shop.isActive)}
               </span>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                (Chỉ admin mới có thể thay đổi trạng thái)
+              </p>
             </div>
 
             {/* Shop Name */}
@@ -294,13 +275,19 @@ const SellerShop: React.FC = () => {
               <div className="flex gap-3 pt-4 border-t">
                 <Button
                   onClick={handleSave}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                  disabled={saving || !name.trim()}
+                  className={`px-4 py-2 rounded-md text-white ${
+                    saving || !name.trim()
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
                 >
-                  Lưu thay đổi
+                  {saving ? "Đang lưu..." : "Lưu thay đổi"}
                 </Button>
                 <Button
                   onClick={handleCancel}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  disabled={saving}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 disabled:opacity-50"
                 >
                   Hủy
                 </Button>

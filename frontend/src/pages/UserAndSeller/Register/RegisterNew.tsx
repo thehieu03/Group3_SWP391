@@ -4,7 +4,7 @@ import { authServices } from "../../../services/AuthServices";
 import type { RegisterRequest } from "../../../models/modelRequest/RegisterRequest";
 import { useAuth } from "../../../hooks/useAuth.tsx";
 import Cookies from "js-cookie";
-import routesConfig from "../../../config/routesConfig.tsx";
+import routesConfig from "../../../config/routesConfig.ts";
 import "./Register.css";
 
 const Register = () => {
@@ -83,25 +83,29 @@ const Register = () => {
     setIsLoading(true);
 
     try {
+      // Backend không cần confirmPassword, chỉ cần username, email, password
       const requestData: RegisterRequest = {
         username: registerData.username.trim(),
         email: registerData.email.trim(),
         password: registerData.password,
-        confirmPassword: registerData.confirmPassword,
+        confirmPassword: "", // Field này chỉ dùng để validate ở frontend, không gửi lên backend
       };
 
       const response = await authServices.registerAsync(requestData);
 
+      // Xác định secure flag dựa trên protocol
+      const isHttps = window.location.protocol === 'https:';
+
       // Lưu tokens
       Cookies.set("accessToken", response.accessToken, {
         expires: 7,
-        secure: true,
+        secure: isHttps,
         sameSite: "strict",
       });
 
       Cookies.set("refreshToken", response.refreshToken, {
         expires: 30,
-        secure: true,
+        secure: isHttps,
         sameSite: "strict",
       });
 
@@ -132,9 +136,11 @@ const Register = () => {
       console.error("Register failed:", error);
 
       if (error.response?.status === 409) {
-        setError("Tên đăng nhập hoặc email đã tồn tại");
+        const errorMsg = error.response?.data?.message || "Tên đăng nhập hoặc email đã tồn tại";
+        setError(errorMsg);
       } else if (error.response?.status === 400) {
-        setError("Thông tin đăng ký không hợp lệ");
+        const errorMsg = error.response?.data?.message || "Thông tin đăng ký không hợp lệ";
+        setError(errorMsg);
       } else {
         setError("Đăng ký thất bại. Vui lòng thử lại sau.");
       }
@@ -173,6 +179,7 @@ const Register = () => {
                 onChange={(e) =>
                   setRegisterData({ ...registerData, username: e.target.value })
                 }
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -184,6 +191,7 @@ const Register = () => {
                 onChange={(e) =>
                   setRegisterData({ ...registerData, email: e.target.value })
                 }
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -195,6 +203,7 @@ const Register = () => {
                 onChange={(e) =>
                   setRegisterData({ ...registerData, password: e.target.value })
                 }
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -209,6 +218,8 @@ const Register = () => {
                     confirmPassword: e.target.value,
                   })
                 }
+                disabled={isLoading}
+                onKeyPress={(e) => e.key === "Enter" && !isLoading && isAgreed && handleRegister()}
               />
             </div>
           </div>
@@ -219,6 +230,7 @@ const Register = () => {
               id="agree"
               checked={isAgreed}
               onChange={(e) => setIsAgreed(e.target.checked)}
+              disabled={isLoading}
             />
             <label htmlFor="agree" style={{ marginBottom: 0 }}>
               Tôi đã đọc và đồng ý với{" "}
@@ -246,4 +258,3 @@ const Register = () => {
 };
 
 export default Register;
-
