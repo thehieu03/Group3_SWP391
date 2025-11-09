@@ -1,3 +1,7 @@
+using Mmo_Domain.ModelRequest;
+using System.Security.Claims;
+using Mmo_Application.Services.Interface;
+
 namespace Mmo_Api.Api;
 
 [Route("api/orders")]
@@ -9,17 +13,20 @@ public class OrderController : ControllerBase
     private readonly IShopServices _shopServices;
     private readonly IMapper _mapper;
     private readonly ILogger<OrderController>? _logger;
+    private readonly IRabbitMQService? _rabbitMQService;
 
     public OrderController(
         IOrderServices orderServices, 
         IShopServices shopServices, 
         IMapper mapper,
-        ILogger<OrderController>? logger = null)
+        ILogger<OrderController>? logger = null,
+        IRabbitMQService? rabbitMQService = null)
     {
         _orderServices = orderServices;
         _shopServices = shopServices;
         _mapper = mapper;
         _logger = logger;
+        _rabbitMQService = rabbitMQService;
     }
 
     [HttpGet]
@@ -166,7 +173,7 @@ public class OrderController : ControllerBase
                 ProductVariantName = order.ProductVariant?.Name,
                 Quantity = order.Quantity,
                 TotalPrice = order.TotalPrice,
-                Status = order.Status,
+                Status = order.Status.ToString(),
                 OrderDate = order.CreatedAt,
                 Payload = order.Payload,
                 Accounts = null // Không cần lấy accounts từ ProductStorage
@@ -178,6 +185,74 @@ public class OrderController : ControllerBase
         catch (Exception ex)
         {
             _logger?.LogError(ex, "GetOrderDetails: Error getting order details for OrderId: {OrderId}", orderId);
+            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Tạo đơn hàng mới
+    /// </summary>
+    /// <param name="request">Thông tin đơn hàng cần tạo</param>
+    /// <returns>Kết quả tạo đơn hàng</returns>
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+    {
+        try
+        {
+            _logger?.LogInformation("CreateOrder called with ProductVariantId: {ProductVariantId}, Quantity: {Quantity}", 
+                request?.ProductVariantId, request?.Quantity);
+
+            if (request == null)
+            {
+                _logger?.LogWarning("CreateOrder: Request is null");
+                return BadRequest(new { message = "Request cannot be null" });
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                _logger?.LogWarning("CreateOrder: Invalid token");
+                return Unauthorized(new { message = "Invalid token" });
+            }
+
+            var result = await _orderServices.CreateOrderAsync(userId, request);
+            
+            if (!result.Success)
+            {
+                _logger?.LogWarning("CreateOrder: Failed - {ErrorMessage}", result.ErrorMessage);
+                return BadRequest(new { message = result.ErrorMessage });
+            }
+
+            if (result.Order != null)
+            {
+                // Publish to Order Queue
+                var orderMessage = new OrderQueueMessage
+                {
+                    OrderId = result.Order.Id,
+                    AccountId = userId,
+                    ProductVariantId = request.ProductVariantId,
+                    Quantity = request.Quantity,
+                    TotalPrice = result.Order.TotalPrice
+                };
+
+                _rabbitMQService?.PublishToOrderQueue(orderMessage);
+                _logger?.LogInformation("CreateOrder: Order {OrderId} published to Order Queue", result.Order.Id);
+            }
+
+            _logger?.LogInformation("CreateOrder: Successfully created order with ID: {OrderId}", result.Order?.Id);
+            return Ok(new { 
+                message = "Order created successfully", 
+                orderId = result.Order?.Id,
+                status = result.Order?.Status.ToString() ?? "Pending"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "CreateOrder: Error creating order");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }

@@ -31,22 +31,28 @@ export interface VerifyDepositResponse {
 
 class DepositServices {
   async createDeposit(amount: number): Promise<DepositResponse> {
-    return await httpPost<DepositResponse, CreateDepositRequest>("deposit/create", {
-      amount,
-    });
+    return await httpPost<DepositResponse, CreateDepositRequest>(
+      "deposit/create",
+      {
+        amount,
+      }
+    );
   }
 
-  async getDepositStatus(transactionId: number): Promise<DepositStatusResponse> {
-    return await httpGet<DepositStatusResponse>(`deposit/status/${transactionId}`);
+  async getDepositStatus(
+    transactionId: number
+  ): Promise<DepositStatusResponse> {
+    return await httpGet<DepositStatusResponse>(
+      `deposit/status/${transactionId}`
+    );
   }
 
   async verifyDeposit(transactionId: number): Promise<VerifyDepositResponse> {
-    return await httpPost<VerifyDepositResponse, never>(
+    return await httpPost<VerifyDepositResponse, undefined>(
       `deposit/verify/${transactionId}`,
-      {}
+      undefined
     );
   }
 }
 
 export const depositServices = new DepositServices();
-

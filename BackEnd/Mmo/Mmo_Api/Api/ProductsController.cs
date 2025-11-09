@@ -222,7 +222,7 @@ public class ProductsController : ControllerBase
                 Details = productRequest.Details,
                 ImageUrl = imageUrl,
                 Fee = productFee,
-                IsActive = true,
+                IsActive = false, // Mặc định sản phẩm mới tạo sẽ chưa hoạt động
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

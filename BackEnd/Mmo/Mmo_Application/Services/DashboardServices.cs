@@ -1,3 +1,5 @@
+using Mmo_Domain.Enum;
+
 namespace Mmo_Application.Services;
 
 public class DashboardServices : IDashboardServices
@@ -83,7 +85,7 @@ public class DashboardServices : IDashboardServices
 
         var newOrdersToday = await _unitOfWork.GenericRepository<Order>()
             .GetQuery()
-            .Where(o => o.CreatedAt >= startOfToday && o.CreatedAt < endOfToday && o.Status == "CONFIRMED")
+            .Where(o => o.CreatedAt >= startOfToday && o.CreatedAt < endOfToday && o.Status == OrderStatus.Completed)
             .CountAsync();
 
         notifications.Add(new NotificationItem
@@ -176,12 +178,12 @@ public class DashboardServices : IDashboardServices
     
          // total revenue (excluding pending orders)
          var totalRevenue = await shopOrdersQuery
-             .Where(o => o.Status != null && o.Status != "PENDING")
+             .Where(o => o.Status != OrderStatus.Pending)
              .SumAsync(o => (decimal)o.TotalPrice);
     
          // pending orders (by status)
          var pendingOrders = await shopOrdersQuery
-             .Where(o => o.Status != null && o.Status == "PENDING")
+             .Where(o => o.Status == OrderStatus.Pending)
              .CountAsync();
     
          // search
@@ -198,8 +200,11 @@ public class DashboardServices : IDashboardServices
          // filter by status
          if (!string.IsNullOrWhiteSpace(statusFilter))
          {
-             recentOrdersQuery = recentOrdersQuery
-                 .Where(o => o.Status != null && o.Status == statusFilter);
+             if (Enum.TryParse<OrderStatus>(statusFilter, true, out var statusEnum))
+             {
+                 recentOrdersQuery = recentOrdersQuery
+                     .Where(o => o.Status == statusEnum);
+             }
          }
     
          // filter by category
@@ -228,7 +233,7 @@ public class DashboardServices : IDashboardServices
                  CategoryName = o.ProductVariant.Product.Category != null ? o.ProductVariant.Product.Category.Name : null,
                  Quantity = o.Quantity,
                  TotalPrice = o.TotalPrice,
-                 Status = o.Status
+                 Status = o.Status.ToString()
              })
              .ToListAsync();
     

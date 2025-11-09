@@ -273,7 +273,10 @@ const UserProfile: React.FC = () => {
   const calculateStats = () => {
     const totalOrders = orders.length;
     const successfulOrders = orders.filter(
-      (order) => order.status === "completed" || order.status === "success"
+      (order) =>
+        order.status?.toLowerCase() === "completed" ||
+        order.status?.toLowerCase() === "success" ||
+        order.status?.toLowerCase() === "confirmed"
     ).length;
     const totalSpent = orders.reduce((sum, order) => sum + order.totalPrice, 0);
 

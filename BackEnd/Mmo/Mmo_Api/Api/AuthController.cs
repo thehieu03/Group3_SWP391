@@ -1,4 +1,6 @@
-﻿namespace Mmo_Api.Api;
+﻿using Microsoft.AspNetCore.Authorization;
+
+namespace Mmo_Api.Api;
 
 [Route("api/auth")]
 [ApiController]
@@ -45,6 +47,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -132,7 +135,7 @@ public class AuthController : ControllerBase
 
             return Ok(new { message = "Mật khẩu mới đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư." });
         }
-        catch (Exception ex)
+        catch
         {
             return StatusCode(500, new { message = "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau." });
         }

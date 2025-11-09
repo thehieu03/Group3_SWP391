@@ -57,12 +57,12 @@ const HomeSearch = () => {
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchResults.length > 0) {
-      navigate(routesConfig.getProductUrl(searchResults[0].id));
+      navigate(routesConfig.getProductDetailsUrl(searchResults[0].id));
     }
   };
 
   const handleProductClick = (productId: number) => {
-    navigate(routesConfig.getProductUrl(productId));
+    navigate(routesConfig.getProductDetailsUrl(productId));
     setShowResults(false);
   };
 

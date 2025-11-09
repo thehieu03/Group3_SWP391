@@ -178,11 +178,11 @@ const SellerDashboard: React.FC = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="">Tất cả</option>
-                  <option value="PENDING">Chờ xử lý</option>
-                  <option value="COMPLETED">Đã hoàn thành</option>
+                  <option value="Pending">Chờ xử lý</option>
+                  <option value="Processing">Đang xử lý</option>
+                  <option value="Completed">Hoàn thành</option>
+                  <option value="Failed">Thất bại</option>
                   <option value="CANCELLED">Đã hủy</option>
-                  <option value="PROCESSING">Đang xử lý</option>
-                  <option value="SHIPPED">Đã giao hàng</option>
                 </select>
               </div>
               <div>

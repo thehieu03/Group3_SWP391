@@ -474,7 +474,7 @@ const AddProductModal = ({
                 ? processedVariants[0].stock || 0
                 : 0,
             images: [],
-            isActive: true,
+            isActive: false, // Mặc định sản phẩm mới tạo sẽ chưa hoạt động
           },
           image || undefined
         );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "@components/Button/Button";
 import type { ProductResponse } from "@models/modelResponse/ProductResponse";
@@ -8,6 +8,8 @@ import { productVariantServices } from "@services/ProductVariantServices";
 import { feedbackServices } from "@services/FeedbackServices";
 import { shopServices } from "@services/ShopServices";
 import { categoryServices } from "@services/CategoryServices";
+import { orderServices } from "@services/OrderServices";
+import { userServices } from "@services/UserServices";
 import { useAuth } from "@hooks/useAuth";
 import type { FeedbackResponse } from "@models/modelResponse/FeedbackResponse";
 import routesConfig from "@config/routesConfig.ts";
@@ -34,6 +36,10 @@ const ProductDetails = () => {
   const [feedbacks, setFeedbacks] = useState<FeedbackResponse[]>([]);
   const [shopName, setShopName] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [accountBalance, setAccountBalance] = useState<number | null>(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -78,9 +84,8 @@ const ProductDetails = () => {
             const products = await productServices.getProductsByCategoryAsync(
               foundProduct.categoryId
             );
-            const related = products
-              .filter((p) => p.id !== foundProduct.id)
-              .slice(0, 5);
+            // Lấy tất cả sản phẩm liên quan (không giới hạn) để phân trang
+            const related = products.filter((p) => p.id !== foundProduct.id);
             setRelatedProducts(related);
           }
         } catch {
@@ -135,6 +140,106 @@ const ProductDetails = () => {
 
     void loadProduct();
   }, [id]);
+
+  // Load account balance when logged in
+  useEffect(() => {
+    const loadBalance = async () => {
+      if (!isLoggedIn || authLoading) {
+        setAccountBalance(null);
+        return;
+      }
+
+      try {
+        setBalanceLoading(true);
+        const profile = await userServices.getProfileAsync();
+        setAccountBalance(profile.balance ?? 0);
+      } catch {
+        setAccountBalance(null);
+      } finally {
+        setBalanceLoading(false);
+      }
+    };
+
+    void loadBalance();
+  }, [isLoggedIn, authLoading]);
+
+  const handlePurchase = useCallback(
+    async (quantity: number, variantId?: number) => {
+      try {
+        setPurchaseError(null);
+        setPurchaseSuccess(false);
+
+        // Determine product variant ID
+        let productVariantId: number;
+        if (variants.length > 0) {
+          if (!variantId && !selectedVariant) {
+            setPurchaseError("Vui lòng chọn biến thể sản phẩm");
+            return;
+          }
+          productVariantId = variantId ?? selectedVariant!.id;
+        } else {
+          // If no variants, we need to create a variant or use product directly
+          // For now, we'll require a variant
+          setPurchaseError("Sản phẩm này không có biến thể");
+          return;
+        }
+
+        // Create order
+        await orderServices.createOrderAsync(productVariantId, quantity);
+
+        setPurchaseSuccess(true);
+        setPurchaseError(null);
+
+        // Reload balance after purchase
+        try {
+          const profile = await userServices.getProfileAsync();
+          setAccountBalance(profile.balance ?? 0);
+        } catch {
+          // Ignore balance reload error
+        }
+
+        // Reload product to update stock
+        if (id) {
+          const foundProduct = await productServices.getProductByIdAsync(
+            Number(id)
+          );
+          setProduct(foundProduct);
+
+          // Reload variants
+          if (foundProduct.id) {
+            try {
+              const productVariants =
+                await productVariantServices.getProductVariantsAsync(
+                  foundProduct.id
+                );
+              setVariants(productVariants);
+              const firstAvailableVariant = productVariants.find(
+                (v) => v.stock && v.stock > 0
+              );
+              if (firstAvailableVariant) {
+                setSelectedVariant(firstAvailableVariant);
+              }
+            } catch {
+              setVariants([]);
+            }
+          }
+        }
+
+        // Show success message for 3 seconds
+        setTimeout(() => {
+          setPurchaseSuccess(false);
+        }, 3000);
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : "Không thể tạo đơn hàng. Vui lòng thử lại.";
+        setPurchaseError(errorMessage);
+        setPurchaseSuccess(false);
+      }
+    },
+    [id, variants, selectedVariant]
+  );
 
   if (loading) {
     return (
@@ -197,7 +302,20 @@ const ProductDetails = () => {
                 selectedVariant={selectedVariant}
                 isLoggedIn={isLoggedIn}
                 authLoading={authLoading}
+                onPurchase={handlePurchase}
+                accountBalance={accountBalance}
+                balanceLoading={balanceLoading}
               />
+              {purchaseError && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-300 rounded-lg text-red-800 text-sm">
+                  {purchaseError}
+                </div>
+              )}
+              {purchaseSuccess && (
+                <div className="mt-4 p-3 bg-green-50 border border-green-300 rounded-lg text-green-800 text-sm">
+                  Đơn hàng đã được tạo thành công!
+                </div>
+              )}
             </div>
           </div>
         </div>

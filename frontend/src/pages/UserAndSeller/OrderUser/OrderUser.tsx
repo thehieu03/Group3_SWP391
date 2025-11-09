@@ -289,10 +289,10 @@ const OrderUser = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option value="ALL">Tất cả trạng thái</option>
-            <option value="PENDING">Đang chờ</option>
-            <option value="CONFIRMED">Đã xác nhận</option>
-            <option value="SHIPPING">Đang giao</option>
-            <option value="DELIVERED">Đã giao</option>
+            <option value="Pending">Chờ xử lý</option>
+            <option value="Processing">Đang xử lý</option>
+            <option value="Completed">Hoàn thành</option>
+            <option value="Failed">Thất bại</option>
             <option value="CANCELLED">Đã hủy</option>
           </select>
           <select

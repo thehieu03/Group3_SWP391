@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   depositServices,
   type DepositResponse,
-  type DepositStatusResponse,
 } from "@services/DepositServices";
 
 interface UseDepositReturn {
@@ -128,4 +127,3 @@ export const useDeposit = (pollInterval: number = 5000): UseDepositReturn => {
     reset,
   };
 };
-

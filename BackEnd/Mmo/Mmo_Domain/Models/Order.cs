@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Mmo_Domain.Enum;
 
 namespace Mmo_Domain.Models;
 
@@ -20,7 +21,7 @@ public partial class Order
     /// </summary>
     public string? Payload { get; set; }
 
-    public string? Status { get; set; }
+    public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
     public DateTime? CreatedAt { get; set; }
 

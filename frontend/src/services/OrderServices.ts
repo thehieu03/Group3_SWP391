@@ -1,4 +1,4 @@
-import { httpGet } from "@utils/http.ts";
+import { httpGet, httpPost } from "@utils/http.ts";
 import type { OrderUserResponse } from "@models/modelResponse/OrderUserResponse.ts";
 import type {
   OrderAdminResponse,
@@ -270,6 +270,20 @@ class OrderServices {
     const response = await httpGet<OrderDetailResponse>(
       `orders/${orderId}/details`
     );
+    return response;
+  }
+
+  async createOrderAsync(
+    productVariantId: number,
+    quantity: number
+  ): Promise<{ message: string; orderId?: number; status?: string }> {
+    const response = await httpPost<
+      { message: string; orderId?: number; status?: string },
+      { productVariantId: number; quantity: number }
+    >("orders", {
+      productVariantId,
+      quantity,
+    });
     return response;
   }
 }

@@ -303,8 +303,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ProductVariantId).HasColumnName("productVariantId");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Status)
-                .HasDefaultValueSql("'PENDING'")
-                .HasColumnType("enum('PENDING','CONFIRMED','CANCELLED')")
+                .HasConversion<int>()
                 .HasColumnName("status");
             entity.Property(e => e.TotalPrice)
                 .HasPrecision(15, 2)

@@ -56,7 +56,7 @@ const PurchasedProducts: React.FC = () => {
 
   const handleProductClick = (productId?: number) => {
     if (typeof productId === "number") {
-      window.location.href = routesConfig.getProductUrl(productId);
+      window.location.href = routesConfig.getProductDetailsUrl(productId);
     }
   };
 

@@ -1,6 +1,7 @@
 using Mmo_Domain.ModelResponse;
 using Mmo_Domain.Models;
 using Mmo_Domain.ModelRequest;
+using Mmo_Domain.Enum;
 
 namespace Mmo_Api.Helper;
 
@@ -68,17 +69,18 @@ public class MapperClass : Profile
         CreateMap<Order, OrderUserResponse>()
             .ForMember(d => d.OrderId, opt => opt.MapFrom(src => src.Id))
             .ForMember(d => d.OrderDate, o => o.MapFrom(src => src.CreatedAt))
-            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status))
+            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status.ToString()))
             .ForMember(d => d.SellerName, o => o.MapFrom(src => src.ProductVariant!.Product!.Shop!.Account!.Username))
             .ForMember(d => d.ShopName, o => o.MapFrom(src => src.ProductVariant!.Product!.Shop!.Name))
             .ForMember(d => d.TotalPrice, o => o.MapFrom(src => src.TotalPrice))
             .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity))
             .ForMember(d => d.ProductId, o => o.MapFrom(src => src.ProductVariant!.ProductId))
-            .ForMember(d => d.ProductName, o => o.MapFrom(src => src.ProductVariant!.Product!.Name));
+            .ForMember(d => d.ProductName, o => o.MapFrom(src => src.ProductVariant!.Product!.Name))
+            .ForMember(d => d.Payload, o => o.MapFrom(src => src.Payload));
         CreateMap<Order, OrderAdminResponse>()
             .ForMember(d => d.OrderId, opt => opt.MapFrom(src => src.Id))
             .ForMember(d => d.OrderDate, o => o.MapFrom(src => src.CreatedAt))
-            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status))
+            .ForMember(d => d.Status, o => o.MapFrom(src => src.Status.ToString()))
             .ForMember(d => d.SellerName, o => o.MapFrom(src => src.ProductVariant!.Product!.Shop!.Account!.Username))
             .ForMember(d => d.ShopName, o => o.MapFrom(src => src.ProductVariant!.Product!.Shop!.Name))
             .ForMember(d => d.TotalPrice, o => o.MapFrom(src => src.TotalPrice))

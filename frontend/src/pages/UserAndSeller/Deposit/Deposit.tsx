@@ -5,17 +5,12 @@ import { DepositQRCode } from "./components/DepositQRCode";
 
 const DepositContent: React.FC = () => {
   const [amount, setAmount] = useState<string>("");
-  const { depositData, reset } = useDepositContext();
+  const { depositData } = useDepositContext();
 
   // Memoize handlers để tránh re-render
   const handleAmountChange = useCallback((value: string) => {
     setAmount(value);
   }, []);
-
-  const handleReset = useCallback(() => {
-    setAmount("");
-    reset();
-  }, [reset]);
 
   // Memoize để tránh re-render khi depositData thay đổi nhưng vẫn null
   const showForm = useMemo(() => !depositData, [depositData]);
@@ -46,4 +41,3 @@ const Deposit: React.FC = () => {
 };
 
 export default Deposit;
-

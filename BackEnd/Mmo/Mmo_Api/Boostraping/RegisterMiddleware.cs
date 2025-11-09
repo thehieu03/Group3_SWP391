@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Mmo_Application.Services.Interface;
 
 namespace Mmo_Api.Boostraping;
@@ -101,6 +103,18 @@ public static class RegisterMiddleware
         });
         builder.Services.AddScoped<IDapperService, DapperService>();
 
+        // RabbitMQ Service
+        var rabbitMQEnabled = configuration.GetValue<bool>("RabbitMQ:Enabled", false);
+        if (rabbitMQEnabled)
+        {
+            builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
+        }
+        else
+        {
+            // Register a null implementation if RabbitMQ is disabled
+            builder.Services.AddSingleton<IRabbitMQService>(provider => null!);
+        }
+
         return builder;
     }
 
@@ -129,6 +143,22 @@ public static class RegisterMiddleware
         app.UseAuthorization();
 
         app.MapControllers();
+
+        // Start RabbitMQ consumers if enabled
+        var rabbitMQEnabled = configuration.GetValue<bool>("RabbitMQ:Enabled", false);
+        if (rabbitMQEnabled)
+        {
+            try
+            {
+                var rabbitMQService = app.Services.GetRequiredService<IRabbitMQService>();
+                rabbitMQService.StartConsumers();
+            }
+            catch (Exception ex)
+            {
+                var logger = app.Services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "Failed to start RabbitMQ consumers");
+            }
+        }
 
         app.Run();
         return app;
