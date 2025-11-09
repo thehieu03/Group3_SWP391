@@ -57,10 +57,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Token> Tokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql(
-            "server=localhost;database=swp_group3;user=root;password=123456;sslmode=none;allowpublickeyretrieval=true",
-            ServerVersion.Parse("9.4.0-mysql"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=localhost;database=swp_group3;user=root;password=123456;sslmode=none;allowpublickeyretrieval=true", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -298,6 +296,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Payload)
+                .HasComment("Thông tin tài khoản sản phẩm (username, password, etc.)")
+                .HasColumnType("json")
+                .HasColumnName("payload");
             entity.Property(e => e.ProductVariantId).HasColumnName("productVariantId");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Status)
@@ -324,6 +326,8 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("paymenttransaction");
 
+            entity.HasIndex(e => e.ReferenceCode, "UQ_paymenttransaction_referenceCode").IsUnique();
+
             entity.HasIndex(e => e.UserId, "userId");
 
             entity.Property(e => e.Id).HasColumnName("id");
@@ -334,14 +338,17 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp")
                 .HasColumnName("createdAt");
-            entity.Property(e => e.UpdatedAt)
-                .HasColumnType("timestamp")
-                .HasColumnName("updatedAt");
             entity.Property(e => e.PaymentDescription)
                 .HasMaxLength(100)
                 .HasColumnName("paymentDescription")
                 .UseCollation("utf8mb3_general_ci")
                 .HasCharSet("utf8mb3");
+            entity.Property(e => e.RawPayload)
+                .HasColumnType("text")
+                .HasColumnName("rawPayload");
+            entity.Property(e => e.ReferenceCode)
+                .HasMaxLength(100)
+                .HasColumnName("referenceCode");
             entity.Property(e => e.Status)
                 .HasDefaultValueSql("'PENDING'")
                 .HasColumnType("enum('PENDING','SUCCESS','FAILED','CANCELLED')")
@@ -349,13 +356,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Type)
                 .HasColumnType("enum('PURCHASE','DEPOSIT','WITHDRAWAL')")
                 .HasColumnName("type");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updatedAt");
             entity.Property(e => e.UserId).HasColumnName("userId");
-            entity.Property(e => e.ReferenceCode)
-                .HasMaxLength(100)
-                .HasColumnName("referenceCode");
-            entity.Property(e => e.RawPayload)
-                .HasColumnType("text")
-                .HasColumnName("rawPayload");
 
             entity.HasOne(d => d.User).WithMany(p => p.Paymenttransactions)
                 .HasForeignKey(d => d.UserId)
