@@ -187,31 +187,8 @@ class ProductServices {
       formData.append("image", image);
     }
 
-    console.log("[ProductServices] Updating product:", {
-      productId,
-      formData: {
-        name: productData.name,
-        description: productData.description,
-        categoryId: productData.categoryId,
-        subcategoryId: productData.subcategoryId,
-        shopId: productData.shopId,
-        details: productData.details,
-        hasImage: !!image,
-      },
-    });
-
-    try {
-      // Don't set Content-Type header manually - browser will set it with boundary for FormData
-      await httpPut<void, FormData>(`products/${productId}`, formData);
-    } catch (error: unknown) {
-      console.error("[ProductServices] Update product error:", error);
-      const err = error as { response?: { data?: unknown; status?: number } };
-      if (err.response) {
-        console.error("[ProductServices] Error response:", err.response.data);
-        console.error("[ProductServices] Error status:", err.response.status);
-      }
-      throw error;
-    }
+    // Don't set Content-Type header manually - browser will set it with boundary for FormData
+    await httpPut<void, FormData>(`products/${productId}`, formData);
   }
 
   async createProductAsync(
@@ -246,30 +223,7 @@ class ProductServices {
       formData.append("image", image);
     }
 
-    console.log("[ProductServices] Creating product:", {
-      formData: {
-        name: productData.name,
-        description: productData.description,
-        categoryId: productData.categoryId,
-        subcategoryId: productData.subcategoryId,
-        shopId: productData.shopId,
-        details: productData.details,
-        hasImage: !!image,
-        variants: productData.variants,
-      },
-    });
-
-    try {
-      await httpPost<void, FormData>("products", formData);
-    } catch (error: unknown) {
-      console.error("[ProductServices] Create product error:", error);
-      const err = error as { response?: { data?: unknown; status?: number } };
-      if (err.response) {
-        console.error("[ProductServices] Error response:", err.response.data);
-        console.error("[ProductServices] Error status:", err.response.status);
-      }
-      throw error;
-    }
+    await httpPost<void, FormData>("products", formData);
   }
 }
 export const productServices = new ProductServices();

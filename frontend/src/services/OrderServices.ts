@@ -1,6 +1,9 @@
 import { httpGet } from "@utils/http.ts";
 import type { OrderUserResponse } from "@models/modelResponse/OrderUserResponse.ts";
-import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse.ts";
+import type {
+  OrderAdminResponse,
+  OrderDetailResponse,
+} from "@models/modelResponse/OrderAdminResponse.ts";
 
 // Interface for count API response
 interface CountResponse {
@@ -261,6 +264,13 @@ class OrderServices {
     }
 
     return 0;
+  }
+
+  async getOrderDetailsAsync(orderId: number): Promise<OrderDetailResponse> {
+    const response = await httpGet<OrderDetailResponse>(
+      `orders/${orderId}/details`
+    );
+    return response;
   }
 }
 

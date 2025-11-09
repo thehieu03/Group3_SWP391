@@ -12,4 +12,5 @@ public class OrderAdminResponse
     public DateTime? OrderDate { get; set; }
     public string? ProductName { get; set; }
     public string? ProductVariantName { get; set; }
+    public int? ProductVariantId { get; set; }
 }

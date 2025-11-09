@@ -86,52 +86,31 @@ const SellerProducts = () => {
   // Get shop ID for current seller
   useEffect(() => {
     const getShopId = async () => {
-      console.log("[SellerProducts] Getting shop ID...");
-      console.log("[SellerProducts] User:", user);
-      console.log("[SellerProducts] User ID (accountId):", user?.id);
-      console.log("[SellerProducts] User username:", user?.username);
-
       if (!user?.id) {
-        console.error("[SellerProducts] User ID is missing");
         setError("Không tìm thấy thông tin người dùng");
         return;
       }
 
       try {
-        console.log(
-          "[SellerProducts] Calling getShopByAccountIdAsync with accountId:",
-          user.id
-        );
         const sellerShop = await shopServices.getShopByAccountIdAsync(user.id);
-        console.log("[SellerProducts] Seller shop found:", sellerShop);
 
         if (sellerShop) {
-          console.log("[SellerProducts] Setting shopId to:", sellerShop.id);
           setShopId(sellerShop.id);
           setError(null); // Clear any previous errors
         } else {
-          console.warn(
-            "[SellerProducts] No shop found for accountId:",
-            user.id
-          );
           setError("Không tìm thấy shop của bạn. Vui lòng đăng ký shop trước.");
         }
       } catch (error: unknown) {
-        console.error("[SellerProducts] Error getting shop ID:", error);
-
         // Extract error message
         let errorMessage = "Không thể tải thông tin shop";
         if (error instanceof Error) {
           errorMessage = `Lỗi: ${error.message}`;
-          console.error("[SellerProducts] Error message:", error.message);
-          console.error("[SellerProducts] Error stack:", error.stack);
         } else if (typeof error === "object" && error !== null) {
           const err = error as {
             response?: { data?: unknown; status?: number };
             message?: string;
           };
           if (err.response) {
-            console.error("[SellerProducts] Error response:", err.response);
             if (err.response.status === 404) {
               errorMessage =
                 "Không tìm thấy shop của bạn. Vui lòng đăng ký shop trước.";
@@ -151,8 +130,6 @@ const SellerProducts = () => {
 
     if (user) {
       void getShopId();
-    } else {
-      console.log("[SellerProducts] No user found, waiting...");
     }
   }, [user]);
 
@@ -162,36 +139,22 @@ const SellerProducts = () => {
   // Load data - memoized with useCallback
   const loadProducts = useCallback(async () => {
     if (!shopId) {
-      console.log("[SellerProducts] loadProducts: No shopId, skipping...");
       return;
     }
-
-    console.log(
-      "[SellerProducts] loadProducts: Loading products for shopId:",
-      shopId
-    );
 
     try {
       setLoading(true);
       setError(null);
 
       // Call new API to get all products by shopId
-      console.log(
-        "[SellerProducts] Calling getProductsByShopIdAsync with shopId:",
-        shopId
-      );
       const productsData = await productServices.getProductsByShopIdAsync(
         shopId
       );
-      console.log("[SellerProducts] Products received:", productsData);
-      console.log("[SellerProducts] Number of products:", productsData.length);
       setAllProducts(productsData);
-    } catch (error) {
-      console.error("[SellerProducts] Error loading products:", error);
+    } catch {
       setError("Không thể tải danh sách sản phẩm");
     } finally {
       setLoading(false);
-      console.log("[SellerProducts] loadProducts: Finished loading");
     }
   }, [shopId]);
 
@@ -302,9 +265,7 @@ const SellerProducts = () => {
   // Load filter options
   const loadFilterOptions = useCallback(async () => {
     try {
-      console.log("[SellerProducts] Loading categories for filter...");
       const categoriesData = await categoryServices.getAllCategoryAsync();
-      console.log("[SellerProducts] Categories loaded:", categoriesData);
 
       // Map CategoriesResponse to { id, name } format
       const mappedCategories = categoriesData.map((cat) => ({
@@ -312,9 +273,7 @@ const SellerProducts = () => {
         name: cat.name,
       }));
       setCategories(mappedCategories);
-      console.log("[SellerProducts] Mapped categories:", mappedCategories);
-    } catch (error) {
-      console.error("[SellerProducts] Failed to load categories:", error);
+    } catch {
       // Failed to load filter options
     }
   }, []);
@@ -324,16 +283,8 @@ const SellerProducts = () => {
     const loadSubcategories = async () => {
       if (categoryFilter) {
         try {
-          console.log(
-            "[SellerProducts] Loading subcategories for category:",
-            categoryFilter
-          );
           const subcategoriesData =
             await subcategoryServices.getAllSubcategories(categoryFilter);
-          console.log(
-            "[SellerProducts] Subcategories loaded:",
-            subcategoriesData
-          );
 
           const mappedSubcategories = subcategoriesData.map((sub) => ({
             id: sub.id,
@@ -343,11 +294,7 @@ const SellerProducts = () => {
 
           // Reset subcategory filter when category changes
           setSubcategoryFilter(null);
-        } catch (error) {
-          console.error(
-            "[SellerProducts] Failed to load subcategories:",
-            error
-          );
+        } catch {
           setSubcategories([]);
           setSubcategoryFilter(null);
         }
@@ -372,12 +319,8 @@ const SellerProducts = () => {
   ]);
 
   useEffect(() => {
-    console.log("[SellerProducts] shopId changed:", shopId);
     if (shopId) {
-      console.log("[SellerProducts] shopId is set, calling loadProducts...");
       void loadProducts();
-    } else {
-      console.log("[SellerProducts] shopId is null, not loading products");
     }
   }, [shopId, loadProducts]);
 
@@ -390,16 +333,9 @@ const SellerProducts = () => {
     async (id: number, currentStatus: boolean) => {
       try {
         const newStatus = !currentStatus;
-        console.log(
-          `[SellerProducts] Updating product ${id} status to ${newStatus}`
-        );
         await productServices.updateProductStatusAsync(id, newStatus);
         await loadProducts(); // Reload data
-      } catch (error) {
-        console.error(
-          "[SellerProducts] Failed to update product status:",
-          error
-        );
+      } catch {
         alert("Không thể cập nhật trạng thái sản phẩm. Vui lòng thử lại.");
       }
     },
@@ -458,18 +394,6 @@ const SellerProducts = () => {
   const handleSortOrderChange = useCallback((value: "asc" | "desc") => {
     setSortOrder(value);
   }, []);
-
-  // Debug logging
-  useEffect(() => {
-    console.log("[SellerProducts] Component state:", {
-      user: user ? { username: user.username, roles: user.roles } : null,
-      shopId,
-      loading,
-      error,
-      productsCount: products.length,
-      allProductsCount: allProducts.length,
-    });
-  }, [user, shopId, loading, error, products.length, allProducts.length]);
 
   if (!shopId) {
     return (
