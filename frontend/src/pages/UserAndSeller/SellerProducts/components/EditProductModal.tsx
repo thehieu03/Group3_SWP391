@@ -50,7 +50,7 @@ const EditProductModal = ({
         const data = await categoryServices.getAllCategoryAsync();
         setCategories(data);
       } catch (error) {
-        console.error("Failed to load categories:", error);
+        // Failed to load categories
       }
     };
     void loadCategories();
@@ -66,7 +66,6 @@ const EditProductModal = ({
           );
           setSubcategories(data);
         } catch (error) {
-          console.error("Failed to load subcategories:", error);
           setSubcategories([]);
         }
       } else {
@@ -122,10 +121,6 @@ const EditProductModal = ({
                   };
                 } catch (error) {
                   // No storages found or error loading
-                  console.warn(
-                    `Failed to load storages for variant ${variant.id}:`,
-                    error
-                  );
                   return {
                     variant,
                     storageJson: "[]",
@@ -136,7 +131,6 @@ const EditProductModal = ({
 
           setVariantsWithStorage(variantsWithStorageData);
         } catch (error) {
-          console.error("Failed to load variants:", error);
           setVariantsWithStorage([]);
         } finally {
           setLoadingVariants(false);
@@ -313,10 +307,6 @@ const EditProductModal = ({
                 );
               }
             } catch (error) {
-              console.error(
-                `Failed to update storages for variant ${item.variant.id}:`,
-                error
-              );
               // Continue with other variants
             }
           }
@@ -325,7 +315,6 @@ const EditProductModal = ({
         onSuccess();
         onClose();
       } catch (error: unknown) {
-        console.error("[EditProductModal] Failed to update product:", error);
         const err = error as {
           response?: {
             data?: { message?: string; errors?: unknown };

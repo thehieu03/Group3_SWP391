@@ -1,5 +1,6 @@
 using Mmo_Domain.ModelRequest;
 using Mmo_Application.Services.Interface;
+using System.Text.Json;
 
 namespace Mmo_Api.Api;
 
@@ -13,7 +14,11 @@ public class ProductsController : ControllerBase
     private readonly ISystemsconfigServices _systemsconfigServices;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _environment;
-    private readonly ILogger<ProductsController>? _logger;
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     public ProductsController(
         IProductServices productServices, 
@@ -21,8 +26,7 @@ public class ProductsController : ControllerBase
         IProductStorageServices productStorageServices,
         ISystemsconfigServices systemsconfigServices,
         IMapper mapper, 
-        IWebHostEnvironment environment, 
-        ILogger<ProductsController>? logger = null)
+        IWebHostEnvironment environment)
     {
         _productServices = productServices;
         _productVariantServices = productVariantServices;
@@ -30,7 +34,6 @@ public class ProductsController : ControllerBase
         _systemsconfigServices = systemsconfigServices;
         _mapper = mapper;
         _environment = environment;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -133,35 +136,20 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image, [FromForm] string? variants)
     {
-        _logger?.LogInformation("CreateProduct called with Request: {@Request}", new
-        {
-            productRequest?.Name,
-            productRequest?.Description,
-            productRequest?.CategoryId,
-            productRequest?.SubcategoryId,
-            productRequest?.ShopId,
-            HasImage = image != null
-        });
-
         if (productRequest == null)
         {
-            _logger?.LogWarning("CreateProduct: productRequest is null");
             return BadRequest(new { message = "Product request is null" });
         }
 
         // Parse variants from JSON string if provided
         if (!string.IsNullOrEmpty(variants))
         {
-            try
+            var parseResult = ParseVariantsFromJson(variants);
+            if (!parseResult.Success)
             {
-                productRequest.Variants = System.Text.Json.JsonSerializer.Deserialize<List<ProductVariantRequest>>(variants);
-                _logger?.LogInformation("CreateProduct: Parsed {Count} variants from JSON", productRequest.Variants?.Count ?? 0);
+                return BadRequest(new { message = "Invalid variants JSON format", error = parseResult.ErrorMessage });
             }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning("CreateProduct: Failed to parse variants JSON: {Error}", ex.Message);
-                return BadRequest(new { message = "Invalid variants JSON format", error = ex.Message });
-            }
+            productRequest.Variants = parseResult.Variants;
         }
 
         if (!ModelState.IsValid)
@@ -169,7 +157,6 @@ public class ProductsController : ControllerBase
             var errors = ModelState
                 .Where(x => x.Value?.Errors.Count > 0)
                 .Select(x => new { Field = x.Key, Errors = x.Value?.Errors.Select(e => e.ErrorMessage) });
-            _logger?.LogWarning("CreateProduct: ModelState is invalid. Errors: {@Errors}", errors);
             return BadRequest(new { message = "Invalid request data", errors });
         }
 
@@ -190,26 +177,8 @@ public class ProductsController : ControllerBase
                 imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Products, image, _environment);
             }
 
-            // Lấy fee từ Systemsconfig
-            decimal? productFee = null;
-            try
-            {
-                var systemConfigs = await _systemsconfigServices.GetAllAsync();
-                var systemConfig = systemConfigs.FirstOrDefault();
-                if (systemConfig != null && systemConfig.Fee.HasValue)
-                {
-                    productFee = systemConfig.Fee.Value;
-                    _logger?.LogInformation("Using fee from system config: {Fee}", productFee);
-                }
-                else
-                {
-                    _logger?.LogWarning("System config fee not found, using default fee");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Failed to get fee from system config, using default");
-            }
+            // Get fee from Systemsconfig
+            var productFee = await GetProductFeeAsync();
 
             // Bước 1: Tạo Product
             var product = new Product
@@ -232,43 +201,25 @@ public class ProductsController : ControllerBase
                 product.ImageUploadedAt = DateTime.UtcNow;
             }
 
-            var productId = await _productServices.AddAsync(product);
-            if (productId <= 0)
+            // Create product - EF Core will automatically set product.Id after save
+            var saveResult = await _productServices.AddAsync(product);
+            
+            if (saveResult <= 0)
             {
-                _logger?.LogError("Failed to create product: {ProductName}", productRequest.Name);
                 return BadRequest(new { message = "Failed to create product" });
             }
 
-            _logger?.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}", 
-                productId, productRequest.Name);
+            // Get actual ID from entity after save (EF Core automatically sets ID)
+            var productId = product.Id;
+            if (productId <= 0)
+            {
+                return BadRequest(new { message = "Failed to create product - invalid product ID" });
+            }
 
-            // Bước 2: Tạo Variants nếu có
+            // Create variants and storages if provided
             if (productRequest.Variants != null && productRequest.Variants.Any())
             {
-                foreach (var variantRequest in productRequest.Variants)
-                {
-                    var variantCreateRequest = new ProductVariantRequest
-                    {
-                        ProductId = (int)productId,
-                        Name = variantRequest.Name,
-                        Price = variantRequest.Price,
-                        Stock = variantRequest.Stock
-                    };
-
-                    var (variantSuccess, variantError, variantId) = await _productVariantServices.CreateProductVariantAsync(variantCreateRequest);
-                    if (!variantSuccess)
-                    {
-                        _logger?.LogError("Failed to create variant: {VariantName}. Error: {Error}", 
-                            variantRequest.Name, variantError);
-                        continue;
-                    }
-
-                    _logger?.LogInformation("Variant created successfully. VariantId: {VariantId}, Name: {VariantName}", 
-                        variantId, variantRequest.Name);
-
-                    // Bước 3: Tạo Storages cho variant nếu có
-                    // Note: Storages thường được tạo riêng qua API khác, nhưng nếu cần có thể thêm logic ở đây
-                }
+                await CreateProductVariantsAsync(productId, productRequest.Variants);
             }
 
             return Ok(new { 
@@ -279,7 +230,6 @@ public class ProductsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "CreateProduct: Error creating product");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
@@ -305,36 +255,20 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductRequest productRequest, [FromForm] IFormFile? image, [FromForm] string? variants)
     {
-        // Log incoming request for debugging
-        _logger?.LogInformation("UpdateProduct called with id: {Id}, Request: {@Request}", id, new
-        {
-            productRequest?.Name,
-            productRequest?.Description,
-            productRequest?.CategoryId,
-            productRequest?.SubcategoryId,
-            productRequest?.ShopId,
-            HasImage = image != null
-        });
-
         if (productRequest == null)
         {
-            _logger?.LogWarning("UpdateProduct: productRequest is null");
             return BadRequest(new { message = "Product request is null" });
         }
 
         // Parse variants from JSON string if provided
         if (!string.IsNullOrEmpty(variants))
         {
-            try
+            var parseResult = ParseVariantsFromJson(variants);
+            if (!parseResult.Success)
             {
-                productRequest.Variants = System.Text.Json.JsonSerializer.Deserialize<List<ProductVariantRequest>>(variants);
-                _logger?.LogInformation("UpdateProduct: Parsed {Count} variants from JSON", productRequest.Variants?.Count ?? 0);
+                return BadRequest(new { message = "Invalid variants JSON format", error = parseResult.ErrorMessage });
             }
-            catch (Exception ex)
-            {
-                _logger?.LogWarning("UpdateProduct: Failed to parse variants JSON: {Error}", ex.Message);
-                return BadRequest(new { message = "Invalid variants JSON format", error = ex.Message });
-            }
+            productRequest.Variants = parseResult.Variants;
         }
 
         if (!ModelState.IsValid)
@@ -342,14 +276,12 @@ public class ProductsController : ControllerBase
             var errors = ModelState
                 .Where(x => x.Value?.Errors.Count > 0)
                 .Select(x => new { Field = x.Key, Errors = x.Value?.Errors.Select(e => e.ErrorMessage) });
-            _logger?.LogWarning("UpdateProduct: ModelState is invalid. Errors: {@Errors}", errors);
             return BadRequest(new { message = "Invalid request data", errors });
         }
 
         var product = await _productServices.GetByIdAsync(id);
         if (product == null)
         {
-            _logger?.LogWarning("UpdateProduct: Product with id {Id} not found", id);
             return NotFound(new { message = "Product not found" });
         }
 
@@ -410,13 +342,7 @@ public class ProductsController : ControllerBase
 
                         if (!variantSuccess)
                         {
-                            _logger?.LogWarning("Failed to update variant {VariantId}: {Error}", 
-                                variantRequest.Id.Value, variantError);
-                            // Continue with other variants instead of failing entire request
-                        }
-                        else
-                        {
-                            _logger?.LogInformation("Variant {VariantId} updated successfully", variantRequest.Id.Value);
+                            // Variant update failed, continue with other variants
                         }
                     }
                     // If variant doesn't have ID, create new variant (optional - for future use)
@@ -429,5 +355,117 @@ public class ProductsController : ControllerBase
         {
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
+    }
+    
+    private (bool Success, List<ProductVariantRequest>? Variants, string? ErrorMessage) ParseVariantsFromJson(string variantsJson)
+    {
+        try
+        {
+            var variants = JsonSerializer.Deserialize<List<ProductVariantRequest>>(variantsJson, JsonOptions);
+            return (true, variants, null);
+        }
+        catch (Exception ex)
+        {
+            return (false, null, ex.Message);
+        }
+    }
+
+    private async Task<decimal?> GetProductFeeAsync()
+    {
+        try
+        {
+            var systemConfigs = await _systemsconfigServices.GetAllAsync();
+            return systemConfigs.FirstOrDefault()?.Fee;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    private async Task CreateProductVariantsAsync(int productId, IEnumerable<ProductVariantRequest> variantRequests)
+    {
+        foreach (var variantRequest in variantRequests)
+        {
+            var variantCreateRequest = new ProductVariantRequest
+            {
+                ProductId = productId,
+                Name = variantRequest.Name,
+                Price = variantRequest.Price,
+                Stock = variantRequest.Stock
+            };
+
+            var (variantSuccess, variantError, variantId) = await _productVariantServices.CreateProductVariantAsync(variantCreateRequest);
+            
+            if (!variantSuccess)
+            {
+                continue;
+            }
+
+            // Create storages for variant if provided
+            if (variantRequest.Storages != null && variantRequest.Storages.Any() && variantId.HasValue)
+            {
+                await CreateStoragesForVariantAsync(variantId.Value, variantRequest.Storages);
+            }
+        }
+    }
+
+    private async Task CreateStoragesForVariantAsync(int variantId, IEnumerable<ProductVariantStorageItem> storageItems)
+    {
+        try
+        {
+            var accounts = ParseStorageAccounts(storageItems);
+            
+            if (!accounts.Any())
+            {
+                return;
+            }
+
+            var storageRequest = new ProductStorageRequest
+            {
+                ProductVariantId = variantId,
+                Accounts = accounts
+            };
+
+            var (storageSuccess, storageError, _) = await _productStorageServices.CreateProductStoragesAsync(storageRequest);
+
+            if (!storageSuccess)
+            {
+                // Storage creation failed, continue with other variants
+            }
+        }
+        catch (Exception ex)
+        {
+            // Error creating storages, continue with other variants
+        }
+    }
+
+    private List<AccountStorageItem> ParseStorageAccounts(IEnumerable<ProductVariantStorageItem> storageItems)
+    {
+        var accounts = new List<AccountStorageItem>();
+
+        foreach (var storage in storageItems)
+        {
+            if (string.IsNullOrEmpty(storage.Result))
+                continue;
+
+            try
+            {
+                var accountData = JsonSerializer.Deserialize<AccountStorageItem>(storage.Result, JsonOptions);
+
+                if (accountData != null && 
+                    !string.IsNullOrWhiteSpace(accountData.Username) &&
+                    !string.IsNullOrWhiteSpace(accountData.Password))
+                {
+                    accounts.Add(accountData);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Failed to parse storage result, skip this storage
+            }
+        }
+
+        return accounts;
     }
 }

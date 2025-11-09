@@ -9,16 +9,13 @@ public class ProductVariantController : ControllerBase
 {
     private readonly IProductVariantServices _productVariantServices;
     private readonly IMapper _mapper;
-    private readonly ILogger<ProductVariantController>? _logger;
 
     public ProductVariantController(
         IProductVariantServices productVariantServices, 
-        IMapper mapper,
-        ILogger<ProductVariantController>? logger = null)
+        IMapper mapper)
     {
         _productVariantServices = productVariantServices;
         _mapper = mapper;
-        _logger = logger;
     }
 
     [HttpGet("product/{productId}")]
@@ -41,7 +38,6 @@ public class ProductVariantController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "GetProductVariantsByProductId: Error retrieving product variants");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }

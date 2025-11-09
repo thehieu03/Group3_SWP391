@@ -39,7 +39,7 @@ const AddProductModal = ({
         const data = await categoryServices.getAllCategoryAsync();
         setCategories(data);
       } catch (error) {
-        console.error("Failed to load categories:", error);
+        // Failed to load categories
       }
     };
     void loadCategories();
@@ -55,7 +55,6 @@ const AddProductModal = ({
           );
           setSubcategories(data);
         } catch (error) {
-          console.error("Failed to load subcategories:", error);
           setSubcategories([]);
         }
       } else {
@@ -318,7 +317,6 @@ const AddProductModal = ({
 
           alert(`Đã import thành công ${parsedVariants.length} variant từ file Excel`);
         } catch (error) {
-          console.error("Error parsing Excel file:", error);
           alert(
             `Lỗi khi đọc file Excel: ${
               error instanceof Error ? error.message : "Lỗi không xác định"
@@ -476,7 +474,6 @@ const AddProductModal = ({
         onSuccess();
         onClose();
       } catch (error: unknown) {
-        console.error("[AddProductModal] Failed to create product:", error);
         const err = error as {
           response?: { data?: { message?: string }; status?: number };
         };

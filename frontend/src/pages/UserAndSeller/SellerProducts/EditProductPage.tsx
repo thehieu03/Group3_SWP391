@@ -46,7 +46,7 @@ const EditProductPage = () => {
         const data = await categoryServices.getAllCategoryAsync();
         setCategories(data);
       } catch (error) {
-        console.error("Failed to load categories:", error);
+        // Failed to load categories
       }
     };
     void loadCategories();
@@ -62,7 +62,6 @@ const EditProductPage = () => {
           );
           setSubcategories(data);
         } catch (error) {
-          console.error("Failed to load subcategories:", error);
           setSubcategories([]);
         }
       } else {
@@ -154,10 +153,6 @@ const EditProductPage = () => {
                   };
                 } catch (error) {
                   // No storages found or error loading
-                  console.warn(
-                    `Failed to load storages for variant ${variant.id}:`,
-                    error
-                  );
                   return {
                     variant,
                     storageJson: "[]",
@@ -168,13 +163,11 @@ const EditProductPage = () => {
 
           setVariantsWithStorage(variantsWithStorageData);
         } catch (error) {
-          console.error("Failed to load variants:", error);
           setVariantsWithStorage([]);
         } finally {
           setLoadingVariants(false);
         }
       } catch (error) {
-        console.error("Failed to load product:", error);
         alert("Không thể tải thông tin sản phẩm. Vui lòng thử lại.");
         navigate("/seller/products");
       } finally {
@@ -434,7 +427,6 @@ const EditProductPage = () => {
 
           alert(`Đã import thành công ${parsedVariants.length} variant từ file Excel`);
         } catch (error) {
-          console.error("Error parsing Excel file:", error);
           alert(
             `Lỗi khi đọc file Excel: ${
               error instanceof Error ? error.message : "Lỗi không xác định"
@@ -564,10 +556,6 @@ const EditProductPage = () => {
                 );
               }
             } catch (error) {
-              console.error(
-                `Failed to update storages for variant ${item.variant.id}:`,
-                error
-              );
               // Continue with other variants
             }
           }
@@ -576,7 +564,6 @@ const EditProductPage = () => {
         alert("Cập nhật sản phẩm thành công!");
         navigate("/seller/products");
       } catch (error: unknown) {
-        console.error("[EditProductPage] Failed to update product:", error);
         const err = error as {
           response?: {
             data?: { message?: string; errors?: unknown };
