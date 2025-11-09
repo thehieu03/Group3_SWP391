@@ -1,4 +1,7 @@
-﻿namespace Mmo_Domain.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Mmo_Domain.Models;
 
 public partial class Productstorage
 {

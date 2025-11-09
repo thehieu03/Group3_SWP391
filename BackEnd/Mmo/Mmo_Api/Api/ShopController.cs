@@ -1,3 +1,5 @@
+using Mmo_Domain.ModelRequest;
+
 namespace Mmo_Api.Api;
 
 [Route("api/shops")]
@@ -38,7 +40,7 @@ public class ShopController : ControllerBase
             foreach (var shop in shops)
             {
                 var shopResponse = _mapper.Map<ShopResponse>(shop);
-                shopResponse.OwnerUsername = shop.Account?.Username;
+                shopResponse.OwnerUsername = shop.Account?.Username ?? "Unknown";
                 shopResponse.ProductCount = shop.Products?.Count ?? 0;
                 shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
                 shopResponse.IsActive = shop.Status == "APPROVED";
@@ -61,7 +63,45 @@ public class ShopController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
+    /// <summary>
+    /// Lấy thông tin shop của seller hiện tại
+    /// </summary>
+    /// <returns>Thông tin shop của seller</returns>
+    [HttpGet("my-shop")]
+    [Authorize(Policy = "AdminOrSeller")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ShopResponse>> GetMyShop()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid token" });
+
+            var shop = await _shopServices.GetByAccountIdAsync(userId);
+            if (shop == null)
+                return NotFound(new { message = "Shop not found for this account" });
+
+            var shopResponse = _mapper.Map<ShopResponse>(shop);
+            shopResponse.OwnerUsername = shop.Account?.Username ?? "Unknown";
+            shopResponse.ProductCount = shop.Products?.Count ?? 0;
+            shopResponse.ComplaintCount = shop.Replies?.Count ?? 0;
+            shopResponse.IdentificationFurl = shop.Account?.IdentificationFurl;
+            shopResponse.IdentificationBurl = shop.Account?.IdentificationBurl;
+
+            return Ok(shopResponse);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting shop for current user");
+            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+        }
+    }
+
+    [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -472,6 +512,67 @@ public class ShopController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Cập nhật thông tin shop của seller hiện tại
+    /// </summary>
+    /// <param name="request">Thông tin shop cần cập nhật</param>
+    /// <returns>Kết quả cập nhật</returns>
+    [HttpPut("my-shop")]
+    [Authorize(Policy = "AdminOrSeller")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ShopResponse>> UpdateMyShop([FromBody] UpdateShopRequest request)
+    {
+        try
+        {
+            if (request == null)
+                return BadRequest(new { message = "Request body cannot be null" });
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid token" });
+
+            var shop = await _shopServices.GetByAccountIdAsync(userId);
+            if (shop == null)
+                return NotFound(new { message = "Shop not found for this account" });
+
+            // Cập nhật thông tin shop (chỉ cho phép cập nhật Name và Description)
+            if (!string.IsNullOrWhiteSpace(request.Name))
+                shop.Name = request.Name.Trim();
+
+            if (request.Description != null)
+                shop.Description = request.Description.Trim();
+
+            shop.UpdatedAt = DateTime.UtcNow;
+
+            var updated = await _shopServices.UpdateAsync(shop);
+            if (!updated)
+                return StatusCode(500, new { message = "Failed to update shop" });
+
+            // Lấy lại shop với đầy đủ thông tin
+            var updatedShop = await _shopServices.GetByAccountIdAsync(userId);
+            if (updatedShop == null)
+                return NotFound(new { message = "Shop not found after update" });
+
+            var shopResponse = _mapper.Map<ShopResponse>(updatedShop);
+            shopResponse.OwnerUsername = updatedShop.Account?.Username ?? "Unknown";
+            shopResponse.ProductCount = updatedShop.Products?.Count ?? 0;
+            shopResponse.ComplaintCount = updatedShop.Replies?.Count ?? 0;
+            shopResponse.IdentificationFurl = updatedShop.Account?.IdentificationFurl;
+            shopResponse.IdentificationBurl = updatedShop.Account?.IdentificationBurl;
+
+            return Ok(shopResponse);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating shop for current user");
+            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
 }

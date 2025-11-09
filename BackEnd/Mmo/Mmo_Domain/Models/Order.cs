@@ -15,6 +15,11 @@ public partial class Order
 
     public int Quantity { get; set; }
 
+    /// <summary>
+    /// Thông tin tài khoản sản phẩm (username, password, etc.)
+    /// </summary>
+    public string? Payload { get; set; }
+
     public string? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }

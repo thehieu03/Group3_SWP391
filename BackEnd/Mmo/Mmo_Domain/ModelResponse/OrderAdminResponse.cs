@@ -10,4 +10,7 @@ public class OrderAdminResponse
     public string SellerName { get; set; } = null!;
     public string? Status { get; set; }
     public DateTime? OrderDate { get; set; }
+    public string? ProductName { get; set; }
+    public string? ProductVariantName { get; set; }
+    public int? ProductVariantId { get; set; }
 }

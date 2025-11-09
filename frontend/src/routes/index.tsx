@@ -25,6 +25,7 @@ import EditProductPage from "@pages/UserAndSeller/SellerProducts/EditProductPage
 import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
 import SellerLayout from "@components/Layouts/SellerLayout/SellerLayout.tsx";
 import SellerShop from "@pages/UserAndSeller/SellerShop/SellerShop.tsx";
+import SellerOrders from "@pages/UserAndSeller/SellerOrders/SellerOrders.tsx";
 
 /**
  * Định nghĩa cấu trúc route trong ứng dụng
@@ -162,7 +163,7 @@ const sellerRoutes: AppRoute[] = [
   },
   {
     path: "/seller/orders",
-    element: <div>Quản lý đơn hàng</div>,
+    element: <SellerOrders />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
