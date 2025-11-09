@@ -46,6 +46,8 @@ public class ProductsController : ControllerBase
     {
         var products = await _productServices.GetAllWithRelatedAsync();
 
+        // Only show active products for public viewing
+        products = products.Where(p => p.IsActive == true);
 
         if (categoryId.HasValue) products = products.Where(p => p.CategoryId == (uint?)categoryId.Value);
 
@@ -97,7 +99,8 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProductByCategoryId(int id)
     {
         var products = await _productServices.GetAllAsync();
-        var filteredProducts = products.Where(p => p.CategoryId == (uint)id);
+        // Only show active products for public viewing
+        var filteredProducts = products.Where(p => p.CategoryId == (uint)id && p.IsActive == true);
         if (!filteredProducts.Any()) return NotFound();
 
         var resultResponse = _mapper.Map<IEnumerable<ProductResponse>>(filteredProducts);
@@ -108,10 +111,13 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery] int id)
+    public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery] int id, [FromQuery] bool includeInactive = false)
     {
         var productResult = await _productServices.GetByIdAsync(id);
         if (productResult == null) return NotFound();
+
+        // Only show active products for public viewing, unless includeInactive is true (for sellers editing their products)
+        if (!includeInactive && productResult.IsActive != true) return NotFound();
 
         var productResponse = _mapper.Map<ProductResponse>(productResult);
         return Ok(productResponse);

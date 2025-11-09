@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   depositServices,
   type DepositResponse,
-  type DepositStatusResponse,
 } from "@services/DepositServices";
 
 interface UseDepositReturn {
@@ -11,11 +10,10 @@ interface UseDepositReturn {
   error: string;
   loading: boolean;
   createDeposit: (amount: number) => Promise<void>;
-  verifyDeposit: (transactionId: number) => Promise<boolean>;
   reset: () => void;
 }
 
-export const useDeposit = (pollInterval: number = 5000): UseDepositReturn => {
+export const useDeposit = (pollInterval: number = 300000): UseDepositReturn => { // Default: 5 minutes
   const [depositData, setDepositData] = useState<DepositResponse | null>(null);
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -83,35 +81,6 @@ export const useDeposit = (pollInterval: number = 5000): UseDepositReturn => {
     }
   }, []);
 
-  const verifyDeposit = useCallback(async (transactionId: number) => {
-    setError("");
-    setLoading(true);
-
-    try {
-      const response = await depositServices.verifyDeposit(transactionId);
-      setStatus(response.status);
-
-      if (response.status === "SUCCESS" && response.processed) {
-        // Reload sau 2 giây để cập nhật balance
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-        return true;
-      }
-
-      return false;
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        "Có lỗi xảy ra khi xác minh giao dịch";
-      setError(errorMessage);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   const reset = useCallback(() => {
     setDepositData(null);
     setStatus("");
@@ -124,7 +93,6 @@ export const useDeposit = (pollInterval: number = 5000): UseDepositReturn => {
     error,
     loading,
     createDeposit,
-    verifyDeposit,
     reset,
   };
 };

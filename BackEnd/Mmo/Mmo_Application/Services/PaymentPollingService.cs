@@ -25,7 +25,7 @@ public class PaymentPollingService : BackgroundService, IPaymentPollingService
     }
 
     /// <summary>
-    /// Background service chạy mỗi 5 giây để:
+    /// Background service chạy mỗi 5 phút để:
     /// 1. Lấy tất cả transaction PENDING type DEPOSIT
     /// 2. Hủy các transaction quá hạn (mặc định 15 phút)
     /// 3. Query SePay API để lấy danh sách giao dịch trong khoảng thời gian

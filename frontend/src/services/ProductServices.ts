@@ -27,10 +27,14 @@ class ProductServices {
     return response;
   }
 
-  async getProductByIdAsync(productId: number): Promise<ProductResponse> {
-    const response = await httpGet<ProductResponse>(
-      `products/getProductById?id=${productId}`
-    );
+  async getProductByIdAsync(
+    productId: number,
+    includeInactive: boolean = false
+  ): Promise<ProductResponse> {
+    const url = `products/getProductById?id=${productId}${
+      includeInactive ? "&includeInactive=true" : ""
+    }`;
+    const response = await httpGet<ProductResponse>(url);
     return response;
   }
 

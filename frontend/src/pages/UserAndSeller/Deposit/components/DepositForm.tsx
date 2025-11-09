@@ -1,16 +1,20 @@
 import React, { memo, useCallback, useMemo } from "react";
-import { useDepositContext } from "@contexts/DepositContext";
 
 interface DepositFormProps {
   amount: string;
   onAmountChange: (value: string) => void;
+  loading: boolean;
+  error: string;
+  createDeposit: (amount: number) => Promise<void>;
 }
 
 export const DepositForm: React.FC<DepositFormProps> = memo(({
   amount,
   onAmountChange,
+  loading,
+  error,
+  createDeposit,
 }) => {
-  const { loading, error, createDeposit } = useDepositContext();
 
   // Memoize error display
   const hasError = useMemo(() => !!error, [error]);

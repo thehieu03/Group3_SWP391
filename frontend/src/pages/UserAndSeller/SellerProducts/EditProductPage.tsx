@@ -81,9 +81,10 @@ const EditProductPage = () => {
 
       setLoadingProduct(true);
       try {
-        // Load product data
+        // Load product data (include inactive products for sellers to edit)
         const productData = await productServices.getProductByIdAsync(
-          productId
+          productId,
+          true // includeInactive = true for sellers editing their products
         );
 
         // Map ProductResponse to AdminProductResponse
