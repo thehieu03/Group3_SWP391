@@ -1,10 +1,10 @@
 const routesConfig  =  {
     home:'/',
     login:'/login',
-    registerShop:'/registerShop',
     productDetails:'/productDetails',
     categoryProducts:'/category',
     deposit:'/deposit',
+    register:'/register',
     account:'/account',
     orders:'/orders',
     paymentHistory:'/paymentHistory',
@@ -16,18 +16,9 @@ const routesConfig  =  {
     forgotPassword:'/forgotPassword',
     infoAccount:'/infoAccount',
     userProfile:'/userProfile',
-    productApproval:'/admin/product-approval',
-    // Seller routes
-    sellerDashboard:'/seller/dashboard',
-    sellerProducts:'/seller/products',
-    sellerOrders:'/seller/orders',
-    sellerShopInfo:'/seller/shop-info',
-    sellerStatistics:'/seller/statistics',
-    shopDetail:'/shop-detail',
     getProductDetailsUrl: (id: number) => `/productDetails/${id}`,
     getProductUrl: (id: number) => `/product/${id}`,
-    getCategoryProductsUrl: (id: number) => `/category/${id}`,
-    getShopDetailUrl: (id: number) => `/shop-detail/${id}`
+    getCategoryProductsUrl: (id: number) => `/category/${id}`
 };
 
 

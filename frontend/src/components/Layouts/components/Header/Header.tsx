@@ -1,9 +1,9 @@
 import { FaFacebookSquare } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import { CiClock1 } from "react-icons/ci";
-import Button from "../../../Button/Button.tsx";
-import { ImageLogo as Logo } from "../../../../assets/ImageLogo.tsx";
-import CategoryMenuHeader from "../../menu/CategoryMenuHeader.tsx";
+import Button from "@components/Button/Button.tsx";
+import { ImageLogo as Logo } from "@assets/ImageLogo.tsx";
+import CategoryMenuHeader from "@/components/Layouts/components/Header/menu/CategoryMenuHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -12,11 +12,11 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import TippyHeadless from "@tippyjs/react/headless";
-import UserMenu from "../../menu/UserMenu.tsx";
-import LoginMenu from "../../menu/LoginMenu.tsx";
+import UserMenu from "@/components/Layouts/components/Header/menu/UserMenu";
+import LoginMenu from "@/components/Layouts/components/Header/menu/LoginMenu";
 import { useEffect, useState } from "react";
-import routesConfig from "../../../../config/routesConfig.tsx";
-import { useAuth } from "../../../../hooks/useAuth.tsx";
+import routesConfig from "@config/routesConfig.ts";
+import { useAuth } from "@/hooks/useAuth.tsx";
 
 const headerStyle = {
   notification:

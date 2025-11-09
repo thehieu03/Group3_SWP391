@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import HomeSearch from "../../../components/HomeSearch/HomeSearch.tsx";
-import CategoryList from "../../../components/CategoryHomeList/CategoryList";
-import PurchasedProducts from "../../../components/PurchasedProducts/PurchasedProducts.tsx";
-import { categoryServices } from "../../../services/CategoryServices.tsx";
-import type { CategoriesResponse } from "../../../models/modelResponse/CategoriesResponse";
+import HomeSearch from "@/components/HomeSearch/HomeSearch.tsx";
+import CategoryList from "@/components/CategoryHomeList/CategoryList";
+import PurchasedProducts from "@/components/PurchasedProducts/PurchasedProducts.tsx";
+import { categoryServices } from "@services/CategoryServices.ts";
+import type { CategoriesResponse } from "@/models/modelResponse/CategoriesResponse";
 
 const Home = () => {
   const [categories, setCategories] = useState<CategoriesResponse[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   useEffect(() => {
     const fetchCategories = async () => {
       const categories = await categoryServices.getAllCategoryAsync();
@@ -21,14 +21,14 @@ const Home = () => {
             <HomeSearch/>
       <CategoryList categories={categories} />
       <PurchasedProducts />
-      
+
       <div className="bg-green-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white border border-green-300 rounded-lg shadow-lg p-8">
             <h1 className="text-3xl font-bold text-gray-800 text-center mb-4">
               Tạp hóa MMO - Chuyên mua bán sản phẩm số - Phục vụ cộng đồng MMO (Kiếm tiền online)
             </h1>
-            
+
             <p className="text-lg text-gray-600 text-center mb-8">
               Một sản phẩm ra đời với mục đích thuận tiện và an toàn hơn trong các giao dịch mua bán sản phẩm số.
             </p>

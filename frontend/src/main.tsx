@@ -1,11 +1,16 @@
-import { createRoot } from 'react-dom/client'
+import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import {AuthProvider} from "./contexts/AuthContext.tsx";
+import { AuthProvider } from "./provider/AuthProvider.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import {clientId} from "@config/clientId.ts";
+import {StrictMode} from "react";
 
-console.log("🚀 main.tsx loaded");
-
-createRoot(document.getElementById('root')!).render(
-    <AuthProvider>
-        <App />
-    </AuthProvider>
-)
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+      <GoogleOAuthProvider clientId={clientId}>
+          <AuthProvider>
+              <App />
+          </AuthProvider>
+      </GoogleOAuthProvider>
+  </StrictMode>
+);

@@ -1,27 +1,42 @@
 import type { FC, ReactNode } from "react";
-import Home from "../pages/UserAndSeller/Home/Home.tsx";
-import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout.tsx";
-import HeaderAndFooter from "../components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
-import ProductDetails from "../pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
-import CategoryProducts from "../pages/UserAndSeller/CategoryProducts/CategoryProducts.tsx";
-import Deposit from "../pages/UserAndSeller/Deposit/Deposit.tsx";
-import UserProfile from "../pages/UserAndSeller/UserProfile/UserProfile.tsx";
-import Login from "../pages/UserAndSeller/Login/Login.tsx";
-import Register from "../pages/UserAndSeller/Register/Register.tsx";
-import ShopDetail from "../pages/UserAndSeller/ShopDetail/ShopDetail.tsx";
-import AdminPanel from "../pages/Admin/AdminPanel.tsx";
-import ProductApproval from "../pages/Admin/ProductApproval.tsx";
-import SellerDashboard from "../pages/Seller/SellerDashboard.tsx";
-import SellerProductManagement from "../pages/Seller/SellerProductManagement.tsx";
-import SellerLayout from "../components/Layouts/SellerLayout/SellerLayout.tsx";
-import routesConfig from "../config/routesConfig.tsx";
-import type { User } from "../models/modelResponse/LoginResponse";
-type AppRoute = {
-  path: string;
-  element: ReactNode;
-  layout: FC<{ children?: ReactNode }>;
-  requiredRoles?: string[];
+import Home from "@pages/UserAndSeller/Home/Home.tsx";
+import DefaultLayout from "@components/Layouts/DefaultLayout/DefaultLayout.tsx";
+import HeaderAndFooter from "@components/Layouts/HeaderAndFooter/HeaderAndFooter.tsx";
+import AdminLayoutNoHeader from "@components/Layouts/AdminLayoutNoHeader.tsx";
+import ProductDetails from "@pages/UserAndSeller/ProductDetails/ProductDetails.tsx";
+import Products from "@pages/Products/Products.tsx";
+import Deposit from "@pages/UserAndSeller/Deposit/Deposit.tsx";
+import UserProfile from "@pages/UserAndSeller/UserProfile/UserProfile.tsx";
+import AdminPanel from "@pages/Admin/AdminPanel.tsx";
+import AdminProductManagement from "@pages/Admin/AdminProductManagement.tsx";
+import routesConfig from "@config/routesConfig.ts";
+import type { User } from "@models/modelResponse/LoginResponse";
+import ChangePassword from "@pages/UserAndSeller/ChangePassword/ChangePassword.tsx";
+import OrderUser from "@/pages/UserAndSeller/OrderUser/OrderUser";
+import RegisterShop from "@pages/UserAndSeller/RegisterShop/RegisterShop.tsx";
+import Share from "@pages/UserAndSeller/Share/Share.tsx";
+import LoginValidator from "@pages/UserAndSeller/LoginValidator/LoginValidator.tsx";
+import ForgotPassword from "@pages/UserAndSeller/ForgotPassword/ForgotPassword.tsx";
+import SellerDashboard from "@pages/UserAndSeller/SellerDashboard/SellerDashboard.tsx";
+import SellerProducts from "@pages/UserAndSeller/SellerProducts/SellerProducts.tsx";
+import EditProductPage from "@pages/UserAndSeller/SellerProducts/EditProductPage.tsx";
+import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.tsx";
+import SellerLayout from "@components/Layouts/SellerLayout/SellerLayout.tsx";
+import SellerShop from "@pages/UserAndSeller/SellerShop/SellerShop.tsx";
+
+/**
+ * Định nghĩa cấu trúc route trong ứng dụng
+ */
+export type AppRoute = {
+  path: string; // Đường dẫn URL
+  element: ReactNode; // Component sẽ render
+  layout: FC<{ children?: ReactNode }>; // Layout wrapper
+  requiredRoles?: string[]; // Roles được phép truy cập (undefined = public)
 };
+
+// ============================================================================
+// PUBLIC ROUTES - Tất cả người dùng đều truy cập được (không cần đăng nhập)
+// ============================================================================
 const publicRoutes: AppRoute[] = [
   {
     path: routesConfig.home,
@@ -29,121 +44,202 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
   {
-    path: routesConfig.login,
-    element: <Login />,
-    layout: HeaderAndFooter,
-  },
-  {
-    path: routesConfig.registerShop,
-    element: <Register />,
-    layout: HeaderAndFooter,
-  },
-  {
-    path: routesConfig.productDetails,
+    path: routesConfig.productDetails + "/:id",
     element: <ProductDetails />,
     layout: HeaderAndFooter,
   },
   {
-    path: routesConfig.categoryProducts + '/:id',
-    element: <CategoryProducts />,
+    path: routesConfig.categoryProducts + "/:id",
+    element: <Products />,
     layout: DefaultLayout,
   },
   {
-    path: routesConfig.deposit,
-    element: <Deposit />,
+    path: routesConfig.registerShop,
+    element: <RegisterShop />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.loginValidator,
+    element: <LoginValidator />,
+    layout: DefaultLayout,
+  },
+  {
+    path: routesConfig.forgotPassword,
+    element: <ForgotPassword />,
     layout: DefaultLayout,
   },
 ];
-const privateRoutes: AppRoute[] = [
+
+// ============================================================================
+// SHARED ROUTES - Dùng chung cho CUSTOMER, SELLER, ADMIN (cần đăng nhập)
+// ============================================================================
+const sharedRoutes: AppRoute[] = [
   {
     path: routesConfig.userProfile,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['BUYER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.changePassword,
+    element: <ChangePassword />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
     path: routesConfig.infoAccount,
     element: <UserProfile />,
     layout: DefaultLayout,
-    requiredRoles: ['BUYER', 'SELLER', 'ADMIN'],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
   {
-    path: routesConfig.shopDetail + '/:id',
-    element: <ShopDetail />,
+    path: routesConfig.userOrder,
+    element: <OrderUser />,
     layout: DefaultLayout,
-    requiredRoles: ['BUYER', 'CUSTOMER'],
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.share,
+    element: <Share />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.paymentHistory,
+    element: <PaymentHistory />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.deposit,
+    element: <Deposit />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },
 ];
 
+// ============================================================================
+// CUSTOMER ROUTES - Chỉ dành cho CUSTOMER
+// ============================================================================
+const customerRoutes: AppRoute[] = [
+  // Hiện tại chưa có route riêng cho CUSTOMER
+  // Các route của CUSTOMER nằm trong sharedRoutes
+];
+
+// ============================================================================
+// SELLER ROUTES - Chỉ dành cho SELLER (người bán)
+// ============================================================================
 const sellerRoutes: AppRoute[] = [
   {
-    path: routesConfig.sellerDashboard,
+    path: "/seller/dashboard",
     element: <SellerDashboard />,
     layout: SellerLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: routesConfig.sellerProducts,
-    element: <SellerProductManagement />,
+    path: "/seller/products",
+    element: <SellerProducts />,
     layout: SellerLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: routesConfig.sellerOrders,
-    element: <div style={{ padding: '24px' }}>Quản lý đơn hàng - Coming soon</div>,
+    path: "/seller/products/edit/:id",
+    element: <EditProductPage />,
     layout: SellerLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: routesConfig.sellerShopInfo,
-    element: <div style={{ padding: '24px' }}>Thông tin shop - Coming soon</div>,
+    path: "/seller/orders",
+    element: <div>Quản lý đơn hàng</div>,
     layout: SellerLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
   {
-    path: routesConfig.sellerStatistics,
-    element: <div style={{ padding: '24px' }}>Thống kê - Coming soon</div>,
+    path: "/seller/shop",
+    element: <SellerShop />,
     layout: SellerLayout,
-    requiredRoles: ['SELLER'],
+    requiredRoles: ["SELLER"],
   },
 ];
 
+// ============================================================================
+// ADMIN ROUTES - Chỉ dành cho ADMIN (quản trị viên)
+// ============================================================================
 const adminRoutes: AppRoute[] = [
   {
-    path: '/admin/dashboard',
+    path: "/admin/dashboard",
     element: <AdminPanel />,
-    layout: DefaultLayout,
-    requiredRoles: ['ADMIN'],
+    layout: AdminLayoutNoHeader,
+    requiredRoles: ["ADMIN"],
   },
   {
-    path: routesConfig.productApproval,
-    element: <ProductApproval />,
-    layout: DefaultLayout,
-    requiredRoles: ['ADMIN'],
+    path: "/admin/products",
+    element: <AdminProductManagement />,
+    layout: AdminLayoutNoHeader,
+    requiredRoles: ["ADMIN"],
   },
 ];
-export const hasRequiredRole = (user: User | null, requiredRoles?: string[]): boolean => {
+
+// ============================================================================
+// HELPER FUNCTIONS - Kiểm tra quyền truy cập
+// ============================================================================
+
+/**
+ * Kiểm tra user có role phù hợp với requiredRoles không
+ * @param user - User object từ auth context
+ * @param requiredRoles - Mảng roles được yêu cầu
+ * @returns true nếu user có ít nhất 1 role trong requiredRoles
+ */
+export const hasRequiredRole = (
+  user: User | null,
+  requiredRoles?: string[]
+): boolean => {
+  // Nếu không yêu cầu role nào => public route
   if (!requiredRoles || requiredRoles.length === 0) {
     return true;
   }
-  
+
+  // Nếu user chưa đăng nhập hoặc không có role => không được phép
   if (!user || !user.roles || user.roles.length === 0) {
     return false;
   }
-  
-  return requiredRoles.some(role => user.roles.includes(role));
+
+  // Kiểm tra user có ít nhất 1 role trong danh sách requiredRoles
+  return requiredRoles.some((role) => user.roles.includes(role));
 };
 
+/**
+ * Lấy danh sách routes mà user hiện tại có quyền truy cập
+ * @param user - User object từ auth context (null nếu chưa đăng nhập)
+ * @returns Mảng routes mà user có thể truy cập
+ */
 export const getAccessibleRoutes = (user: User | null): AppRoute[] => {
-  const allRoutes = [...publicRoutes, ...privateRoutes, ...sellerRoutes, ...adminRoutes];
-  
-  return allRoutes.filter(route => {
+  // Gộp tất cả routes lại
+  const allRoutes = [
+    ...publicRoutes,
+    ...sharedRoutes,
+    ...customerRoutes,
+    ...sellerRoutes,
+    ...adminRoutes,
+  ];
+
+  // Lọc chỉ giữ lại routes mà user có quyền truy cập
+  return allRoutes.filter((route) => {
+    // Public routes (không có requiredRoles) => luôn cho phép
     if (!route.requiredRoles) {
       return true;
     }
-    
+
+    // Kiểm tra user có role phù hợp không
     return hasRequiredRole(user, route.requiredRoles);
   });
 };
 
-export { publicRoutes, privateRoutes, sellerRoutes, adminRoutes };
+// Export để sử dụng ở nơi khác
+export {
+  publicRoutes,
+  sharedRoutes,
+  customerRoutes,
+  sellerRoutes,
+  adminRoutes,
+};

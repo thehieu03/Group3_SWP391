@@ -1,28 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mmo_Domain.ModelRequest;
 
 public class ProductRequest
 {
     [Required]
-    public uint? ShopId { get; set; }
+    public int? ShopId { get; set; }
+    
     [Required]
+    public int? CategoryId { get; set; }
 
-    public uint? CategoryId { get; set; }
+    public int? SubcategoryId { get; set; }
+    
     [Required]
     [MaxLength(100)]
-
     public string Name { get; set; } = null!;
+    
     [Required]
     [MaxLength(500)]
-
     public string? Description { get; set; }
 
-    public byte[]? Image { get; set; }
     public string? Details { get; set; }
+    
+    public List<ProductVariantRequest>? Variants { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿namespace Mmo_Domain.IRepository;
+namespace Mmo_Domain.IRepository;
 
 public interface IGenericRepository<T> where T : class
 {

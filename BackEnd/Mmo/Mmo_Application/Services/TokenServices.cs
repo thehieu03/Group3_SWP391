@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,18 +15,19 @@ public class TokenServices : BaseServices<Token>, ITokenServices
     private readonly IAccountServices _accountServices;
     private readonly IRoleServices _roleServices;
 
-    public TokenServices(IUnitOfWork unitOfWork, IConfiguration configuration, 
+    public TokenServices(IUnitOfWork unitOfWork, IConfiguration configuration,
         IAccountServices accountServices, IRoleServices roleServices) : base(unitOfWork)
     {
         _configuration = configuration;
         _accountServices = accountServices;
         _roleServices = roleServices;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponse> GenerateTokensAsync(Account account)
     {
         var roles = await GetUserRolesAsync(account.Id);
-        
+
         var accessToken = GenerateAccessToken(account, roles);
         var refreshToken = GenerateRefreshToken();
         var expiresAt = DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes());
@@ -54,6 +55,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
                 Email = account.Email,
                 Phone = account.Phone,
                 Balance = account.Balance,
+                ImageUrl = account.ImageUrl,
                 IsActive = account.IsActive,
                 CreatedAt = account.CreatedAt,
                 Roles = roles
@@ -67,16 +69,10 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             .GetQuery(t => t.RefreshToken == refreshToken);
         var token = tokenQuery.FirstOrDefault();
 
-        if (token == null || token.ExpiresAt < DateTime.UtcNow)
-        {
-            return null;
-        }
+        if (token == null || token.ExpiresAt < DateTime.UtcNow) return null;
 
         var account = await _accountServices.GetByIdAsync(token.AccountId);
-        if (account == null)
-        {
-            return null;
-        }
+        if (account == null) return null;
 
         var roles = await GetUserRolesAsync(account.Id);
         var newAccessToken = GenerateAccessToken(account, roles);
@@ -102,10 +98,7 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             .GetQuery(t => t.RefreshToken == refreshToken);
         var token = tokenQuery.FirstOrDefault();
 
-        if (token == null)
-        {
-            return false;
-        }
+        if (token == null) return false;
 
         return await DeleteAsync(token);
     }
@@ -130,17 +123,15 @@ public class TokenServices : BaseServices<Token>, ITokenServices
             new(ClaimTypes.Name, account.Username),
             new(ClaimTypes.Email, account.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                ClaimValueTypes.Integer64)
         };
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+        foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
+            _configuration["Jwt:Issuer"],
+            _configuration["Jwt:Audience"],
+            claims,
             expires: DateTime.UtcNow.AddMinutes(GetTokenExpirationMinutes()),
             signingCredentials: credentials
         );
@@ -169,9 +160,9 @@ public class TokenServices : BaseServices<Token>, ITokenServices
 
         var roleIds = accountRoles.Select(ar => ar.RoleId).ToList();
         var roles = await _roleServices.GetAllAsync();
-        
+
         return roles.Where(r => roleIds.Contains(r.Id))
-                   .Select(r => r.RoleName)
-                   .ToList();
+            .Select(r => r.RoleName)
+            .ToList();
     }
 }

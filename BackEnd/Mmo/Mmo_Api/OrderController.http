@@ -1,0 +1,14 @@
+### Test API lấy đơn hàng của user hiện tại
+GET https://localhost:7134/api/orders/my-orders
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+### Test API lấy đơn hàng của user cụ thể (cần quyền admin)
+GET https://localhost:7134/api/orders/user/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+### Test API với token không hợp lệ
+GET https://localhost:7134/api/orders/my-orders
+Authorization: Bearer invalid_token
+Content-Type: application/json

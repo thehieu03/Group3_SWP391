@@ -1,4 +1,4 @@
-﻿namespace Mmo_UnitTest.UnitTest;
+namespace Mmo_UnitTest.UnitTest;
 
 using AutoMapper;
 using FluentAssertions;

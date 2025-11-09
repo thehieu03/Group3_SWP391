@@ -1,13 +1,5 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Mmo_Application.Services;
+﻿using Microsoft.Extensions.FileProviders;
 using Mmo_Application.Services.Interface;
-using Mmo_Domain.IUnit;
-using Mmo_Domain.Models;
-using Mmo_Infrastructure.Unit;
 
 namespace Mmo_Api.Boostraping;
 
@@ -17,25 +9,18 @@ public static class RegisterMiddleware
         IConfiguration configuration)
     {
         var connStr = configuration.GetConnectionString("DefaultConnection");
-        
-        // Thêm CORS
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("AllowFrontend", policy =>
-            {
-                policy.WithOrigins("http://localhost:5173", "http://localhost:3000") // Vite dev server
-                      .AllowAnyMethod()
-                      .AllowAnyHeader()
-                      .AllowCredentials();
-            });
-        });
-        
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddControllers().AddOData(options =>
-        {
-            options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
-        });
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.WriteIndented = true;
+            })
+            .AddOData(options =>
+            {
+                options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
+            });
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -67,15 +52,15 @@ public static class RegisterMiddleware
         {
             options.AddPolicy("AdminOnly", policy =>
                 policy.RequireRole("ADMIN"));
+
+            options.AddPolicy("UserOrAdminSeller", policy =>
+                policy.RequireRole("USER", "ADMIN", "SELLER"));
             
             options.AddPolicy("UserOrAdmin", policy =>
                 policy.RequireRole("USER", "ADMIN"));
-            
-            options.AddPolicy("SellerOnly", policy =>
-                policy.RequireRole("SELLER"));
-            
-            options.AddPolicy("SellerOrAdmin", policy =>
-                policy.RequireRole("SELLER", "ADMIN"));
+
+            options.AddPolicy("AdminOrSeller", policy =>
+                policy.RequireRole("ADMIN", "SELLER"));
         });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
@@ -86,16 +71,37 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<IMessageServices, MessageServices>();
         builder.Services.AddScoped<IOrderServices, OrderServices>();
         builder.Services.AddScoped<IPaymenttransactionServices, PaymenttransactionServices>();
+        builder.Services.AddScoped<IPaymentHistoryServices, PaymentHistoryServices>();
         builder.Services.AddScoped<IProductServices, ProductServices>();
         builder.Services.AddScoped<IProductStorageServices, ProductStorageServices>();
         builder.Services.AddScoped<IProductVariantServices, ProductVariantServices>();
         builder.Services.AddScoped<IReplyServices, ReplyServices>();
         builder.Services.AddScoped<IRoleServices, RoleServices>();
         builder.Services.AddScoped<IShopServices, ShopServices>();
+        builder.Services.AddScoped<ISubcategoryServices, SubcategoryServices>();
         builder.Services.AddScoped<ISupportticketServices, SupportticketServices>();
         builder.Services.AddScoped<ISystemsconfigServices, SystemsconfigServices>();
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
+        builder.Services.AddScoped<IDashboardServices, DashboardServices>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
+        // Removed image service DI; using static HelperImage methods instead
+        
+        // RabbitMQ Service - Singleton để duy trì connection
+        builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
+
+        // Payment services
+        builder.Services.AddScoped<IVietQRService, VietQRService>();
+        builder.Services.AddHttpClient();
+        builder.Services.AddScoped<ISePayService, SePayService>();
+        builder.Services.AddHostedService<PaymentPollingService>();
+
+        builder.Services.AddScoped<IDbConnection>(provider =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            return new MySqlConnection(connectionString);
+        });
+        builder.Services.AddScoped<IDapperService, DapperService>();
 
         return builder;
     }
@@ -108,13 +114,44 @@ public static class RegisterMiddleware
             app.UseSwaggerUI();
         }
 
-        // Sử dụng CORS (phải đặt TRƯỚC Authentication/Authorization)
-        app.UseCors("AllowFrontend");
-        
-        app.MapControllers();
+        // HTTPS redirection first
         app.UseHttpsRedirection();
+
+        // Serve static files from default wwwroot (if any)
+        app.UseStaticFiles();
+
+        // Explicitly serve the Images folder at /Images
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Images")),
+            RequestPath = "/Images"
+        });
+
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapControllers();
+
+        // Start RabbitMQ consumer để xử lý product creation queue
+        var rabbitMQEnabled = configuration.GetSection("RabbitMQ").GetValue<bool>("Enabled", true);
+        if (rabbitMQEnabled)
+        {
+            try
+            {
+                var rabbitMQService = app.Services.GetRequiredService<IRabbitMQService>();
+                rabbitMQService.StartConsumingProductCreationQueue();
+                app.Logger.LogInformation("RabbitMQ consumer started for product creation queue");
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogWarning(ex, "Failed to start RabbitMQ consumer. Application will continue without RabbitMQ support.");
+            }
+        }
+        else
+        {
+            app.Logger.LogInformation("RabbitMQ is disabled in configuration. Skipping consumer startup.");
+        }
+
         app.Run();
         return app;
     }

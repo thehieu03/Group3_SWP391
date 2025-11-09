@@ -15,7 +15,7 @@ public partial class Shop
 
     public int? ReportCount { get; set; }
 
-    public bool? IsActive { get; set; }
+    public string? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

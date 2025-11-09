@@ -1,4 +1,4 @@
-﻿namespace Mmo_Application.Services.Interface;
+namespace Mmo_Application.Services.Interface;
 
 public interface IReplyServices  :IBaseServices<Reply>
 {

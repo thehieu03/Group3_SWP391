@@ -1,178 +1,160 @@
-import { useState } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import routesConfig from '../../../config/routesConfig';
+import type { FC, ReactNode } from "react";
+import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChartBar,
+  faShoppingBag,
+  faBox,
+  faStore,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@hooks/useAuth";
+import { useNavigate, useLocation } from "react-router-dom";
+import routesConfig from "@config/routesConfig.ts";
+import Button from "@components/Button/Button";
 
 interface SellerLayoutProps {
-  children: React.ReactNode;
+  children?: ReactNode;
 }
 
-const SellerLayout = ({ children }: SellerLayoutProps) => {
+const SellerLayout: FC<SellerLayoutProps> = ({ children }) => {
+  const location = useLocation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Determine active tab based on current route
+  const getActiveTab = (pathname: string) => {
+    if (pathname.includes("/seller/dashboard")) return "dashboard";
+    if (pathname.includes("/seller/products")) return "products";
+    if (pathname.includes("/seller/orders")) return "orders";
+    if (pathname.includes("/seller/shop")) return "shop";
+    return "dashboard";
+  };
+
+  const [activeTab, setActiveTab] = useState(() => getActiveTab(location.pathname));
+
+  // Update active tab when route changes
+  useEffect(() => {
+    setActiveTab(getActiveTab(location.pathname));
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
     navigate(routesConfig.home);
   };
 
-  const menuItems = [
-    { 
-      id: 'dashboard', 
-      label: 'Dashboard', 
-      icon: '📊',
-      path: '/seller/dashboard'
-    },
-    { 
-      id: 'products', 
-      label: 'Quản lý sản phẩm', 
-      icon: '📦',
-      path: '/seller/products'
-    },
-    { 
-      id: 'orders', 
-      label: 'Quản lý đơn hàng', 
-      icon: '🛒',
-      path: '/seller/orders'
-    },
-    { 
-      id: 'shop', 
-      label: 'Thông tin shop', 
-      icon: '🏪',
-      path: '/seller/shop-info'
-    },
-    { 
-      id: 'statistics', 
-      label: 'Thống kê', 
-      icon: '📈',
-      path: '/seller/statistics'
-    },
-  ];
-
-  const handleMenuClick = (item: typeof menuItems[0]) => {
-    setActiveTab(item.id);
-    navigate(item.path);
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    switch (tab) {
+      case "dashboard":
+        navigate("/seller/dashboard");
+        break;
+      case "products":
+        navigate("/seller/products");
+        break;
+      case "orders":
+        navigate("/seller/orders");
+        break;
+      case "shop":
+        navigate("/seller/shop");
+        break;
+      default:
+        navigate("/seller/dashboard");
+    }
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-      {/* Header */}
-      <header style={{
-        backgroundColor: 'white',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        borderBottom: '1px solid #e5e7eb'
-      }}>
-        <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          padding: '0 24px'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: '64px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <h1 style={{
-                fontSize: '20px',
-                fontWeight: 'bold',
-                color: '#111827',
-                margin: 0
-              }}>
-                Seller Dashboard
-              </h1>
-            </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px'
-            }}>
-              <span style={{
-                fontSize: '14px',
-                color: '#6b7280'
-              }}>
-                Xin chào, <span style={{ fontWeight: '500', color: '#111827' }}>{user?.username}</span>
-              </span>
-              <button
-                onClick={handleLogout}
-                style={{
-                  backgroundColor: '#ef4444',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}
-              >
-                Đăng xuất
-              </button>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white shadow-lg">
+        <div className="flex h-full flex-col">
+          {/* Logo/Header */}
+          <div className="border-b border-gray-700 p-4">
+            <h2 className="text-xl font-bold text-white">Seller Panel</h2>
+            {user && (
+              <p className="mt-1 text-sm text-gray-300">{user.email}</p>
+            )}
           </div>
-        </div>
-      </header>
 
-      <div style={{ display: 'flex' }}>
-        {/* Sidebar */}
-        <aside style={{
-          width: '256px',
-          backgroundColor: 'white',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          minHeight: 'calc(100vh - 64px)'
-        }}>
-          <nav style={{ marginTop: '20px', padding: '0 8px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleMenuClick(item)}
-                  style={{
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '12px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    backgroundColor: activeTab === item.id ? '#d1fae5' : 'transparent',
-                    color: activeTab === item.id ? '#065f46' : '#6b7280',
-                    borderRight: activeTab === item.id ? '3px solid #10b981' : 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (activeTab !== item.id) {
-                      e.currentTarget.style.backgroundColor = '#f3f4f6';
-                      e.currentTarget.style.color = '#111827';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab !== item.id) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = '#6b7280';
-                    }
-                  }}
-                >
-                  <span style={{ marginRight: '12px' }}>{item.icon}</span>
-                  {item.label}
-                </button>
-              ))}
+          {/* Navigation */}
+          <nav className="flex-1 space-y-1 p-4 overflow-y-auto">
+            <div className="space-y-1">
+              <Button
+                onClick={() => handleTabChange("dashboard")}
+                className={`w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                  activeTab === "dashboard"
+                    ? "bg-green-600 text-white"
+                    : "text-gray-300 hover:bg-gray-700"
+                }`}
+                leftIcon={<FontAwesomeIcon icon={faChartBar} className="w-5" />}
+              >
+                Dashboard
+              </Button>
+
+              <Button
+                onClick={() => handleTabChange("products")}
+                className={`w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                  activeTab === "products"
+                    ? "bg-green-600 text-white"
+                    : "text-gray-300 hover:bg-gray-700"
+                }`}
+                leftIcon={<FontAwesomeIcon icon={faBox} className="w-5" />}
+              >
+                Quản lý sản phẩm
+              </Button>
+
+              <Button
+                onClick={() => handleTabChange("orders")}
+                className={`w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                  activeTab === "orders"
+                    ? "bg-green-600 text-white"
+                    : "text-gray-300 hover:bg-gray-700"
+                }`}
+                leftIcon={<FontAwesomeIcon icon={faShoppingBag} className="w-5" />}
+              >
+                Quản lý đơn hàng
+              </Button>
+
+              <Button
+                onClick={() => handleTabChange("shop")}
+                className={`w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors ${
+                  activeTab === "shop"
+                    ? "bg-green-600 text-white"
+                    : "text-gray-300 hover:bg-gray-700"
+                }`}
+                leftIcon={<FontAwesomeIcon icon={faStore} className="w-5" />}
+              >
+                Thông tin shop
+              </Button>
             </div>
           </nav>
-        </aside>
 
-        {/* Main Content */}
-        <main style={{ flex: 1, padding: '24px' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            {children}
+          {/* Back to Homepage Button */}
+          <div className="border-t border-gray-700 p-4">
+            <Button
+              to={routesConfig.home}
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-gray-700 px-4 py-3 text-white transition-colors hover:bg-gray-600"
+              leftIcon={<FontAwesomeIcon icon={faArrowLeft} className="w-4" />}
+            >
+              Về trang chủ
+            </Button>
           </div>
-        </main>
+
+          {/* Logout Button */}
+          <div className="border-t border-gray-700 p-4">
+            <Button
+              onClick={handleLogout}
+              className="w-full rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+            >
+              Đăng xuất
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="ml-64">
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );
