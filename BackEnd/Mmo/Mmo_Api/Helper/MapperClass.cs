@@ -83,7 +83,9 @@ public class MapperClass : Profile
             .ForMember(d => d.ShopName, o => o.MapFrom(src => src.ProductVariant!.Product!.Shop!.Name))
             .ForMember(d => d.TotalPrice, o => o.MapFrom(src => src.TotalPrice))
             .ForMember(d => d.BuyerName, o => o.MapFrom(src => src.Account!.Username))
-            .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity));
+            .ForMember(d => d.Quantity, o => o.MapFrom(src => src.Quantity))
+            .ForMember(d => d.ProductName, o => o.MapFrom(src => src.ProductVariant!.Product!.Name))
+            .ForMember(d => d.ProductVariantName, o => o.MapFrom(src => src.ProductVariant!.Name));
         CreateMap<Feedback, FeedbackRequest>().ReverseMap();
         CreateMap<Feedback, FeedbackResponse>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

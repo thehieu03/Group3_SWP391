@@ -10,6 +10,7 @@ public class ProductsController : ControllerBase
     private readonly IProductServices _productServices;
     private readonly IProductVariantServices _productVariantServices;
     private readonly IProductStorageServices _productStorageServices;
+    private readonly ISystemsconfigServices _systemsconfigServices;
     private readonly IMapper _mapper;
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<ProductsController>? _logger;
@@ -18,6 +19,7 @@ public class ProductsController : ControllerBase
         IProductServices productServices, 
         IProductVariantServices productVariantServices,
         IProductStorageServices productStorageServices,
+        ISystemsconfigServices systemsconfigServices,
         IMapper mapper, 
         IWebHostEnvironment environment, 
         ILogger<ProductsController>? logger = null)
@@ -25,6 +27,7 @@ public class ProductsController : ControllerBase
         _productServices = productServices;
         _productVariantServices = productVariantServices;
         _productStorageServices = productStorageServices;
+        _systemsconfigServices = systemsconfigServices;
         _mapper = mapper;
         _environment = environment;
         _logger = logger;
@@ -104,8 +107,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<ProductResponse>> GetProductById([FromQuery] int id)
     {
-        // Sử dụng GetProductByIdWithRelatedAsync để include variants và các related entities
-        var productResult = await _productServices.GetProductByIdWithRelatedAsync(id);
+        var productResult = await _productServices.GetByIdAsync(id);
         if (productResult == null) return NotFound();
 
         var productResponse = _mapper.Map<ProductResponse>(productResult);
@@ -129,30 +131,35 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ProductResponse>> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image, [FromForm] string? variants)
+    public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest, [FromForm] IFormFile? image, [FromForm] string? variants)
     {
+        _logger?.LogInformation("CreateProduct called with Request: {@Request}", new
+        {
+            productRequest?.Name,
+            productRequest?.Description,
+            productRequest?.CategoryId,
+            productRequest?.SubcategoryId,
+            productRequest?.ShopId,
+            HasImage = image != null
+        });
+
         if (productRequest == null)
         {
+            _logger?.LogWarning("CreateProduct: productRequest is null");
             return BadRequest(new { message = "Product request is null" });
         }
 
-        // Parse variants - ưu tiên từ parameter variants (JSON string), nếu không có thì dùng productRequest.Variants
+        // Parse variants from JSON string if provided
         if (!string.IsNullOrEmpty(variants))
         {
             try
             {
-                var jsonOptions = new System.Text.Json.JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    AllowTrailingCommas = true,
-                    ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip
-                };
-                
-                productRequest.Variants = System.Text.Json.JsonSerializer.Deserialize<List<ProductVariantRequest>>(variants, jsonOptions);
+                productRequest.Variants = System.Text.Json.JsonSerializer.Deserialize<List<ProductVariantRequest>>(variants);
+                _logger?.LogInformation("CreateProduct: Parsed {Count} variants from JSON", productRequest.Variants?.Count ?? 0);
             }
             catch (Exception ex)
             {
+                _logger?.LogWarning("CreateProduct: Failed to parse variants JSON: {Error}", ex.Message);
                 return BadRequest(new { message = "Invalid variants JSON format", error = ex.Message });
             }
         }
@@ -162,6 +169,7 @@ public class ProductsController : ControllerBase
             var errors = ModelState
                 .Where(x => x.Value?.Errors.Count > 0)
                 .Select(x => new { Field = x.Key, Errors = x.Value?.Errors.Select(e => e.ErrorMessage) });
+            _logger?.LogWarning("CreateProduct: ModelState is invalid. Errors: {@Errors}", errors);
             return BadRequest(new { message = "Invalid request data", errors });
         }
 
@@ -182,8 +190,29 @@ public class ProductsController : ControllerBase
                 imageUrl = await HelperImage.SaveImageByType(Mmo_Domain.Enum.ImageCategory.Products, image, _environment);
             }
 
-            // Bước 1: Tạo Product trực tiếp
-            var product = new Mmo_Domain.Models.Product
+            // Lấy fee từ Systemsconfig
+            decimal? productFee = null;
+            try
+            {
+                var systemConfigs = await _systemsconfigServices.GetAllAsync();
+                var systemConfig = systemConfigs.FirstOrDefault();
+                if (systemConfig != null && systemConfig.Fee.HasValue)
+                {
+                    productFee = systemConfig.Fee.Value;
+                    _logger?.LogInformation("Using fee from system config: {Fee}", productFee);
+                }
+                else
+                {
+                    _logger?.LogWarning("System config fee not found, using default fee");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to get fee from system config, using default");
+            }
+
+            // Bước 1: Tạo Product
+            var product = new Product
             {
                 ShopId = productRequest.ShopId,
                 CategoryId = productRequest.CategoryId,
@@ -192,6 +221,7 @@ public class ProductsController : ControllerBase
                 Description = productRequest.Description,
                 Details = productRequest.Details,
                 ImageUrl = imageUrl,
+                Fee = productFee,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -202,58 +232,54 @@ public class ProductsController : ControllerBase
                 product.ImageUploadedAt = DateTime.UtcNow;
             }
 
-            var saveResult = await _productServices.AddAsync(product);
-            if (saveResult <= 0)
+            var productId = await _productServices.AddAsync(product);
+            if (productId <= 0)
             {
+                _logger?.LogError("Failed to create product: {ProductName}", productRequest.Name);
                 return BadRequest(new { message = "Failed to create product" });
             }
 
-            // Lấy ProductId từ entity sau khi đã save (EF Core sẽ set ID tự động)
-            var productId = product.Id;
-            if (productId <= 0)
-            {
-                return BadRequest(new { message = "Failed to get product ID after creation" });
-            }
+            _logger?.LogInformation("Product created successfully. ProductId: {ProductId}, Name: {ProductName}", 
+                productId, productRequest.Name);
 
             // Bước 2: Tạo Variants nếu có
             if (productRequest.Variants != null && productRequest.Variants.Any())
             {
                 foreach (var variantRequest in productRequest.Variants)
                 {
-                    // Validate variant request
-                    if (variantRequest == null || string.IsNullOrWhiteSpace(variantRequest.Name))
-                        continue;
-
-                    if (!variantRequest.Price.HasValue || variantRequest.Price.Value < 0)
-                        continue;
-
                     var variantCreateRequest = new ProductVariantRequest
                     {
-                        ProductId = productId,
+                        ProductId = (int)productId,
                         Name = variantRequest.Name,
                         Price = variantRequest.Price,
                         Stock = variantRequest.Stock
                     };
 
                     var (variantSuccess, variantError, variantId) = await _productVariantServices.CreateProductVariantAsync(variantCreateRequest);
-                    if (!variantSuccess || !variantId.HasValue || variantId.Value <= 0)
+                    if (!variantSuccess)
+                    {
+                        _logger?.LogError("Failed to create variant: {VariantName}. Error: {Error}", 
+                            variantRequest.Name, variantError);
                         continue;
+                    }
+
+                    _logger?.LogInformation("Variant created successfully. VariantId: {VariantId}, Name: {VariantName}", 
+                        variantId, variantRequest.Name);
+
+                    // Bước 3: Tạo Storages cho variant nếu có
+                    // Note: Storages thường được tạo riêng qua API khác, nhưng nếu cần có thể thêm logic ở đây
                 }
             }
 
-            // Load lại product với variants để trả về đầy đủ thông tin (bao gồm MinPrice và MaxPrice)
-            var createdProduct = await _productServices.GetProductByIdWithRelatedAsync(productId);
-            if (createdProduct == null)
-            {
-                return BadRequest(new { message = "Failed to load created product" });
-            }
-
-            // Map sang ProductResponse - MinPrice và MaxPrice sẽ được tính tự động từ variants
-            var productResponse = _mapper.Map<ProductResponse>(createdProduct);
-            return Ok(productResponse);
+            return Ok(new { 
+                message = "Product created successfully",
+                productId = productId,
+                status = "success"
+            });
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "CreateProduct: Error creating product");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }

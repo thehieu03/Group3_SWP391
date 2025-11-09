@@ -6,11 +6,13 @@ namespace Mmo_Api.Api;
 public class OrderController : ControllerBase
 {
     private readonly IOrderServices _orderServices;
+    private readonly IShopServices _shopServices;
     private readonly IMapper _mapper;
 
-    public OrderController(IOrderServices orderServices, IMapper mapper)
+    public OrderController(IOrderServices orderServices, IShopServices shopServices, IMapper mapper)
     {
         _orderServices = orderServices;
+        _shopServices = shopServices;
         _mapper = mapper;
     }
 
@@ -52,6 +54,43 @@ public class OrderController : ControllerBase
                 orderResponse.hasFeedback = await _orderServices.HasFeedbackAsync(orderResponse.OrderId);
 
             return Ok(listOrderUserResponse);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Lấy danh sách đơn hàng của shop (dành cho seller)
+    /// </summary>
+    /// <returns>Danh sách đơn hàng của shop hiện tại</returns>
+    [HttpGet("shop-orders")]
+    [Authorize(Policy = "AdminOrSeller")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [EnableQuery]
+    public async Task<ActionResult<IEnumerable<OrderAdminResponse>>> GetShopOrders()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized("Invalid token");
+
+            // Lấy shop của seller hiện tại
+            var shop = await _shopServices.GetByAccountIdAsync(userId);
+            
+            if (shop == null)
+                return NotFound(new { message = "Shop not found for this account" });
+
+            // Lấy orders của shop
+            var orders = await _orderServices.GetShopOrdersAsync(shop.Id);
+            var orderResponses = _mapper.Map<List<OrderAdminResponse>>(orders);
+
+            return Ok(orderResponses);
         }
         catch (Exception ex)
         {
