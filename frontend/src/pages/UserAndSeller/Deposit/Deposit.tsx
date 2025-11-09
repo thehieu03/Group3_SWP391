@@ -1,16 +1,21 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { DepositProvider, useDepositContext } from "@contexts/DepositContext";
+import { useDeposit } from "@hooks/useDeposit";
 import { DepositForm } from "./components/DepositForm";
 import { DepositQRCode } from "./components/DepositQRCode";
 
-const DepositContent: React.FC = () => {
+const Deposit: React.FC = () => {
   const [amount, setAmount] = useState<string>("");
-  const { depositData } = useDepositContext();
+  const { depositData, status, error, loading, createDeposit, reset } = useDeposit(300000); // 5 minutes
 
   // Memoize handlers để tránh re-render
   const handleAmountChange = useCallback((value: string) => {
     setAmount(value);
   }, []);
+
+  const handleReset = useCallback(() => {
+    setAmount("");
+    reset();
+  }, [reset]);
 
   // Memoize để tránh re-render khi depositData thay đổi nhưng vẫn null
   const showForm = useMemo(() => !depositData, [depositData]);
@@ -22,9 +27,19 @@ const DepositContent: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Nạp tiền</h2>
 
           {showForm ? (
-            <DepositForm amount={amount} onAmountChange={handleAmountChange} />
+            <DepositForm
+              amount={amount}
+              onAmountChange={handleAmountChange}
+              loading={loading}
+              error={error}
+              createDeposit={createDeposit}
+            />
           ) : (
-            <DepositQRCode />
+            <DepositQRCode
+              depositData={depositData}
+              status={status}
+              reset={handleReset}
+            />
           )}
         </div>
       </div>
@@ -32,12 +47,5 @@ const DepositContent: React.FC = () => {
   );
 };
 
-const Deposit: React.FC = () => {
-  return (
-    <DepositProvider pollInterval={5000}>
-      <DepositContent />
-    </DepositProvider>
-  );
-};
-
 export default Deposit;
+

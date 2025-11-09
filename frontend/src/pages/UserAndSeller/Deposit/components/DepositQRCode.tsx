@@ -1,5 +1,5 @@
 import React, { useMemo, memo, useCallback } from "react";
-import { useDepositContext } from "@contexts/DepositContext";
+import type { DepositResponse } from "@services/DepositServices";
 
 const STATUS_CONFIG = {
   SUCCESS: {
@@ -23,10 +23,17 @@ const STATUS_CONFIG = {
   },
 } as const;
 
-export const DepositQRCode: React.FC = memo(() => {
-  const { depositData, status, verifying, verifyDeposit, reset } =
-    useDepositContext();
+interface DepositQRCodeProps {
+  depositData: DepositResponse | null;
+  status: string;
+  reset: () => void;
+}
 
+export const DepositQRCode: React.FC<DepositQRCodeProps> = memo(({
+  depositData,
+  status,
+  reset,
+}) => {
   if (!depositData) {
     return null;
   }
@@ -46,10 +53,6 @@ export const DepositQRCode: React.FC = memo(() => {
   );
 
   // Memoize handlers
-  const handleVerify = useCallback(async () => {
-    await verifyDeposit(depositData.transactionId);
-  }, [depositData.transactionId, verifyDeposit]);
-
   const handleReset = useCallback(() => {
     reset();
   }, [reset]);
@@ -94,16 +97,6 @@ export const DepositQRCode: React.FC = memo(() => {
       <div className={`${statusConfig.bgColor} border px-4 py-3 rounded`}>
         <p className="text-sm">{statusConfig.message}</p>
       </div>
-
-      {status === "PENDING" && (
-        <button
-          onClick={handleVerify}
-          disabled={verifying}
-          className="w-full bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-        >
-          {verifying ? "Đang xác minh..." : "Xác minh thanh toán ngay"}
-        </button>
-      )}
 
       <button
         onClick={handleReset}

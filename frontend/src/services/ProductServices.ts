@@ -27,10 +27,14 @@ class ProductServices {
     return response;
   }
 
-  async getProductByIdAsync(productId: number): Promise<ProductResponse> {
-    const response = await httpGet<ProductResponse>(
-      `products/getProductById?id=${productId}`
-    );
+  async getProductByIdAsync(
+    productId: number,
+    includeInactive: boolean = false
+  ): Promise<ProductResponse> {
+    const url = `products/getProductById?id=${productId}${
+      includeInactive ? "&includeInactive=true" : ""
+    }`;
+    const response = await httpGet<ProductResponse>(url);
     return response;
   }
 
@@ -187,8 +191,12 @@ class ProductServices {
       formData.append("image", image);
     }
 
-    // Don't set Content-Type header manually - browser will set it with boundary for FormData
-    await httpPut<void, FormData>(`products/${productId}`, formData);
+    try {
+      // Don't set Content-Type header manually - browser will set it with boundary for FormData
+      await httpPut<void, FormData>(`products/${productId}`, formData);
+    } catch (error: unknown) {
+      throw error;
+    }
   }
 
   async createProductAsync(
@@ -223,7 +231,11 @@ class ProductServices {
       formData.append("image", image);
     }
 
-    await httpPost<void, FormData>("products", formData);
+    try {
+      await httpPost<void, FormData>("products", formData);
+    } catch (error: unknown) {
+      throw error;
+    }
   }
 }
 export const productServices = new ProductServices();
