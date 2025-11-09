@@ -23,15 +23,6 @@ class DashboardServices {
     ];
 
     const endpoint = possibleEndpoints[0]; // Thử endpoint đầu tiên
-    const fullUrl = `/api/${endpoint}?${new URLSearchParams(
-      Object.entries(params).map(([k, v]) => [k, String(v)])
-    ).toString()}`;
-    console.log("[DashboardServices] Gọi API:", fullUrl);
-    console.log("[DashboardServices] Params:", params);
-    console.log(
-      "[DashboardServices] ⚠️ Nếu 404, thử các endpoint:",
-      possibleEndpoints
-    );
 
     return await httpGet<SellerDashboardResponse>(endpoint, {
       params,

@@ -45,7 +45,7 @@ const EditProductPage = () => {
       try {
         const data = await categoryServices.getAllCategoryAsync();
         setCategories(data);
-      } catch (error) {
+      } catch {
         // Failed to load categories
       }
     };
@@ -61,7 +61,7 @@ const EditProductPage = () => {
             categoryId
           );
           setSubcategories(data);
-        } catch (error) {
+        } catch {
           setSubcategories([]);
         }
       } else {
@@ -151,7 +151,7 @@ const EditProductPage = () => {
                     variant,
                     storageJson: JSON.stringify(accountsArray, null, 2),
                   };
-                } catch (error) {
+                } catch {
                   // No storages found or error loading
                   return {
                     variant,
@@ -162,12 +162,12 @@ const EditProductPage = () => {
             );
 
           setVariantsWithStorage(variantsWithStorageData);
-        } catch (error) {
+        } catch {
           setVariantsWithStorage([]);
         } finally {
           setLoadingVariants(false);
         }
-      } catch (error) {
+      } catch {
         alert("Không thể tải thông tin sản phẩm. Vui lòng thử lại.");
         navigate("/seller/products");
       } finally {
@@ -292,7 +292,9 @@ const EditProductPage = () => {
           }) as (string | number)[][];
 
           if (jsonData.length < 2) {
-            alert("File Excel phải có ít nhất 1 dòng dữ liệu (không tính header)");
+            alert(
+              "File Excel phải có ít nhất 1 dòng dữ liệu (không tính header)"
+            );
             return;
           }
 
@@ -320,7 +322,11 @@ const EditProductPage = () => {
                 h.toString().toLowerCase().includes("json"))
           );
 
-          if (nameColIndex === -1 || priceColIndex === -1 || stockColIndex === -1) {
+          if (
+            nameColIndex === -1 ||
+            priceColIndex === -1 ||
+            stockColIndex === -1
+          ) {
             alert(
               "File Excel phải có các cột: Tên, Giá, Số lượng. Vui lòng kiểm tra lại header."
             );
@@ -380,25 +386,31 @@ const EditProductPage = () => {
                   const usernames = parsedStorage
                     .map((item) => item?.username?.toLowerCase().trim())
                     .filter((username) => username);
-                  
+
                   const uniqueUsernames = new Set(usernames);
                   if (usernames.length !== uniqueUsernames.size) {
                     alert(
-                      `Dòng ${i + 2}: Variant "${name}" có tài khoản trùng lặp trong Storage JSON. Import đã bị hủy. Vui lòng kiểm tra lại file Excel.`
+                      `Dòng ${
+                        i + 2
+                      }: Variant "${name}" có tài khoản trùng lặp trong Storage JSON. Import đã bị hủy. Vui lòng kiểm tra lại file Excel.`
                     );
                     hasDuplicateUsername = true;
                     break; // Break out of loop to cancel import
                   }
-                  
+
                   validatedStorageJson = storageJson;
                 } else {
                   alert(
-                    `Dòng ${i + 2}: Storage JSON phải là một mảng. Bỏ qua storage cho variant này.`
+                    `Dòng ${
+                      i + 2
+                    }: Storage JSON phải là một mảng. Bỏ qua storage cho variant này.`
                   );
                 }
-              } catch (parseError) {
+              } catch {
                 alert(
-                  `Dòng ${i + 2}: Storage JSON không hợp lệ. Bỏ qua storage cho variant này.`
+                  `Dòng ${
+                    i + 2
+                  }: Storage JSON không hợp lệ. Bỏ qua storage cho variant này.`
                 );
               }
             }
@@ -425,7 +437,9 @@ const EditProductPage = () => {
           // Mặc định thêm vào (không thay thế)
           setVariantsWithStorage([...variantsWithStorage, ...parsedVariants]);
 
-          alert(`Đã import thành công ${parsedVariants.length} variant từ file Excel`);
+          alert(
+            `Đã import thành công ${parsedVariants.length} variant từ file Excel`
+          );
         } catch (error) {
           alert(
             `Lỗi khi đọc file Excel: ${
@@ -555,7 +569,7 @@ const EditProductPage = () => {
                   accountsArray
                 );
               }
-            } catch (error) {
+            } catch {
               // Continue with other variants
             }
           }
@@ -829,8 +843,8 @@ const EditProductPage = () => {
               <li>
                 File Excel phải có header ở dòng đầu tiên với các cột:{" "}
                 <strong>Tên</strong>, <strong>Giá</strong>,{" "}
-                <strong>Số lượng</strong>, <strong>Storage JSON</strong>{" "}
-                (tùy chọn)
+                <strong>Số lượng</strong>, <strong>Storage JSON</strong> (tùy
+                chọn)
               </li>
               <li>
                 Dòng 2 trở đi chứa dữ liệu variants (mỗi dòng = 1 variant)

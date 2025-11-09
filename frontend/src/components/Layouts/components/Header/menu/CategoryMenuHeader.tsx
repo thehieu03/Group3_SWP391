@@ -7,7 +7,6 @@ import type { Tools } from "@models/Tools.ts";
 import Button from "@components/Button/Button.tsx";
 import routesConfig from "@config/routesConfig.ts";
 
-
 const tools: Tools[] = [
   {
     id: 1,
@@ -51,10 +50,10 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
     try {
       const data = await categoryServices.getAllCategoryAsync();
       // Filter out inactive categories for the menu
-      const activeCategories = data.filter(category => category.isActive);
+      const activeCategories = data.filter((category) => category.isActive);
       setCategoriesItems(activeCategories);
-    } catch (err) {
-      console.error('Error refreshing categories:', err);
+    } catch {
+      // Error refreshing categories
     }
   };
 
@@ -65,16 +64,16 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
   // Listen for category updates from admin page
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'categoryUpdated' && e.newValue) {
+      if (e.key === "categoryUpdated" && e.newValue) {
         refreshCategories();
-        localStorage.removeItem('categoryUpdated');
+        localStorage.removeItem("categoryUpdated");
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-  
+
   const mid = Math.ceil(categoriesItems.length / 2);
   const firstCol = categoriesItems.slice(0, mid);
   const secondCol = categoriesItems.slice(mid);
@@ -82,19 +81,29 @@ const CategoryMenuHeader: FC<CategoryMenuHeaderProps> = ({ isLogin }) => {
   const DropdownContent = () => (
     <div className={DROPDOWN_CONTAINER_CLASS}>
       <div className="mb-2">
-        <h3 className="text-sm font-semibold text-gray-900 mb-3">Danh mục sản phẩm</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">
+          Danh mục sản phẩm
+        </h3>
       </div>
       <div className="grid grid-cols-2 gap-x-8 gap-y-2">
         <div className="space-y-1">
           {firstCol.map((item) => (
-            <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
+            <Button
+              key={item.id}
+              to={`/category/${item.id}`}
+              className={DROPDOWN_ITEM_CLASS}
+            >
               {item.name}
             </Button>
           ))}
         </div>
         <div className="space-y-1">
           {secondCol.map((item) => (
-            <Button key={item.id} to={`/category/${item.id}`} className={DROPDOWN_ITEM_CLASS}>
+            <Button
+              key={item.id}
+              to={`/category/${item.id}`}
+              className={DROPDOWN_ITEM_CLASS}
+            >
               {item.name}
             </Button>
           ))}

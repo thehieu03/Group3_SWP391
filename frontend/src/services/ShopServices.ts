@@ -42,8 +42,7 @@ class ShopServices {
     try {
       const response = await httpGet<Shop>(`shops/account/${accountId}`);
       return response;
-    } catch (error) {
-      console.error("Error getting shop by account ID:", error);
+    } catch {
       return null;
     }
   }
@@ -238,6 +237,23 @@ class ShopServices {
     form.append("identificationB", request.identificationB);
 
     await httpPost<void, FormData>("shops/register", form);
+  }
+
+  async getMyShopAsync(): Promise<ShopForAdmin> {
+    const response = await httpGet<ShopForAdmin>("shops/my-shop");
+    return response;
+  }
+
+  async updateMyShopAsync(
+    name?: string,
+    description?: string
+  ): Promise<ShopForAdmin> {
+    const request: { name?: string; description?: string } = {};
+    if (name !== undefined) request.name = name;
+    if (description !== undefined) request.description = description;
+
+    const response = await httpPut<ShopForAdmin>("shops/my-shop", request);
+    return response;
   }
 }
 

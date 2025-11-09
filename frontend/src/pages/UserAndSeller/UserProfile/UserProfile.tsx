@@ -62,9 +62,6 @@ const UserProfile: React.FC = () => {
       // Parse avatar from user
       const parsedAvatar = parseAvatarFromUser(user);
       setAvatar(parsedAvatar);
-
-      console.log("[UserProfile] initial user:", user);
-      console.log("[UserProfile] initial avatar URL:", parsedAvatar);
     }
   }, [user, parseAvatarFromUser]);
 
@@ -210,9 +207,6 @@ const UserProfile: React.FC = () => {
             imageUrl: profileAvatarData,
           } as typeof refreshedUser;
         }
-
-        console.log("[UserProfile] refreshed user:", refreshedUser);
-        console.log("[UserProfile] final avatar URL:", finalParsedAvatar);
 
         login(refreshedUser);
       } catch {

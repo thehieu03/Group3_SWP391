@@ -151,7 +151,7 @@ const SellerProducts = () => {
         shopId
       );
       setAllProducts(productsData);
-    } catch (error) {
+    } catch {
       setError("Không thể tải danh sách sản phẩm");
     } finally {
       setLoading(false);
@@ -273,7 +273,7 @@ const SellerProducts = () => {
         name: cat.name,
       }));
       setCategories(mappedCategories);
-    } catch (error) {
+    } catch {
       // Failed to load filter options
     }
   }, []);
@@ -294,7 +294,7 @@ const SellerProducts = () => {
 
           // Reset subcategory filter when category changes
           setSubcategoryFilter(null);
-        } catch (error) {
+        } catch {
           setSubcategories([]);
           setSubcategoryFilter(null);
         }
@@ -335,7 +335,7 @@ const SellerProducts = () => {
         const newStatus = !currentStatus;
         await productServices.updateProductStatusAsync(id, newStatus);
         await loadProducts(); // Reload data
-      } catch (error) {
+      } catch {
         alert("Không thể cập nhật trạng thái sản phẩm. Vui lòng thử lại.");
       }
     },

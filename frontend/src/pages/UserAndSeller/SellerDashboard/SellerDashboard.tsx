@@ -12,7 +12,9 @@ const SellerDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
-  const [categoryFilter, setCategoryFilter] = useState<number | undefined>(undefined);
+  const [categoryFilter, setCategoryFilter] = useState<number | undefined>(
+    undefined
+  );
   const [categories, setCategories] = useState<CategoriesResponse[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -23,8 +25,8 @@ const SellerDashboard: React.FC = () => {
       try {
         const cats = await categoryServices.getAllCategoryAsync();
         setCategories(cats);
-      } catch (e) {
-        console.error("Failed to load categories", e);
+      } catch {
+        // Failed to load categories
       }
     };
     loadCategories();
@@ -55,32 +57,40 @@ const SellerDashboard: React.FC = () => {
       }
     };
     load();
-  }, [debouncedSearchTerm, statusFilter, categoryFilter, currentPage, pageSize]);
+  }, [
+    debouncedSearchTerm,
+    statusFilter,
+    categoryFilter,
+    currentPage,
+    pageSize,
+  ]);
 
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN').format(amount);
-  const formatDate = (d: string | null) => d ? new Date(d).toLocaleString('vi-VN') : '';
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("vi-VN").format(amount);
+  const formatDate = (d: string | null) =>
+    d ? new Date(d).toLocaleString("vi-VN") : "";
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
   const getStatusColor = (status: string | null) => {
-    if (!status) return 'bg-gray-100 text-gray-800';
-    
+    if (!status) return "bg-gray-100 text-gray-800";
+
     const statusUpper = status.toUpperCase();
     switch (statusUpper) {
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
-      case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800';
-      case 'SHIPPED':
-        return 'bg-purple-100 text-purple-800';
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800";
+      case "COMPLETED":
+        return "bg-green-100 text-green-800";
+      case "CANCELLED":
+        return "bg-red-100 text-red-800";
+      case "PROCESSING":
+        return "bg-blue-100 text-blue-800";
+      case "SHIPPED":
+        return "bg-purple-100 text-purple-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -100,7 +110,12 @@ const SellerDashboard: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
-          <button onClick={() => window.location.reload()} className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Thử lại</button>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          >
+            Thử lại
+          </button>
         </div>
       </div>
     );
@@ -111,7 +126,7 @@ const SellerDashboard: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Seller Dashboard</h2>
-          <p className="text-gray-600">Cửa hàng: {data?.shopName || 'N/A'}</p>
+          <p className="text-gray-600">Cửa hàng: {data?.shopName || "N/A"}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -125,7 +140,9 @@ const SellerDashboard: React.FC = () => {
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="text-sm text-gray-500">Doanh thu</div>
-            <div className="text-2xl font-bold text-green-700">{formatCurrency(data?.totalRevenue || 0)} VNĐ</div>
+            <div className="text-2xl font-bold text-green-700">
+              {formatCurrency(data?.totalRevenue || 0)} VNĐ
+            </div>
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <div className="text-sm text-gray-500">Đơn hàng chờ</div>
@@ -135,10 +152,14 @@ const SellerDashboard: React.FC = () => {
 
         <div className="bg-white rounded-lg shadow p-4">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Đơn hàng gần đây</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Đơn hàng gần đây
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tìm kiếm theo tên sản phẩm</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tìm kiếm theo tên sản phẩm
+                </label>
                 <input
                   type="text"
                   placeholder="Nhập tên sản phẩm..."
@@ -148,7 +169,9 @@ const SellerDashboard: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Lọc theo trạng thái</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Lọc theo trạng thái
+                </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -163,10 +186,16 @@ const SellerDashboard: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Lọc theo danh mục</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Lọc theo danh mục
+                </label>
                 <select
                   value={categoryFilter || ""}
-                  onChange={(e) => setCategoryFilter(e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    setCategoryFilter(
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="">Tất cả</option>
@@ -183,27 +212,54 @@ const SellerDashboard: React.FC = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">Ngày</th>
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">Sản phẩm</th>
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">Danh mục</th>
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">Phân loại</th>
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">SL</th>
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">Tổng</th>
-                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">Trạng thái</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    Ngày
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    Sản phẩm
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    Danh mục
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    Phân loại
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    SL
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    Tổng
+                  </th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-semibold border-b">
+                    Trạng thái
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {data?.recentOrders?.length ? (
-                  data!.recentOrders.map(item => (
-                    <tr key={item.orderId} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-3">{formatDate(item.createdAt)}</td>
+                  data!.recentOrders.map((item) => (
+                    <tr
+                      key={item.orderId}
+                      className="border-b hover:bg-gray-50"
+                    >
+                      <td className="px-4 py-3">
+                        {formatDate(item.createdAt)}
+                      </td>
                       <td className="px-4 py-3">{item.productName}</td>
-                      <td className="px-4 py-3">{item.categoryName || 'N/A'}</td>
+                      <td className="px-4 py-3">
+                        {item.categoryName || "N/A"}
+                      </td>
                       <td className="px-4 py-3">{item.variantName}</td>
                       <td className="px-4 py-3">{item.quantity}</td>
-                      <td className="px-4 py-3 font-semibold">{formatCurrency(item.totalPrice)} VNĐ</td>
+                      <td className="px-4 py-3 font-semibold">
+                        {formatCurrency(item.totalPrice)} VNĐ
+                      </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${getStatusColor(item.status)}`}>
+                        <span
+                          className={`inline-block px-2 py-1 rounded text-xs font-semibold ${getStatusColor(
+                            item.status
+                          )}`}
+                        >
                           {item.status}
                         </span>
                       </td>
@@ -211,8 +267,13 @@ const SellerDashboard: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td className="px-4 py-6 text-center text-gray-500" colSpan={7}>
-                      {(debouncedSearchTerm || statusFilter || categoryFilter) ? 'Không tìm thấy đơn hàng phù hợp' : 'Chưa có đơn hàng'}
+                    <td
+                      className="px-4 py-6 text-center text-gray-500"
+                      colSpan={7}
+                    >
+                      {debouncedSearchTerm || statusFilter || categoryFilter
+                        ? "Không tìm thấy đơn hàng phù hợp"
+                        : "Chưa có đơn hàng"}
                     </td>
                   </tr>
                 )}
@@ -223,7 +284,8 @@ const SellerDashboard: React.FC = () => {
           {data && (
             <div className="mt-4 flex items-center justify-between">
               <div className="text-center text-sm text-gray-600">
-                Hiển thị {data.recentOrders?.length || 0} trong tổng số {data.totalItems || 0} đơn hàng
+                Hiển thị {data.recentOrders?.length || 0} trong tổng số{" "}
+                {data.totalItems || 0} đơn hàng
               </div>
               <div className="flex items-center gap-2">
                 <label className="text-sm text-gray-600">Hiển thị:</label>
@@ -257,5 +319,3 @@ const SellerDashboard: React.FC = () => {
 };
 
 export default SellerDashboard;
-
-
