@@ -1,22 +1,45 @@
-import React from "react";
+import React, { memo, useCallback, useMemo } from "react";
+import { useDepositContext } from "@contexts/DepositContext";
 
 interface DepositFormProps {
   amount: string;
   onAmountChange: (value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  loading: boolean;
-  error: string;
 }
 
-export const DepositForm: React.FC<DepositFormProps> = ({
+export const DepositForm: React.FC<DepositFormProps> = memo(({
   amount,
   onAmountChange,
-  onSubmit,
-  loading,
-  error,
 }) => {
+  const { loading, error, createDeposit } = useDepositContext();
+
+  // Memoize error display
+  const hasError = useMemo(() => !!error, [error]);
+
+  // Memoize submit handler
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      try {
+        const amountNum = parseFloat(amount);
+        if (!isNaN(amountNum) && amountNum > 0) {
+          await createDeposit(amountNum);
+        }
+      } catch (err) {
+        // Error đã được xử lý trong context
+      }
+    },
+    [amount, createDeposit]
+  );
+
+  // Memoize input change handler
+  const handleAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onAmountChange(e.target.value);
+    },
+    [onAmountChange]
+  );
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label
           htmlFor="amount"
@@ -28,7 +51,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
           type="number"
           id="amount"
           value={amount}
-          onChange={(e) => onAmountChange(e.target.value)}
+          onChange={handleAmountChange}
           placeholder="Nhập số tiền"
           min="1000"
           step="1000"
@@ -40,7 +63,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         </p>
       </div>
 
-      {error && (
+      {hasError && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
           {error}
         </div>
@@ -55,5 +78,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
       </button>
     </form>
   );
-};
+});
+
+DepositForm.displayName = "DepositForm";
 

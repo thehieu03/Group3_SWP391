@@ -1,64 +1,58 @@
-import React from "react";
-import type { DepositResponse } from "@services/DepositServices";
+import React, { useMemo, memo, useCallback } from "react";
+import { useDepositContext } from "@contexts/DepositContext";
 
-interface DepositQRCodeProps {
-  depositData: DepositResponse;
-  status: string;
-  onVerify: () => void;
-  onReset: () => void;
-  verifying: boolean;
-}
+const STATUS_CONFIG = {
+  SUCCESS: {
+    color: "text-green-600",
+    text: "Đã thanh toán",
+    message: "Thanh toán thành công! Số dư của bạn đã được cập nhật.",
+    bgColor: "bg-green-50 border-green-200 text-green-700",
+  },
+  CANCELLED: {
+    color: "text-red-600",
+    text: "Hết hạn",
+    message: "Giao dịch đã hết hạn. Vui lòng tạo giao dịch mới.",
+    bgColor: "bg-red-50 border-red-200 text-red-700",
+  },
+  PENDING: {
+    color: "text-yellow-600",
+    text: "Đang chờ thanh toán",
+    message:
+      "Vui lòng quét mã QR và thanh toán trong vòng 15 phút. Hệ thống sẽ tự động cập nhật trạng thái khi nhận được thanh toán.",
+    bgColor: "bg-blue-50 border-blue-200 text-blue-700",
+  },
+} as const;
 
-export const DepositQRCode: React.FC<DepositQRCodeProps> = ({
-  depositData,
-  status,
-  onVerify,
-  onReset,
-  verifying,
-}) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "SUCCESS":
-        return "text-green-600";
-      case "CANCELLED":
-        return "text-red-600";
-      default:
-        return "text-yellow-600";
-    }
-  };
+export const DepositQRCode: React.FC = memo(() => {
+  const { depositData, status, verifying, verifyDeposit, reset } =
+    useDepositContext();
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "SUCCESS":
-        return "Đã thanh toán";
-      case "CANCELLED":
-        return "Hết hạn";
-      default:
-        return "Đang chờ thanh toán";
-    }
-  };
+  if (!depositData) {
+    return null;
+  }
 
-  const getStatusMessage = (status: string) => {
-    switch (status) {
-      case "SUCCESS":
-        return "Thanh toán thành công! Số dư của bạn đã được cập nhật.";
-      case "CANCELLED":
-        return "Giao dịch đã hết hạn. Vui lòng tạo giao dịch mới.";
-      default:
-        return "Vui lòng quét mã QR và thanh toán trong vòng 15 phút. Hệ thống sẽ tự động cập nhật trạng thái khi nhận được thanh toán.";
-    }
-  };
+  // Memoize status config để tránh tính toán lại mỗi lần render
+  const statusConfig = useMemo(() => {
+    return (
+      STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ||
+      STATUS_CONFIG.PENDING
+    );
+  }, [status]);
 
-  const getStatusBgColor = (status: string) => {
-    switch (status) {
-      case "SUCCESS":
-        return "bg-green-50 border-green-200 text-green-700";
-      case "CANCELLED":
-        return "bg-red-50 border-red-200 text-red-700";
-      default:
-        return "bg-blue-50 border-blue-200 text-blue-700";
-    }
-  };
+  // Memoize formatted amount
+  const formattedAmount = useMemo(
+    () => depositData.amount.toLocaleString("vi-VN"),
+    [depositData.amount]
+  );
+
+  // Memoize handlers
+  const handleVerify = useCallback(async () => {
+    await verifyDeposit(depositData.transactionId);
+  }, [depositData.transactionId, verifyDeposit]);
+
+  const handleReset = useCallback(() => {
+    reset();
+  }, [reset]);
 
   return (
     <div className="space-y-6">
@@ -71,6 +65,7 @@ export const DepositQRCode: React.FC<DepositQRCodeProps> = ({
             src={depositData.qrCodeUrl}
             alt="VietQR Code"
             className="w-64 h-64 mx-auto"
+            loading="lazy"
           />
         </div>
       </div>
@@ -79,7 +74,7 @@ export const DepositQRCode: React.FC<DepositQRCodeProps> = ({
         <div className="flex justify-between">
           <span className="text-gray-600">Số tiền:</span>
           <span className="font-semibold text-gray-800">
-            {depositData.amount.toLocaleString("vi-VN")} VNĐ
+            {formattedAmount} VNĐ
           </span>
         </div>
         <div className="flex justify-between">
@@ -90,19 +85,19 @@ export const DepositQRCode: React.FC<DepositQRCodeProps> = ({
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Trạng thái:</span>
-          <span className={`font-semibold ${getStatusColor(status)}`}>
-            {getStatusText(status)}
+          <span className={`font-semibold ${statusConfig.color}`}>
+            {statusConfig.text}
           </span>
         </div>
       </div>
 
-      <div className={`${getStatusBgColor(status)} border px-4 py-3 rounded`}>
-        <p className="text-sm">{getStatusMessage(status)}</p>
+      <div className={`${statusConfig.bgColor} border px-4 py-3 rounded`}>
+        <p className="text-sm">{statusConfig.message}</p>
       </div>
 
       {status === "PENDING" && (
         <button
-          onClick={onVerify}
+          onClick={handleVerify}
           disabled={verifying}
           className="w-full bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
@@ -111,12 +106,14 @@ export const DepositQRCode: React.FC<DepositQRCodeProps> = ({
       )}
 
       <button
-        onClick={onReset}
+        onClick={handleReset}
         className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
       >
         Tạo giao dịch mới
       </button>
     </div>
   );
-};
+});
+
+DepositQRCode.displayName = "DepositQRCode";
 

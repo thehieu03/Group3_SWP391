@@ -1,47 +1,24 @@
-import React, { useState } from "react";
-import { useDeposit } from "@hooks/useDeposit";
+import React, { useState, useMemo, useCallback } from "react";
+import { DepositProvider, useDepositContext } from "@contexts/DepositContext";
 import { DepositForm } from "./components/DepositForm";
 import { DepositQRCode } from "./components/DepositQRCode";
 
-const Deposit: React.FC = () => {
+const DepositContent: React.FC = () => {
   const [amount, setAmount] = useState<string>("");
-  const [verifying, setVerifying] = useState(false);
-  const {
-    depositData,
-    status,
-    error,
-    loading,
-    createDeposit,
-    verifyDeposit,
-    reset,
-  } = useDeposit();
+  const { depositData, reset } = useDepositContext();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await createDeposit(parseFloat(amount));
-    } catch (err) {
-      // Error đã được xử lý trong hook
-    }
-  };
+  // Memoize handlers để tránh re-render
+  const handleAmountChange = useCallback((value: string) => {
+    setAmount(value);
+  }, []);
 
-  const handleVerify = async () => {
-    if (!depositData) return;
-    
-    setVerifying(true);
-    try {
-      await verifyDeposit(depositData.transactionId);
-    } catch (err) {
-      // Error đã được xử lý trong hook
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setAmount("");
     reset();
-  };
+  }, [reset]);
+
+  // Memoize để tránh re-render khi depositData thay đổi nhưng vẫn null
+  const showForm = useMemo(() => !depositData, [depositData]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -49,26 +26,22 @@ const Deposit: React.FC = () => {
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Nạp tiền</h2>
 
-          {!depositData ? (
-            <DepositForm
-              amount={amount}
-              onAmountChange={setAmount}
-              onSubmit={handleSubmit}
-              loading={loading}
-              error={error}
-            />
+          {showForm ? (
+            <DepositForm amount={amount} onAmountChange={handleAmountChange} />
           ) : (
-            <DepositQRCode
-              depositData={depositData}
-              status={status}
-              onVerify={handleVerify}
-              onReset={handleReset}
-              verifying={verifying}
-            />
+            <DepositQRCode />
           )}
         </div>
       </div>
     </div>
+  );
+};
+
+const Deposit: React.FC = () => {
+  return (
+    <DepositProvider pollInterval={5000}>
+      <DepositContent />
+    </DepositProvider>
   );
 };
 
