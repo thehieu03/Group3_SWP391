@@ -49,8 +49,8 @@ const EditProductModal = ({
       try {
         const data = await categoryServices.getAllCategoryAsync();
         setCategories(data);
-      } catch (error) {
-        console.error("Failed to load categories:", error);
+      } catch {
+        // Failed to load categories
       }
     };
     void loadCategories();
@@ -65,8 +65,7 @@ const EditProductModal = ({
             categoryId
           );
           setSubcategories(data);
-        } catch (error) {
-          console.error("Failed to load subcategories:", error);
+        } catch {
           setSubcategories([]);
         }
       } else {
@@ -120,12 +119,8 @@ const EditProductModal = ({
                     variant,
                     storageJson: JSON.stringify(accountsArray, null, 2),
                   };
-                } catch (error) {
+                } catch {
                   // No storages found or error loading
-                  console.warn(
-                    `Failed to load storages for variant ${variant.id}:`,
-                    error
-                  );
                   return {
                     variant,
                     storageJson: "[]",
@@ -135,8 +130,7 @@ const EditProductModal = ({
             );
 
           setVariantsWithStorage(variantsWithStorageData);
-        } catch (error) {
-          console.error("Failed to load variants:", error);
+        } catch {
           setVariantsWithStorage([]);
         } finally {
           setLoadingVariants(false);
@@ -312,11 +306,7 @@ const EditProductModal = ({
                   accountsArray
                 );
               }
-            } catch (error) {
-              console.error(
-                `Failed to update storages for variant ${item.variant.id}:`,
-                error
-              );
+            } catch {
               // Continue with other variants
             }
           }
@@ -325,7 +315,6 @@ const EditProductModal = ({
         onSuccess();
         onClose();
       } catch (error: unknown) {
-        console.error("[EditProductModal] Failed to update product:", error);
         const err = error as {
           response?: {
             data?: { message?: string; errors?: unknown };

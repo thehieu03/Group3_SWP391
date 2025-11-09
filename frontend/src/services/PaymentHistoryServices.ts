@@ -20,13 +20,17 @@ class PaymentHistoryServices {
     // Backend route is payment-history/{userId}, so userId goes in the path
     // BaseURL is /api/, so full path becomes /api/payment-history/{userId}?params
     const queryString = params.toString();
-    const path = `payment-history/${userId}${queryString ? `?${queryString}` : ''}`;
+    const path = `payment-history/${userId}${
+      queryString ? `?${queryString}` : ""
+    }`;
 
     try {
       return await httpGet<PaymentHistorySummary>(path);
     } catch (err: unknown) {
-      console.error('PaymentHistoryServices.getPaymentHistory error:', err);
-      const error = err as { response?: { status?: number; data?: unknown }; message?: string };
+      const error = err as {
+        response?: { status?: number; data?: unknown };
+        message?: string;
+      };
       if (error.response?.status === 404) {
         // Return empty payment history if not found
         return {
@@ -37,7 +41,7 @@ class PaymentHistoryServices {
           totalItems: 0,
           itemsPerPage: pageSize,
           hasNextPage: false,
-          hasPreviousPage: false
+          hasPreviousPage: false,
         };
       }
       throw err;

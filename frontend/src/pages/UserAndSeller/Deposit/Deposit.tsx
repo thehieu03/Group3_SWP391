@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { depositServices, type DepositResponse } from "@services/DepositServices";
+import {
+  depositServices,
+  type DepositResponse,
+} from "@services/DepositServices";
 
 const Deposit: React.FC = () => {
   const [amount, setAmount] = useState<string>("");
@@ -16,8 +19,11 @@ const Deposit: React.FC = () => {
             depositData.transactionId
           );
           setStatus(statusResponse.status);
-          
-            if (statusResponse.status === "SUCCESS" || statusResponse.status === "CANCELLED") {
+
+          if (
+            statusResponse.status === "SUCCESS" ||
+            statusResponse.status === "CANCELLED"
+          ) {
             clearInterval(interval);
             if (statusResponse.status === "SUCCESS") {
               setTimeout(() => {
@@ -25,8 +31,8 @@ const Deposit: React.FC = () => {
               }, 3000);
             }
           }
-        } catch (err) {
-          console.error("Error checking deposit status:", err);
+        } catch {
+          // Error checking deposit status
         }
       }, 5000);
 
@@ -50,8 +56,11 @@ const Deposit: React.FC = () => {
       const response = await depositServices.createDeposit(amountNum);
       setDepositData(response);
       setStatus(response.status);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Có lỗi xảy ra khi tạo giao dịch");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(
+        error.response?.data?.message || "Có lỗi xảy ra khi tạo giao dịch"
+      );
     } finally {
       setLoading(false);
     }
@@ -160,8 +169,9 @@ const Deposit: React.FC = () => {
               {status === "PENDING" && (
                 <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded">
                   <p className="text-sm">
-                    Vui lòng quét mã QR và thanh toán trong vòng 15 phút. Hệ thống sẽ tự động
-                    cập nhật trạng thái khi nhận được thanh toán.
+                    Vui lòng quét mã QR và thanh toán trong vòng 15 phút. Hệ
+                    thống sẽ tự động cập nhật trạng thái khi nhận được thanh
+                    toán.
                   </p>
                 </div>
               )}
@@ -197,4 +207,3 @@ const Deposit: React.FC = () => {
 };
 
 export default Deposit;
-

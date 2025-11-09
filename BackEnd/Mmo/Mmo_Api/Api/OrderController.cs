@@ -8,12 +8,18 @@ public class OrderController : ControllerBase
     private readonly IOrderServices _orderServices;
     private readonly IShopServices _shopServices;
     private readonly IMapper _mapper;
+    private readonly ILogger<OrderController>? _logger;
 
-    public OrderController(IOrderServices orderServices, IShopServices shopServices, IMapper mapper)
+    public OrderController(
+        IOrderServices orderServices, 
+        IShopServices shopServices, 
+        IMapper mapper,
+        ILogger<OrderController>? logger = null)
     {
         _orderServices = orderServices;
         _shopServices = shopServices;
         _mapper = mapper;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -95,6 +101,84 @@ public class OrderController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Lấy chi tiết đơn hàng với thông tin tài khoản đã bán (dành cho seller)
+    /// </summary>
+    /// <param name="orderId">ID của order</param>
+    /// <returns>Chi tiết order với thông tin tài khoản</returns>
+    [HttpGet("{orderId}/details")]
+    [Authorize(Policy = "AdminOrSeller")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<OrderDetailResponse>> GetOrderDetails(int orderId)
+    {
+        try
+        {
+            _logger?.LogInformation("GetOrderDetails called with OrderId: {OrderId}", orderId);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                _logger?.LogWarning("GetOrderDetails: Invalid token");
+                return Unauthorized("Invalid token");
+            }
+
+            // Lấy shop của seller hiện tại
+            var shop = await _shopServices.GetByAccountIdAsync(userId);
+            if (shop == null)
+            {
+                _logger?.LogWarning("GetOrderDetails: Shop not found for userId: {UserId}", userId);
+                return NotFound(new { message = "Shop not found for this account" });
+            }
+
+            // Lấy order
+            var order = await _orderServices.GetOrderByIdAsync(orderId);
+            if (order == null)
+            {
+                _logger?.LogWarning("GetOrderDetails: Order {OrderId} not found", orderId);
+                return NotFound(new { message = "Order not found" });
+            }
+
+            // Kiểm tra order có ProductVariant không
+            if (order.ProductVariant == null)
+            {
+                _logger?.LogWarning("GetOrderDetails: ProductVariant not found for OrderId: {OrderId}", orderId);
+                return NotFound(new { message = "Product variant not found for this order" });
+            }
+
+            // Kiểm tra order thuộc về shop của seller
+            if (order.ProductVariant.Product == null || order.ProductVariant.Product.ShopId != shop.Id)
+            {
+                _logger?.LogWarning("GetOrderDetails: Order {OrderId} does not belong to shop {ShopId}", orderId, shop.Id);
+                return Unauthorized(new { message = "This order does not belong to your shop" });
+            }
+
+            // Tạo response - chỉ lấy Payload từ Order
+            var response = new OrderDetailResponse
+            {
+                OrderId = order.Id,
+                ProductName = order.ProductVariant?.Product?.Name,
+                ProductVariantName = order.ProductVariant?.Name,
+                Quantity = order.Quantity,
+                TotalPrice = order.TotalPrice,
+                Status = order.Status,
+                OrderDate = order.CreatedAt,
+                Payload = order.Payload,
+                Accounts = null // Không cần lấy accounts từ ProductStorage
+            };
+
+            _logger?.LogInformation("GetOrderDetails: Successfully retrieved order details for OrderId: {OrderId}", orderId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "GetOrderDetails: Error getting order details for OrderId: {OrderId}", orderId);
+            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     }
 }

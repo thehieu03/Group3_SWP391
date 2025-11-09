@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { orderServices } from "@services/OrderServices.ts";
-import type { OrderAdminResponse } from "@models/modelResponse/OrderAdminResponse.ts";
+import type {
+  OrderAdminResponse,
+  OrderDetailResponse,
+} from "@models/modelResponse/OrderAdminResponse.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBox } from "@fortawesome/free-solid-svg-icons";
+import { faBox, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
   formatPrice,
   formatDate,
@@ -18,6 +21,10 @@ const SellerOrders = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedOrderDetail, setSelectedOrderDetail] =
+    useState<OrderDetailResponse | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   // Search and Filter States
   const [productNameSearch, setProductNameSearch] = useState("");
@@ -125,6 +132,25 @@ const SellerOrders = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleViewOrder = async (orderId: number) => {
+    try {
+      setLoadingDetail(true);
+      setError(null);
+      const detail = await orderServices.getOrderDetailsAsync(orderId);
+      setSelectedOrderDetail(detail);
+      setShowDetailModal(true);
+    } catch {
+      setError("Không thể tải chi tiết đơn hàng");
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedOrderDetail(null);
   };
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -299,6 +325,9 @@ const SellerOrders = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ngày đặt
                 </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Thao tác
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -332,11 +361,22 @@ const SellerOrders = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(order.orderDate)}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <Button
+                        onClick={() => handleViewOrder(order.orderId)}
+                        disabled={loadingDetail}
+                        className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Xem chi tiết tài khoản đã bán"
+                      >
+                        <FontAwesomeIcon icon={faEye} className="mr-1" />
+                        Xem
+                      </Button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
+                  <td colSpan={8} className="px-6 py-12 text-center">
                     <div className="text-center">
                       <div className="text-gray-400 text-4xl mb-4">
                         <FontAwesomeIcon icon={faBox} className="text-4xl" />
@@ -441,9 +481,108 @@ const SellerOrders = () => {
           </div>
         </div>
       )}
+
+      {/* Order Detail Modal */}
+      {showDetailModal && selectedOrderDetail && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">
+                Chi tiết đơn hàng #{selectedOrderDetail.orderId}
+              </h2>
+              <Button
+                onClick={handleCloseDetailModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </Button>
+            </div>
+
+            {/* Order Info */}
+            <div className="mb-6 grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Sản phẩm:</p>
+                <p className="font-semibold">
+                  {selectedOrderDetail.productName || "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Variant:</p>
+                <p className="font-semibold">
+                  {selectedOrderDetail.productVariantName || "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Số lượng:</p>
+                <p className="font-semibold">{selectedOrderDetail.quantity}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Tổng tiền:</p>
+                <p className="font-semibold">
+                  {formatPrice(selectedOrderDetail.totalPrice)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Trạng thái:</p>
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                    selectedOrderDetail.status || ""
+                  )}`}
+                >
+                  {getStatusText(selectedOrderDetail.status || "")}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Ngày đặt:</p>
+                <p className="font-semibold">
+                  {formatDate(selectedOrderDetail.orderDate || "")}
+                </p>
+              </div>
+            </div>
+
+            {/* Payload */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Payload (Thông tin tài khoản đã bán):
+              </h3>
+              {selectedOrderDetail.payload ? (
+                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                  <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                    {selectedOrderDetail.payload}
+                  </pre>
+                </div>
+              ) : (
+                <div className="bg-gray-50 p-4 rounded-md border border-gray-200 text-center text-gray-500">
+                  <p>Không có thông tin payload cho đơn hàng này</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button
+                onClick={handleCloseDetailModal}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+              >
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default SellerOrders;
-

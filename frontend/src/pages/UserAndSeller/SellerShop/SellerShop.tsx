@@ -24,47 +24,14 @@ const SellerShop: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Get all shops and find the one belonging to current user
-        const allShops = await shopServices.getAllShopsAsync();
-        const userShop = allShops.find(
-          (s) => s.ownerUsername === user.username
-        );
-
-        if (!userShop) {
-          setError("Bạn chưa có shop. Vui lòng đăng ký shop trước.");
-          setLoading(false);
-          return;
-        }
-
-        // Get detailed shop information
-        try {
-          const shopDetails = await shopServices.getShopDetailsAsync(userShop.id);
-          setShop(shopDetails);
-          setName(shopDetails.name);
-          setDescription(shopDetails.description || "");
-        } catch (detailError) {
-          // If getShopDetailsAsync fails, use the basic shop info
-          const basicShop: ShopForAdmin = {
-            id: userShop.id,
-            name: userShop.name,
-            description: userShop.description || "",
-            status: userShop.status,
-            createdAt: userShop.createdAt,
-            updatedAt: userShop.updatedAt || userShop.createdAt,
-            ownerUsername: userShop.ownerUsername,
-            productCount: userShop.productCount,
-            complaintCount: userShop.complaintCount || 0,
-          };
-          setShop(basicShop);
-          setName(basicShop.name);
-          setDescription(basicShop.description);
-        }
+        // Get shop của seller hiện tại
+        const shopDetails = await shopServices.getMyShopAsync();
+        setShop(shopDetails);
+        setName(shopDetails.name);
+        setDescription(shopDetails.description || "");
       } catch (err: unknown) {
-        console.error("Error fetching shop:", err);
         const errorMessage =
-          err instanceof Error
-            ? err.message
-            : "Không thể tải thông tin shop";
+          err instanceof Error ? err.message : "Không thể tải thông tin shop";
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -91,15 +58,30 @@ const SellerShop: React.FC = () => {
 
     try {
       setError(null);
-      // Note: Update shop endpoint would need to be implemented in ShopServices
-      // For now, just show a message
-      setError("Chức năng cập nhật shop đang được phát triển");
+      setLoading(true);
+
+      // Validate input
+      if (!name || name.trim() === "") {
+        setError("Tên shop không được để trống");
+        setLoading(false);
+        return;
+      }
+
+      // Update shop
+      const updatedShop = await shopServices.updateMyShopAsync(
+        name.trim(),
+        description.trim() || undefined
+      );
+
+      setShop(updatedShop);
       setEditing(false);
+      setError(null);
     } catch (err: unknown) {
-      console.error("Error updating shop:", err);
       const errorMessage =
         err instanceof Error ? err.message : "Không thể cập nhật shop";
       setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -171,9 +153,7 @@ const SellerShop: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Thông tin shop
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800">Thông tin shop</h2>
             {!editing && (
               <Button
                 onClick={handleEdit}
@@ -250,9 +230,7 @@ const SellerShop: React.FC = () => {
                 </div>
               </div>
               <div className="bg-orange-50 p-4 rounded-lg">
-                <div className="text-sm text-orange-600 mb-1">
-                  Số khiếu nại
-                </div>
+                <div className="text-sm text-orange-600 mb-1">Số khiếu nại</div>
                 <div className="text-2xl font-bold text-orange-800">
                   {shop.complaintCount || 0}
                 </div>
@@ -314,4 +292,3 @@ const SellerShop: React.FC = () => {
 };
 
 export default SellerShop;
-

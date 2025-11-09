@@ -61,6 +61,27 @@ public class OrderServices : BaseServices<Order>, IOrderServices
         return orders;
     }
 
+    public async Task<Order?> GetOrderByIdAsync(int orderId)
+    {
+        try
+        {
+            var order = await _unitOfWork.GenericRepository<Order>()
+                .Get(
+                    filter: o => o.Id == orderId,
+                    includeProperties: "Account,ProductVariant,ProductVariant.Product,ProductVariant.Product.Shop,ProductVariant.Product.Shop.Account"
+                )
+                .FirstOrDefaultAsync();
+
+            return order;
+        }
+        catch
+        {
+            // Fallback: try without includes
+            return await _unitOfWork.GenericRepository<Order>()
+                .GetByIdAsync(orderId);
+        }
+    }
+
     public async Task<bool> HasFeedbackAsync(int orderId)
     {
         var feedback = await _unitOfWork.GenericRepository<Feedback>()
