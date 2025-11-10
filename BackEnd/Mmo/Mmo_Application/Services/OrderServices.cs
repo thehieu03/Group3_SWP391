@@ -3,6 +3,7 @@ using Mmo_Domain.ModelRequest;
 using Mmo_Domain.ModelResponse;
 using Mmo_Application.Services.Interface;
 using Mmo_Domain.Enum;
+using Mmo_Domain.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Mmo_Application.Exceptions;
@@ -389,6 +390,21 @@ public class OrderServices : BaseServices<Order>, IOrderServices
             _logger?.LogInformation("Order {OrderId}: Deducted {Amount} from buyer account {AccountId}", 
                 message.OrderId, message.Amount, message.AccountId);
 
+            // Create transaction for customer (PURCHASE - deducts money)
+            var customerTransaction = new Paymenttransaction
+            {
+                UserId = message.AccountId,
+                Type = "PURCHASE",
+                Amount = message.Amount,
+                PaymentDescription = $"Mua hàng - Order #{message.OrderId}",
+                Status = "SUCCESS",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await paymentServices.AddAsync(customerTransaction);
+            _logger?.LogInformation("Order {OrderId}: Created customer transaction {TransactionId} for account {AccountId}", 
+                message.OrderId, customerTransaction.Id, message.AccountId);
+
             // Find admin account (account with Admin role)
             var adminRole = await _unitOfWork.GenericRepository<Role>()
                 .Get(r => r.RoleName == "Admin")
@@ -416,6 +432,21 @@ public class OrderServices : BaseServices<Order>, IOrderServices
                         _unitOfWork.GenericRepository<Account>().Update(adminAccount);
                         _logger?.LogInformation("Order {OrderId}: Added fee {FeeAmount} to admin account {AdminAccountId} (Fee: {FeePercentage}%)", 
                             message.OrderId, feeAmount, adminAccount.Id, feePercentage * 100);
+
+                        // Create transaction for admin (SALE - adds money from fee)
+                        var adminTransaction = new Paymenttransaction
+                        {
+                            UserId = adminAccount.Id,
+                            Type = "SALE",
+                            Amount = feeAmount,
+                            PaymentDescription = $"Phí giao dịch từ Order #{message.OrderId}",
+                            Status = "SUCCESS",
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        };
+                        await paymentServices.AddAsync(adminTransaction);
+                        _logger?.LogInformation("Order {OrderId}: Created admin transaction {TransactionId} for account {AdminAccountId}", 
+                            message.OrderId, adminTransaction.Id, adminAccount.Id);
                     }
                     else
                     {
@@ -448,6 +479,21 @@ public class OrderServices : BaseServices<Order>, IOrderServices
                 _unitOfWork.GenericRepository<Account>().Update(sellerAccount);
                 _logger?.LogInformation("Order {OrderId}: Added {SellerAmount} to seller account {SellerAccountId} (Total: {TotalAmount}, Fee: {FeeAmount})", 
                     message.OrderId, sellerAmount, sellerAccount.Id, message.Amount, feeAmount);
+
+                // Create transaction for seller (SALE - adds money from sale)
+                var sellerTransaction = new Paymenttransaction
+                {
+                    UserId = sellerAccount.Id,
+                    Type = "SALE",
+                    Amount = sellerAmount,
+                    PaymentDescription = $"Bán hàng - Order #{message.OrderId}",
+                    Status = "SUCCESS",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await paymentServices.AddAsync(sellerTransaction);
+                _logger?.LogInformation("Order {OrderId}: Created seller transaction {TransactionId} for account {SellerAccountId}", 
+                    message.OrderId, sellerTransaction.Id, sellerAccount.Id);
             }
             else
             {

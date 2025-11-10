@@ -1,7 +1,7 @@
 export interface PaymentHistoryResponse {
     id: number;
     userId: number;
-    type: 'PURCHASE' | 'DEPOSIT' | 'WITHDRAWAL';
+    type: 'PURCHASE' | 'DEPOSIT' | 'WITHDRAWAL' | 'SALE';
     amount: number;
     paymentDescription: string;
     status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';

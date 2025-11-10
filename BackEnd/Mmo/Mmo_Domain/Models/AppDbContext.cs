@@ -353,7 +353,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("enum('PENDING','SUCCESS','FAILED','CANCELLED')")
                 .HasColumnName("status");
             entity.Property(e => e.Type)
-                .HasColumnType("enum('PURCHASE','DEPOSIT','WITHDRAWAL')")
+                .HasColumnType("enum('PURCHASE','DEPOSIT','WITHDRAWAL','SALE')")
                 .HasColumnName("type");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")

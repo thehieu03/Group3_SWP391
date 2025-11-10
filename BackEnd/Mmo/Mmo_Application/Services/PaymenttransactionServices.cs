@@ -44,6 +44,9 @@ public class PaymenttransactionServices :BaseServices<Paymenttransaction>, IPaym
             case "PURCHASE":
                 account.Balance -= amount; 
                 break;
+            case "SALE":
+                account.Balance += amount; 
+                break;
             default:
                 account.Balance -= amount;
                 break;
