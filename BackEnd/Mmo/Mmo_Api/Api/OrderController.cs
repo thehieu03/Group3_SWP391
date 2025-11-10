@@ -1,6 +1,7 @@
 using Mmo_Domain.ModelRequest;
 using System.Security.Claims;
 using Mmo_Application.Services.Interface;
+using Mmo_Domain.Enum;
 
 namespace Mmo_Api.Api;
 
@@ -239,7 +240,7 @@ public class OrderController : ControllerBase
                     TotalPrice = result.Order.TotalPrice
                 };
 
-                _rabbitMQService?.PublishToOrderQueue(orderMessage);
+                _rabbitMQService?.PublishToQueue(orderMessage, QueueType.OrderQueue);
                 _logger?.LogInformation("CreateOrder: Order {OrderId} published to Order Queue", result.Order.Id);
             }
 

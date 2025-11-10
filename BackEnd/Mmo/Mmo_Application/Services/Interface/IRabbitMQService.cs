@@ -1,9 +1,10 @@
+using Mmo_Domain.Enum;
+
 namespace Mmo_Application.Services.Interface;
 
 public interface IRabbitMQService
 {
-    void PublishToOrderQueue<T>(T message);
-    void PublishToPaymentQueue<T>(T message);
+    void PublishToQueue<T>(T message, QueueType queueType);
     void StartConsumers();
     void StopConsumers();
 }
