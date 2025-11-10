@@ -96,13 +96,12 @@ public class PaymentPollingService : BackgroundService, IPaymentPollingService
                         _logger.LogError(ex, "Error fetching or matching SePay transactions");
                     }
 
-                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in payment polling service");
-                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
-            }
+                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);            }
     }
 
     private async Task<List<Paymenttransaction>> GetPendingTransactionsAsync(IPaymenttransactionServices paymentService)
