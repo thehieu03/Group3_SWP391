@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { AdminProductResponse } from "@/models/modelResponse/AdminProductResponse";
 import type { ProductVariantResponse } from "@/models/modelResponse/ProductVariantResponse";
@@ -9,13 +9,124 @@ import { categoryServices } from "@services/CategoryServices";
 import { subcategoryServices } from "@services/SubcategoryServices";
 import type { CategoriesResponse } from "@/models/modelResponse/CategoriesResponse";
 import type { SubcategoryResponse } from "@/models/modelResponse/SubcategoryResponse";
-import type { ProductVariantRequest } from "@/models/modelRequest/ProductRequest";
+import type { ProductVariantRequest, ProductStorageRequest } from "@/models/modelRequest/ProductRequest";
 import * as XLSX from "xlsx";
 
 interface VariantWithStorage {
   variant: ProductVariantResponse;
   storageJson: string; // JSON string chứa mảng tài khoản
 }
+
+// Helper function to extract usernames from storage JSON
+const extractUsernamesFromStorageJson = (storageJson: string): string[] => {
+  if (!storageJson || storageJson.trim() === "") {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(storageJson);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .map((item) => {
+        if (item && typeof item === "object" && item.username) {
+          return String(item.username).toLowerCase().trim();
+        }
+        return null;
+      })
+      .filter((username): username is string => username !== null && username !== "");
+  } catch {
+    return [];
+  }
+};
+
+// Helper function to validate storage JSON format
+const validateStorageJson = (storageJson: string): { isValid: boolean; error?: string; accounts?: any[] } => {
+  if (!storageJson || storageJson.trim() === "") {
+    return { isValid: true, accounts: [] };
+  }
+
+  try {
+    const parsed = JSON.parse(storageJson);
+    
+    if (!Array.isArray(parsed)) {
+      return { isValid: false, error: "Storage JSON phải là một mảng" };
+    }
+
+    const accounts = [];
+    for (let i = 0; i < parsed.length; i++) {
+      const account = parsed[i];
+      
+      if (!account || typeof account !== "object") {
+        return { isValid: false, error: `Tài khoản thứ ${i + 1} không hợp lệ (phải là object)` };
+      }
+
+      if (!account.username || typeof account.username !== "string" || account.username.trim() === "") {
+        return { isValid: false, error: `Tài khoản thứ ${i + 1} thiếu username hoặc username không hợp lệ` };
+      }
+
+      if (!account.password || typeof account.password !== "string" || account.password.trim() === "") {
+        return { isValid: false, error: `Tài khoản thứ ${i + 1} thiếu password hoặc password không hợp lệ` };
+      }
+
+      if (account.status !== undefined && typeof account.status !== "boolean") {
+        return { isValid: false, error: `Tài khoản thứ ${i + 1} có status không hợp lệ (phải là boolean)` };
+      }
+
+      accounts.push(account);
+    }
+
+    return { isValid: true, accounts };
+  } catch (error) {
+    return { 
+      isValid: false, 
+      error: `Storage JSON không hợp lệ: ${error instanceof Error ? error.message : "Lỗi không xác định"}` 
+    };
+  }
+};
+
+// Helper function to check for duplicate usernames within a single variant
+const checkDuplicateUsernamesInVariant = (
+  variantName: string,
+  storageJson: string
+): { hasDuplicate: boolean; duplicateUsernames: string[]; errorMessage?: string } => {
+  if (!storageJson || storageJson.trim() === "") {
+    return { hasDuplicate: false, duplicateUsernames: [] };
+  }
+
+  const usernames = extractUsernamesFromStorageJson(storageJson);
+  const usernameMap = new Map<string, number[]>();
+  
+  usernames.forEach((username, index) => {
+    if (!usernameMap.has(username)) {
+      usernameMap.set(username, []);
+    }
+    usernameMap.get(username)!.push(index + 1);
+  });
+
+  const duplicateUsernames: string[] = [];
+  usernameMap.forEach((indices, username) => {
+    if (indices.length > 1) {
+      duplicateUsernames.push(username);
+    }
+  });
+
+  if (duplicateUsernames.length > 0) {
+    const firstDuplicate = duplicateUsernames[0];
+    const indices = usernameMap.get(firstDuplicate)!;
+    const indicesString = indices.map(idx => `tài khoản thứ ${idx}`).join(", ");
+    
+    return {
+      hasDuplicate: true,
+      duplicateUsernames,
+      errorMessage: `Variant "${variantName}" có username trùng lặp: "${firstDuplicate}" tại ${indicesString}. Vui lòng kiểm tra lại.`,
+    };
+  }
+
+  return { hasDuplicate: false, duplicateUsernames: [] };
+};
 
 const EditProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -243,8 +354,13 @@ const EditProductPage = () => {
     []
   );
 
+
   // Excel import functionality
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRemoveVariant = useCallback((variantIndex: number) => {
+    setVariantsWithStorage((prev) => prev.filter((_, i) => i !== variantIndex));
+  }, []);
 
   const handleImportExcel = useCallback(() => {
     fileInputRef.current?.click();
@@ -335,7 +451,7 @@ const EditProductPage = () => {
           }
 
           const parsedVariants: VariantWithStorage[] = [];
-          let hasDuplicateUsername = false;
+          const validationErrors: string[] = [];
 
           for (let i = 0; i < dataRows.length; i++) {
             const row = dataRows[i];
@@ -352,16 +468,35 @@ const EditProductPage = () => {
 
             // Validate required fields
             if (!name) {
-              alert(`Dòng ${i + 2}: Thiếu tên variant`);
+              validationErrors.push(`Dòng ${i + 2}: Thiếu tên variant`);
               continue;
             }
             if (isNaN(price) || price <= 0) {
-              alert(`Dòng ${i + 2}: Giá không hợp lệ`);
+              validationErrors.push(`Dòng ${i + 2}: Giá không hợp lệ`);
               continue;
             }
             if (isNaN(stock) || stock < 0) {
-              alert(`Dòng ${i + 2}: Số lượng không hợp lệ`);
+              validationErrors.push(`Dòng ${i + 2}: Số lượng không hợp lệ`);
               continue;
+            }
+
+            // Validate storage JSON if provided
+            let validatedStorageJson = "";
+            if (storageJson) {
+              const validation = validateStorageJson(storageJson);
+              if (!validation.isValid) {
+                validationErrors.push(`Dòng ${i + 2} - Variant "${name}": ${validation.error}`);
+                continue;
+              }
+              
+              // Check for duplicate usernames within this variant
+              const duplicateCheck = checkDuplicateUsernamesInVariant(name, storageJson);
+              if (duplicateCheck.hasDuplicate) {
+                validationErrors.push(`Dòng ${i + 2}: ${duplicateCheck.errorMessage}`);
+                continue;
+              }
+              
+              validatedStorageJson = storageJson;
             }
 
             // Create a temporary variant (new variant, will be created on submit)
@@ -377,53 +512,17 @@ const EditProductPage = () => {
               updatedAt: new Date().toISOString(),
             };
 
-            // Validate storage JSON if provided
-            let validatedStorageJson = "";
-            if (storageJson) {
-              try {
-                const parsedStorage = JSON.parse(storageJson);
-                if (Array.isArray(parsedStorage)) {
-                  // Check for duplicate usernames in storage JSON
-                  const usernames = parsedStorage
-                    .map((item) => item?.username?.toLowerCase().trim())
-                    .filter((username) => username);
-
-                  const uniqueUsernames = new Set(usernames);
-                  if (usernames.length !== uniqueUsernames.size) {
-                    alert(
-                      `Dòng ${
-                        i + 2
-                      }: Variant "${name}" có tài khoản trùng lặp trong Storage JSON. Import đã bị hủy. Vui lòng kiểm tra lại file Excel.`
-                    );
-                    hasDuplicateUsername = true;
-                    break; // Break out of loop to cancel import
-                  }
-
-                  validatedStorageJson = storageJson;
-                } else {
-                  alert(
-                    `Dòng ${
-                      i + 2
-                    }: Storage JSON phải là một mảng. Bỏ qua storage cho variant này.`
-                  );
-                }
-              } catch {
-                alert(
-                  `Dòng ${
-                    i + 2
-                  }: Storage JSON không hợp lệ. Bỏ qua storage cho variant này.`
-                );
-              }
-            }
-
             parsedVariants.push({
               variant,
               storageJson: validatedStorageJson,
             });
           }
 
-          // Cancel import if there was duplicate username
-          if (hasDuplicateUsername) {
+          // Check for validation errors
+          if (validationErrors.length > 0) {
+            alert(
+              `Có lỗi validation:\n${validationErrors.join("\n")}\n\nImport đã bị hủy. Vui lòng kiểm tra lại file Excel.`
+            );
             if (fileInputRef.current) {
               fileInputRef.current.value = "";
             }
@@ -503,46 +602,90 @@ const EditProductPage = () => {
       }
 
       // Validate and convert variants
-      const variants: ProductVariantRequest[] = variantsWithStorage.map(
-        (item) => {
-          // Validate storage JSON if provided
-          if (item.storageJson && item.storageJson.trim() !== "") {
-            try {
-              const accountsArray = JSON.parse(item.storageJson);
-              if (!Array.isArray(accountsArray)) {
-                throw new Error("Storage JSON phải là một mảng");
-              }
-              // Validate số lượng tài khoản phải khớp với stock
-              const stock = item.variant.stock || 0;
-              if (stock > 0 && accountsArray.length !== stock) {
-                throw new Error(
-                  `Số lượng tài khoản (${accountsArray.length}) không khớp với Stock (${stock}) của variant "${item.variant.name}"`
-                );
-              }
-            } catch (error) {
-              const errorMessage =
-                error instanceof Error ? error.message : "Lỗi không xác định";
-              throw new Error(
-                `Lỗi trong storage của variant "${item.variant.name}": ${errorMessage}`
-              );
-            }
+      const variants: ProductVariantRequest[] = [];
+      
+      for (const item of variantsWithStorage) {
+        // Validate variant name for new variants
+        if (item.variant.id <= 0 && (!item.variant.name || !item.variant.name.trim())) {
+          alert(`Vui lòng nhập tên cho biến thể mới`);
+          setLoading(false);
+          return;
+        }
+
+        // Validate variant price
+        if (!item.variant.price || item.variant.price < 0) {
+          alert(`Giá của biến thể "${item.variant.name || 'mới'}" không hợp lệ`);
+          setLoading(false);
+          return;
+        }
+
+        // Validate storage JSON if provided
+        let storages: ProductStorageRequest[] | undefined = undefined;
+        
+        if (item.storageJson && item.storageJson.trim() !== "") {
+          const validation = validateStorageJson(item.storageJson);
+          if (!validation.isValid) {
+            alert(`Lỗi trong storage của variant "${item.variant.name || 'mới'}": ${validation.error}`);
+            setLoading(false);
+            return;
           }
 
-          return {
-            // Only include id if it's positive (existing variant)
-            // Negative id means new variant, don't include id
-            id: item.variant.id > 0 ? item.variant.id : undefined,
-            name: item.variant.name,
-            price: item.variant.price,
-            stock: item.variant.stock || undefined,
-            storageJson: item.storageJson || undefined,
-          };
+          if (!validation.accounts) {
+            alert(`Lỗi trong storage của variant "${item.variant.name || 'mới'}": Không thể parse accounts`);
+            setLoading(false);
+            return;
+          }
+
+          // Check for duplicate usernames within this variant
+          const duplicateCheck = checkDuplicateUsernamesInVariant(
+            item.variant.name || 'mới',
+            item.storageJson
+          );
+          if (duplicateCheck.hasDuplicate) {
+            alert(duplicateCheck.errorMessage || `Variant "${item.variant.name || 'mới'}" có username trùng lặp. Vui lòng kiểm tra lại.`);
+            setLoading(false);
+            return;
+          }
+
+          // Validate that accounts array is not empty if stock is provided
+          if (item.variant.stock !== undefined && item.variant.stock !== null && item.variant.stock > 0 && validation.accounts.length === 0) {
+            alert(`Variant "${item.variant.name || 'mới'}": Số lượng stock > 0 nhưng không có tài khoản nào trong storage`);
+            setLoading(false);
+            return;
+          }
+
+          // Validate stock matches accounts count
+          if (item.variant.stock !== undefined && item.variant.stock !== null && validation.accounts.length > 0 && validation.accounts.length !== item.variant.stock) {
+            alert(`Variant "${item.variant.name || 'mới'}": Số lượng tài khoản (${validation.accounts.length}) không khớp với số lượng Stock (${item.variant.stock})`);
+            setLoading(false);
+            return;
+          }
+          
+          // Convert storageJson to Storages array format expected by backend
+          // Backend expects Storages as array of { result: string } where result is JSON string
+          storages = validation.accounts.map((account) => ({
+            result: JSON.stringify(account),
+          }));
         }
-      );
+
+        // Build variant object - only include storages if it's defined and has items
+        const variant: ProductVariantRequest = {
+          // Only include id if it's positive (existing variant)
+          // Negative id means new variant, don't include id
+          ...(item.variant.id > 0 && { id: item.variant.id }),
+          name: item.variant.name,
+          price: item.variant.price,
+          ...(item.variant.stock !== undefined && item.variant.stock !== null && { stock: item.variant.stock }),
+          // Only include storages if it's defined and has items
+          ...(storages && storages.length > 0 && { storages }),
+        };
+
+        variants.push(variant);
+      }
 
       setLoading(true);
       try {
-        // Update product
+        // Update product - backend will handle variant creation and storage creation
         await productServices.updateProductAsync(
           productId,
           {
@@ -557,33 +700,19 @@ const EditProductPage = () => {
           image || undefined
         );
 
-        // Update storages for each variant
-        for (const item of variantsWithStorage) {
-          if (item.storageJson && item.storageJson.trim() !== "") {
-            try {
-              const accountsArray = JSON.parse(item.storageJson);
-              if (Array.isArray(accountsArray) && accountsArray.length > 0) {
-                // Delete old storages and create new ones
-                // For now, we'll create new storages (backend should handle cleanup)
-                await productStorageServices.createStoragesAsync(
-                  item.variant.id,
-                  accountsArray
-                );
-              }
-            } catch {
-              // Continue with other variants
-            }
-          }
-        }
-
         alert("Cập nhật sản phẩm thành công!");
         navigate("/seller/products");
       } catch (error: unknown) {
         const err = error as {
           response?: {
-            data?: { message?: string; errors?: unknown };
+            data?: { 
+              message?: string; 
+              errors?: string[] | unknown;
+              error?: string;
+            };
             status?: number;
           };
+          message?: string;
         };
 
         // Extract error message
@@ -591,10 +720,29 @@ const EditProductPage = () => {
 
         if (err.response?.data?.message) {
           errorMessage = err.response.data.message;
+          
+          // If there are detailed errors, append them
+          if (err.response.data.errors) {
+            if (Array.isArray(err.response.data.errors)) {
+              errorMessage += "\n\nChi tiết lỗi:\n" + err.response.data.errors.join("\n");
+            } else if (typeof err.response.data.errors === "object") {
+              const errorList = Object.entries(err.response.data.errors)
+                .map(
+                  ([key, value]) =>
+                    `${key}: ${Array.isArray(value) ? value.join(", ") : value}`
+                )
+                .join("\n");
+              errorMessage += `\n\nChi tiết lỗi:\n${errorList}`;
+            }
+          }
+        } else if (err.response?.data?.error) {
+          errorMessage = err.response.data.error;
         } else if (err.response?.data?.errors) {
           // Handle validation errors
           const errors = err.response.data.errors;
-          if (typeof errors === "object") {
+          if (Array.isArray(errors)) {
+            errorMessage = "Lỗi validation:\n" + errors.join("\n");
+          } else if (typeof errors === "object") {
             const errorList = Object.entries(errors)
               .map(
                 ([key, value]) =>
@@ -605,6 +753,8 @@ const EditProductPage = () => {
           }
         } else if (err.response?.status) {
           errorMessage = `Lỗi ${err.response.status}. Vui lòng thử lại.`;
+        } else if (err.message) {
+          errorMessage = err.message;
         }
 
         alert(errorMessage);
@@ -836,11 +986,14 @@ const EditProductPage = () => {
             onChange={handleExcelFileChange}
             className="hidden"
           />
-          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-xs font-semibold text-yellow-800 mb-1">
-              📋 Hướng dẫn Import Excel:
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-xs font-semibold text-blue-800 mb-2">
+              📋 Lưu ý: Chỉ có thể thêm biến thể mới bằng cách Import Excel
             </p>
-            <ul className="text-xs text-yellow-700 list-disc list-inside space-y-1">
+            <p className="text-xs font-semibold text-blue-800 mb-1">
+              Hướng dẫn Import Excel:
+            </p>
+            <ul className="text-xs text-blue-700 list-disc list-inside space-y-1">
               <li>
                 File Excel phải có header ở dòng đầu tiên với các cột:{" "}
                 <strong>Tên</strong>, <strong>Giá</strong>,{" "}
@@ -852,18 +1005,26 @@ const EditProductPage = () => {
               </li>
               <li>
                 Storage JSON (nếu có) phải là một mảng JSON hợp lệ, ví dụ:{" "}
-                <code className="bg-yellow-100 px-1 rounded">
+                <code className="bg-blue-100 px-1 rounded">
                   {`[{"username": "user1", "password": "pass1", "status": false}]`}
                 </code>
+              </li>
+              <li>
+                Các biến thể mới từ Excel sẽ được đánh dấu <span className="text-green-600 font-semibold">"(Mới từ Excel)"</span> và có thể xóa trước khi lưu
               </li>
             </ul>
           </div>
           {loadingVariants ? (
             <p className="text-sm text-gray-500">Đang tải biến thể...</p>
           ) : variantsWithStorage.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">
-              Sản phẩm này chưa có biến thể nào.
-            </p>
+            <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600 mb-2">
+                Sản phẩm này chưa có biến thể nào.
+              </p>
+              <p className="text-xs text-gray-500">
+                Import Excel để thêm biến thể.
+              </p>
+            </div>
           ) : (
             <div className="space-y-4">
               {variantsWithStorage.map((item, variantIndex) => (
@@ -871,11 +1032,28 @@ const EditProductPage = () => {
                   key={item.variant.id}
                   className="p-4 border border-gray-200 rounded-lg bg-gray-50"
                 >
-                  <h4 className="text-sm font-semibold text-gray-800 mb-3">
-                    Biến thể #{variantIndex + 1}: {item.variant.name}
-                  </h4>
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-sm font-semibold text-gray-800">
+                      Biến thể #{variantIndex + 1}: {item.variant.name || "Biến thể"}
+                      {item.variant.id <= 0 && (
+                        <span className="ml-2 text-xs text-green-600 font-normal">
+                          (Mới từ Excel)
+                        </span>
+                      )}
+                    </h4>
+                    {/* Chỉ cho phép xóa variant mới (ID âm) - từ import Excel */}
+                    {item.variant.id <= 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveVariant(variantIndex)}
+                        className="px-2 py-1 text-xs text-red-600 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
+                      >
+                        Xóa
+                      </button>
+                    )}
+                    </div>
 
-                  <div className="grid grid-cols-3 gap-4 mb-3">
+                    <div className="grid grid-cols-3 gap-4 mb-3">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Tên biến thể
@@ -932,36 +1110,63 @@ const EditProductPage = () => {
                         className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
-                  </div>
+                    </div>
 
-                  {/* Storage for this variant */}
-                  <div className="mt-3">
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Product Storage (JSON) - Mảng tài khoản
-                      {item.variant.stock !== undefined &&
-                        item.variant.stock !== null &&
-                        item.variant.stock > 0 && (
-                          <span className="ml-2 text-red-600 font-semibold">
-                            (Cần đúng {item.variant.stock} tài khoản)
-                          </span>
+                    {/* Storage for this variant */}
+                    <div className="mt-3">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Product Storage (JSON) - Mảng tài khoản
+                        {item.variant.stock !== undefined &&
+                          item.variant.stock !== null &&
+                          item.variant.stock > 0 && (
+                            <span className="ml-2 text-red-600 font-semibold">
+                              (Cần đúng {item.variant.stock} tài khoản)
+                            </span>
+                          )}
+                      </label>
+                      <div className="relative">
+                        <textarea
+                          value={item.storageJson}
+                          onChange={(e) =>
+                            handleStorageChange(variantIndex, e.target.value)
+                          }
+                          placeholder={`[{"username": "user1", "password": "pass1", "status": false}, {"username": "user2", "password": "pass2", "status": false}]`}
+                          rows={6}
+                          className="w-full px-3 py-2 text-xs font-mono border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {item.storageJson && (
+                          <div className="mt-1 text-xs text-gray-600">
+                            Số tài khoản hiện có: {(() => {
+                              try {
+                                const parsed = JSON.parse(item.storageJson);
+                                return Array.isArray(parsed) ? parsed.length : 0;
+                              } catch {
+                                return 0;
+                              }
+                            })()}
+                            {item.variant.stock !== undefined && item.variant.stock !== null && item.variant.stock > 0 && (
+                              <span className={(() => {
+                                try {
+                                  const parsed = JSON.parse(item.storageJson);
+                                  const count = Array.isArray(parsed) ? parsed.length : 0;
+                                  return count === item.variant.stock ? " text-green-600" : " text-red-600";
+                                } catch {
+                                  return " text-red-600";
+                                }
+                              })()}>
+                                {" "}/ {item.variant.stock} (Stock)
+                              </span>
+                            )}
+                          </div>
                         )}
-                    </label>
-                    <textarea
-                      value={item.storageJson}
-                      onChange={(e) =>
-                        handleStorageChange(variantIndex, e.target.value)
-                      }
-                      placeholder={`[{"username": "user1", "password": "pass1", "status": false}, {"username": "user2", "password": "pass2", "status": false}]`}
-                      rows={6}
-                      className="w-full px-3 py-2 text-xs font-mono border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      💡 Nhập mảng JSON chứa tài khoản. Số lượng tài khoản phải
-                      khớp với Stock.
-                    </p>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        💡 Nhập mảng JSON chứa tài khoản. Số lượng tài khoản phải
+                        khớp với Stock. Username không được trùng lặp trong cùng một variant.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>

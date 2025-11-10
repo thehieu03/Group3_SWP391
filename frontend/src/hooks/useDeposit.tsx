@@ -45,7 +45,7 @@ export const useDeposit = (pollInterval: number = 300000): UseDepositReturn => {
           }
         }
       } catch (err) {
-        console.error("Error checking deposit status:", err);
+        // Error handled silently - polling will retry
       }
     }, pollInterval);
 

@@ -328,6 +328,8 @@ public class ProductsController : ControllerBase
             // Update variants if provided
             if (productRequest.Variants != null && productRequest.Variants.Any())
             {
+                var variantErrors = new List<string>();
+                
                 foreach (var variantRequest in productRequest.Variants)
                 {
                     // If variant has ID, update existing variant
@@ -348,11 +350,72 @@ public class ProductsController : ControllerBase
 
                         if (!variantSuccess)
                         {
-                            // Variant update failed, continue with other variants
+                            variantErrors.Add($"Failed to update variant '{variantRequest.Name}': {variantError}");
                         }
                     }
-                    // If variant doesn't have ID, create new variant (optional - for future use)
+                    // If variant doesn't have ID, create new variant
+                    else
+                    {
+                        // Validate required fields for new variant
+                        if (string.IsNullOrWhiteSpace(variantRequest.Name))
+                        {
+                            variantErrors.Add("Variant name is required for new variants");
+                            continue;
+                        }
+
+                        if (!variantRequest.Price.HasValue || variantRequest.Price.Value < 0)
+                        {
+                            variantErrors.Add($"Variant '{variantRequest.Name}' has invalid price");
+                            continue;
+                        }
+
+                        var createRequest = new ProductVariantRequest
+                        {
+                            ProductId = product.Id,
+                            Name = variantRequest.Name,
+                            Price = variantRequest.Price,
+                            Stock = variantRequest.Stock
+                        };
+
+                        var (variantSuccess, variantError, variantId) = await _productVariantServices.CreateProductVariantAsync(createRequest);
+                        
+                        if (!variantSuccess)
+                        {
+                            variantErrors.Add($"Failed to create variant '{variantRequest.Name}': {variantError}");
+                            continue;
+                        }
+
+                        if (!variantId.HasValue)
+                        {
+                            variantErrors.Add($"Failed to create variant '{variantRequest.Name}': Variant ID is invalid");
+                            continue;
+                        }
+
+                        // Create storages for new variant if provided
+                        if (variantRequest.Storages != null && variantRequest.Storages.Any())
+                        {
+                            var (storageSuccess, storageError) = await CreateStoragesForVariantAsync(variantId.Value, variantRequest.Storages);
+                            
+                            if (!storageSuccess)
+                            {
+                                variantErrors.Add($"Failed to create storages for variant '{variantRequest.Name}': {storageError}");
+                                // Note: Variant was created but storages failed, this is logged but doesn't prevent product update
+                            }
+                        }
+                    }
                 }
+
+                // If there are critical errors (variant creation failures), return error
+                if (variantErrors.Any(e => e.Contains("Failed to create variant")))
+                {
+                    return BadRequest(new { 
+                        message = "Failed to create some variants", 
+                        errors = variantErrors 
+                    });
+                }
+
+                // If there are only storage errors, log them but don't fail the entire update
+                // (variants were created successfully, storages can be added later)
             }
 
             return Ok(new { message = "Product updated successfully", productId = product.Id });
@@ -405,18 +468,24 @@ public class ProductsController : ControllerBase
             
             if (!variantSuccess)
             {
+                // Log error but continue with other variants
                 continue;
             }
 
             // Create storages for variant if provided
             if (variantRequest.Storages != null && variantRequest.Storages.Any() && variantId.HasValue)
             {
-                await CreateStoragesForVariantAsync(variantId.Value, variantRequest.Storages);
+                var (storageSuccess, storageError) = await CreateStoragesForVariantAsync(variantId.Value, variantRequest.Storages);
+                if (!storageSuccess)
+                {
+                    // Log error but continue with other variants
+                    // Storage creation failure doesn't prevent variant creation
+                }
             }
         }
     }
 
-    private async Task CreateStoragesForVariantAsync(int variantId, IEnumerable<ProductVariantStorageItem> storageItems)
+    private async Task<(bool Success, string? ErrorMessage)> CreateStoragesForVariantAsync(int variantId, IEnumerable<ProductVariantStorageItem> storageItems)
     {
         try
         {
@@ -424,7 +493,7 @@ public class ProductsController : ControllerBase
             
             if (!accounts.Any())
             {
-                return;
+                return (true, null); // No storages to create is not an error
             }
 
             var storageRequest = new ProductStorageRequest
@@ -437,12 +506,14 @@ public class ProductsController : ControllerBase
 
             if (!storageSuccess)
             {
-                // Storage creation failed, continue with other variants
+                return (false, storageError ?? "Unknown error creating storages");
             }
+
+            return (true, null);
         }
         catch (Exception ex)
         {
-            // Error creating storages, continue with other variants
+            return (false, $"Exception creating storages: {ex.Message}");
         }
     }
 
