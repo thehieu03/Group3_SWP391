@@ -320,7 +320,7 @@ public class OrderServices : BaseServices<Order>, IOrderServices
                 Amount = message.TotalPrice
             };
 
-            _rabbitMQService?.PublishToPaymentQueue(paymentMessage);
+            _rabbitMQService?.PublishToQueue(paymentMessage, QueueType.PaymentQueue);
         }
         catch (Exception ex)
         {

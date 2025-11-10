@@ -9,6 +9,7 @@ using Mmo_Application.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using Mmo_Application.Exceptions;
+using Mmo_Domain.Enum;
 using RabbitMQModel = RabbitMQ.Client.IModel;
 
 namespace Mmo_Application.Services;
@@ -22,6 +23,19 @@ public class RabbitMQService : IRabbitMQService, IDisposable
     private readonly string _orderQueueName = "order_queue";
     private readonly string _paymentQueueName = "payment_queue";
     private readonly IServiceProvider _serviceProvider;
+    
+    /// <summary>
+    /// Maps QueueType enum to actual queue name
+    /// </summary>
+    private string GetQueueName(QueueType queueType)
+    {
+        return queueType switch
+        {
+            QueueType.OrderQueue => _orderQueueName,
+            QueueType.PaymentQueue => _paymentQueueName,
+            _ => throw new ArgumentException($"Unknown queue type: {queueType}", nameof(queueType))
+        };
+    }
 
     public RabbitMQService(
         IConfiguration configuration,
@@ -83,11 +97,19 @@ public class RabbitMQService : IRabbitMQService, IDisposable
         }
     }
 
-    public void PublishToOrderQueue<T>(T message)
+    /// <summary>
+    /// Generic method to publish message to a RabbitMQ queue
+    /// </summary>
+    /// <typeparam name="T">Message type</typeparam>
+    /// <param name="message">Message to publish</param>
+    /// <param name="queueType">Queue type enum</param>
+    public void PublishToQueue<T>(T message, QueueType queueType)
     {
+        var queueName = GetQueueName(queueType);
+        
         if (_channel == null || _connection == null || !_connection.IsOpen)
         {
-            _logger.LogWarning("RabbitMQ connection is not available. Cannot publish to Order Queue.");
+            _logger.LogWarning("RabbitMQ connection is not available. Cannot publish to queue: {QueueName}.", queueName);
             return;
         }
 
@@ -101,46 +123,15 @@ public class RabbitMQService : IRabbitMQService, IDisposable
 
             _channel.BasicPublish(
                 exchange: "",
-                routingKey: _orderQueueName,
+                routingKey: queueName,
                 basicProperties: properties,
                 body: body);
 
-            _logger.LogInformation("Message published to Order Queue: {Message}", json);
+            _logger.LogInformation("Message published to queue {QueueName}: {Message}", queueName, json);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error publishing message to Order Queue");
-            throw;
-        }
-    }
-
-    public void PublishToPaymentQueue<T>(T message)
-    {
-        if (_channel == null || _connection == null || !_connection.IsOpen)
-        {
-            _logger.LogWarning("RabbitMQ connection is not available. Cannot publish to Payment Queue.");
-            return;
-        }
-
-        try
-        {
-            var json = JsonSerializer.Serialize(message);
-            var body = Encoding.UTF8.GetBytes(json);
-
-            var properties = _channel.CreateBasicProperties();
-            properties.Persistent = true;
-
-            _channel.BasicPublish(
-                exchange: "",
-                routingKey: _paymentQueueName,
-                basicProperties: properties,
-                body: body);
-
-            _logger.LogInformation("Message published to Payment Queue: {Message}", json);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error publishing message to Payment Queue");
+            _logger.LogError(ex, "Error publishing message to queue {QueueName}", queueName);
             throw;
         }
     }
