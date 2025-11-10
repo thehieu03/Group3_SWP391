@@ -185,10 +185,19 @@ const ProductDetails = () => {
         }
 
         // Create order
-        await orderServices.createOrderAsync(productVariantId, quantity);
+        const orderResult = await orderServices.createOrderAsync(
+          productVariantId,
+          quantity
+        );
 
         setPurchaseSuccess(true);
         setPurchaseError(null);
+
+        // Redirect to order receipt page if orderId is available
+        if (orderResult.orderId) {
+          navigate(routesConfig.getOrderReceiptUrl(orderResult.orderId));
+          return;
+        }
 
         // Reload balance after purchase
         try {

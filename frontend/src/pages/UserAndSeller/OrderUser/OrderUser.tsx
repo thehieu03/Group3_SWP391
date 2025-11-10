@@ -4,7 +4,7 @@ import type { OrderUserResponse } from "@models/modelResponse/OrderUserResponse.
 import { orderServices } from "@services/OrderServices.ts";
 import { feedbackServices } from "@services/FeedbackServices.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBox, faMessage, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faBox, faMessage, faStar, faTimes, faCopy, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import {
   formatPrice,
   formatDate,
@@ -23,9 +23,12 @@ const OrderUser = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchMessage, setSearchMessage] = useState<string | null>(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showOrderDetailsModal, setShowOrderDetailsModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderUserResponse | null>(
     null
   );
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState<OrderUserResponse | null>(null);
+  const [loadingOrderDetails, setLoadingOrderDetails] = useState(false);
   const [rating, setRating] = useState(0);
   const [feedbackText, setFeedbackText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,7 +124,7 @@ const OrderUser = () => {
     navigate(`/seller/${encodeURIComponent(sellerName)}`);
   };
 
-  const handleMessageClick = (sellerName: string, orderId: string) => {
+  const handleMessageClick = (sellerName: string, orderId: number) => {
     navigate(`/messages/${encodeURIComponent(sellerName)}?orderId=${orderId}`);
   };
 
@@ -130,6 +133,24 @@ const OrderUser = () => {
     setRating(0);
     setFeedbackText("");
     setShowFeedbackModal(true);
+  };
+
+  const handleViewOrderDetails = async (orderId: number) => {
+    try {
+      setLoadingOrderDetails(true);
+      const orderDetails = await orderServices.getUserOrderDetailsAsync(orderId);
+      setSelectedOrderDetails(orderDetails);
+      setShowOrderDetailsModal(true);
+    } catch (err) {
+      // Error handled silently - user can retry
+    } finally {
+      setLoadingOrderDetails(false);
+    }
+  };
+
+  const handleCloseOrderDetailsModal = () => {
+    setShowOrderDetailsModal(false);
+    setSelectedOrderDetails(null);
   };
 
   const handleCloseModal = () => {
@@ -146,12 +167,12 @@ const OrderUser = () => {
 
     setIsSubmitting(true);
     try {
-      await feedbackServices.createFeedbackAsync({
-        orderId: parseInt(selectedOrder.orderId, 10),
-        productId: selectedOrder.productId,
-        rating,
-        comment: feedbackText,
-      });
+        await feedbackServices.createFeedbackAsync({
+          orderId: selectedOrder.orderId,
+          productId: selectedOrder.productId,
+          rating,
+          comment: feedbackText,
+        });
 
       // Update local state to mark as feedback
       setOrderUser((orders) =>
@@ -367,9 +388,6 @@ const OrderUser = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Mã đơn hàng
-                </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Thao tác
                 </th>
@@ -400,11 +418,18 @@ const OrderUser = () => {
               {orderUser.length > 0 ? (
                 orderUser.map((order, index) => (
                   <tr key={order.orderId || index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {order.orderId}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center justify-center gap-3">
+                        <Button
+                          className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
+                          onClick={() => handleViewOrderDetails(order.orderId)}
+                          title="Xem chi tiết đơn hàng"
+                        >
+                          <FontAwesomeIcon
+                            icon={faBox}
+                            className="w-5 h-5"
+                          />
+                        </Button>
                         <Button
                           className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-full transition-colors"
                           onClick={() =>
@@ -472,7 +497,7 @@ const OrderUser = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="px-6 py-12 text-center">
+                  <td colSpan={8} className="px-6 py-12 text-center">
                     <div className="text-center">
                       <div className="text-gray-400 text-4xl mb-4">
                         <FontAwesomeIcon icon={faBox} className="text-4xl" />
@@ -679,6 +704,149 @@ const OrderUser = () => {
                 className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? "Đang gửi..." : "Gửi feedback"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Details Modal */}
+      {showOrderDetailsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">Chi tiết đơn hàng</h2>
+              <button
+                onClick={handleCloseOrderDetailsModal}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <FontAwesomeIcon icon={faTimes} size="lg" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {loadingOrderDetails ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <FontAwesomeIcon
+                    icon={faSpinner}
+                    className="animate-spin text-green-600 text-4xl mb-4"
+                  />
+                  <p className="text-gray-600">Đang tải thông tin đơn hàng...</p>
+                </div>
+              ) : selectedOrderDetails ? (
+                <>
+                  {/* Order Info */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-500">Mã đơn hàng</p>
+                        <p className="text-lg font-semibold text-gray-900">
+                          #{selectedOrderDetails.orderId}
+                        </p>
+                      </div>
+                      <div
+                        className={`px-4 py-2 rounded-lg border ${
+                          selectedOrderDetails.status === "Completed" || selectedOrderDetails.status === "Delivered"
+                            ? "text-green-600 bg-green-50 border-green-200"
+                            : selectedOrderDetails.status === "Pending"
+                            ? "text-yellow-600 bg-yellow-50 border-yellow-200"
+                            : selectedOrderDetails.status === "Processing"
+                            ? "text-blue-600 bg-blue-50 border-blue-200"
+                            : "text-gray-600 bg-gray-50 border-gray-200"
+                        }`}
+                      >
+                        <span className="font-medium">
+                          {getStatusText(selectedOrderDetails.status)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                      <div>
+                        <p className="text-sm text-gray-500">Ngày đặt hàng</p>
+                        <p className="text-gray-900">{formatDate(selectedOrderDetails.orderDate)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Số lượng</p>
+                        <p className="text-gray-900">{selectedOrderDetails.quantity}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                    <p className="text-sm text-gray-500">Sản phẩm</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {selectedOrderDetails.productName}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      <div>
+                        <p className="text-sm text-gray-500">Cửa hàng</p>
+                        <p className="text-gray-900">{selectedOrderDetails.shopName}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Người bán</p>
+                        <p className="text-gray-900">{selectedOrderDetails.sellerName}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Total Price */}
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold text-gray-900">
+                        Tổng tiền:
+                      </span>
+                      <span className="text-2xl font-bold text-green-600">
+                        {formatPrice(selectedOrderDetails.totalPrice)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Payload JSON */}
+                  {selectedOrderDetails.payload && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-gray-700">
+                          Thông tin tài khoản (Payload JSON)
+                        </p>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedOrderDetails.payload || "");
+                          }}
+                          className="flex items-center gap-2 px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                          Sao chép
+                        </button>
+                      </div>
+                      <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                        <pre className="text-sm text-green-400 font-mono">
+                          {(() => {
+                            try {
+                              const parsed = JSON.parse(selectedOrderDetails.payload || "");
+                              return JSON.stringify(parsed, null, 2);
+                            } catch {
+                              return selectedOrderDetails.payload;
+                            }
+                          })()}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : null}
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4">
+              <Button
+                onClick={handleCloseOrderDetailsModal}
+                className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
+                Đóng
               </Button>
             </div>
           </div>

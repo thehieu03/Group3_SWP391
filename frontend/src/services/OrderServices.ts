@@ -286,6 +286,13 @@ class OrderServices {
     });
     return response;
   }
+
+  async getUserOrderDetailsAsync(orderId: number): Promise<OrderUserResponse> {
+    const response = await httpGet<OrderUserResponse>(
+      `orders/${orderId}/user-details`
+    );
+    return response;
+  }
 }
 
 export const orderServices = new OrderServices();

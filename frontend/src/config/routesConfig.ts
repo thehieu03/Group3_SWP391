@@ -23,10 +23,12 @@ const routesConfig = {
   getCategoryProductsUrl: (id: number) => `/category/${id}`,
   changePasswordUrl: "/changePassword",
   userOrder: "/userOrder",
+  orderReceipt: "/order-receipt",
   sellerDashboard: "/seller/dashboard",
   sellerProducts: "/seller/products",
   sellerOrders: "/seller/orders",
-  sellerShop: "/seller/shop"
+  sellerShop: "/seller/shop",
+  getOrderReceiptUrl: (orderId: number) => `/order-receipt/${orderId}`
 };
 
 export default routesConfig;

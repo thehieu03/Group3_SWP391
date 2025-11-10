@@ -24,6 +24,7 @@ import PaymentHistory from "@pages/UserAndSeller/PaymentHistory/PaymentHistory.t
 import SellerLayout from "@components/Layouts/SellerLayout/SellerLayout.tsx";
 import SellerShop from "@pages/UserAndSeller/SellerShop/SellerShop.tsx";
 import SellerOrders from "@pages/UserAndSeller/SellerOrders/SellerOrders.tsx";
+import OrderReceiptPage from "@pages/UserAndSeller/OrderReceipt/OrderReceiptPage.tsx";
 
 /**
  * Định nghĩa cấu trúc route trong ứng dụng
@@ -114,6 +115,12 @@ const sharedRoutes: AppRoute[] = [
   {
     path: routesConfig.deposit,
     element: <Deposit />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.orderReceipt + "/:orderId",
+    element: <OrderReceiptPage />,
     layout: DefaultLayout,
     requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },

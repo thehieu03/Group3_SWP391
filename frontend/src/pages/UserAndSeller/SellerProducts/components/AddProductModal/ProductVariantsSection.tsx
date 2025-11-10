@@ -1,4 +1,5 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
+import type { RefObject } from "react";
 import type { ProductVariantRequest } from "@/models/modelRequest/ProductRequest";
 import VariantItem from "./VariantItem";
 import ExcelImportGuide from "./ExcelImportGuide";
@@ -13,6 +14,8 @@ interface ProductVariantsSectionProps {
     value: string | number
   ) => void;
   onStorageChange: (variantIndex: number, value: string) => void;
+  fileInputRef: RefObject<HTMLInputElement | null>;
+  onImportClick: () => void;
   onExcelFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -23,13 +26,10 @@ const ProductVariantsSection = memo(
     onRemoveVariant,
     onVariantChange,
     onStorageChange,
+    fileInputRef,
+    onImportClick,
     onExcelFileChange,
   }: ProductVariantsSectionProps) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleImportClick = () => {
-      fileInputRef.current?.click();
-    };
 
     return (
       <div className="border-t pt-4">
@@ -40,7 +40,7 @@ const ProductVariantsSection = memo(
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={handleImportClick}
+              onClick={onImportClick}
               className="px-3 py-1 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center gap-1"
             >
               <svg

@@ -1,5 +1,5 @@
 export interface OrderUserResponse {
-  orderId: string;
+  orderId: number;
   orderDate: string;
   productId: number;
   productName: string;
@@ -8,5 +8,6 @@ export interface OrderUserResponse {
   quantity: number;
   totalPrice: number;
   status: string;
+  payload?: string;
   hasFeedback: boolean;
 }

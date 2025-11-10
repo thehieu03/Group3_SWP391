@@ -101,7 +101,7 @@ const VariantItem = memo(
             )}
           </label>
 
-          {/* Format mẫu */}
+          {/* Format mẫu và hướng dẫn */}
           <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-xs font-semibold text-blue-800 mb-1">
               📋 Format JSON mẫu - Mảng tài khoản (Copy và dán vào ô bên dưới):
@@ -132,17 +132,45 @@ const VariantItem = memo(
               chưa bán,{" "}
               <code className="bg-blue-100 px-1 rounded">status: true</code> =
               đã bán
+              <br />• Username không được trùng lặp trong cùng một variant
             </p>
           </div>
 
-          {/* Textarea duy nhất cho mảng JSON */}
-          <textarea
-            value={variant.storageJson || ""}
-            onChange={(e) => onStorageChange(variantIndex, e.target.value)}
-            placeholder={`[{"username": "user1", "password": "pass1", "status": false}, {"username": "user2", "password": "pass2", "status": false}]`}
-            rows={8}
-            className="w-full px-3 py-2 text-xs font-mono border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          {/* Textarea cho mảng JSON */}
+          <div className="relative">
+            <textarea
+              value={variant.storageJson || ""}
+              onChange={(e) => onStorageChange(variantIndex, e.target.value)}
+              placeholder={`[{"username": "user1", "password": "pass1", "status": false}, {"username": "user2", "password": "pass2", "status": false}]`}
+              rows={8}
+              className="w-full px-3 py-2 text-xs font-mono border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {variant.storageJson && (
+              <div className="mt-1 text-xs text-gray-600">
+                Số tài khoản hiện có: {(() => {
+                  try {
+                    const parsed = JSON.parse(variant.storageJson);
+                    return Array.isArray(parsed) ? parsed.length : 0;
+                  } catch {
+                    return 0;
+                  }
+                })()}
+                {variant.stock !== undefined && variant.stock > 0 && (
+                  <span className={(() => {
+                    try {
+                      const parsed = JSON.parse(variant.storageJson);
+                      const count = Array.isArray(parsed) ? parsed.length : 0;
+                      return count === variant.stock ? " text-green-600" : " text-red-600";
+                    } catch {
+                      return " text-red-600";
+                    }
+                  })()}>
+                    {" "}/ {variant.stock} (Stock)
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
           <p className="text-xs text-gray-500 mt-1">
             💡 <strong>Ví dụ:</strong> Nếu Stock = 2, bạn cần nhập mảng có đúng
             2 tài khoản:
