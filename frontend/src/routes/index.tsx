@@ -139,31 +139,31 @@ const customerRoutes: AppRoute[] = [
 // ============================================================================
 const sellerRoutes: AppRoute[] = [
   {
-    path: "/seller/dashboard",
+    path: routesConfig.sellerDashboard,
     element: <SellerDashboard />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
   {
-    path: "/seller/products",
+    path: routesConfig.sellerProducts,
     element: <SellerProducts />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
   {
-    path: "/seller/products/edit/:id",
+    path: routesConfig.sellerProducts + "/edit/:id",
     element: <EditProductPage />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
   {
-    path: "/seller/orders",
+    path: routesConfig.sellerOrders,
     element: <SellerOrders />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
   },
   {
-    path: "/seller/shop",
+    path: routesConfig.sellerShop,
     element: <SellerShop />,
     layout: SellerLayout,
     requiredRoles: ["SELLER"],
@@ -175,13 +175,13 @@ const sellerRoutes: AppRoute[] = [
 // ============================================================================
 const adminRoutes: AppRoute[] = [
   {
-    path: "/admin/dashboard",
+    path: routesConfig.adminDashboard,
     element: <AdminPanel />,
     layout: AdminLayoutNoHeader,
     requiredRoles: ["ADMIN"],
   },
   {
-    path: "/admin/products",
+    path: routesConfig.adminProducts,
     element: <AdminProductManagement />,
     layout: AdminLayoutNoHeader,
     requiredRoles: ["ADMIN"],

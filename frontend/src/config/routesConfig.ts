@@ -28,7 +28,10 @@ const routesConfig = {
   sellerProducts: "/seller/products",
   sellerOrders: "/seller/orders",
   sellerShop: "/seller/shop",
-  getOrderReceiptUrl: (orderId: number) => `/order-receipt/${orderId}`
+  adminDashboard: "/admin/dashboard",
+  adminProducts: "/admin/products",
+  orders: "/userOrder", // Alias cho userOrder để tương thích với code cũ
+  getOrderReceiptUrl: (orderId: number) => `/order-receipt/${orderId}`,
 };
 
 export default routesConfig;

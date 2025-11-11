@@ -35,7 +35,7 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
-      navigate(routesConfig.login);
+      navigate(routesConfig.loginValidator);
     }
   }, [isLoggedIn, loading, navigate]);
 

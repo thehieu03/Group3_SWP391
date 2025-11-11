@@ -39,7 +39,7 @@ const UserMenu = () => {
         </li>
         {user?.roles.includes("SELLER") && (
           <li>
-            <Button to="/seller/dashboard">Quản lý shop</Button>
+            <Button to={routesConfig.sellerDashboard}>Quản lý shop</Button>
           </li>
         )}
         <li>
