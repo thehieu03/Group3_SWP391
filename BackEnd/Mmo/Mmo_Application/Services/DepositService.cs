@@ -32,10 +32,9 @@ public class DepositService : IDepositService
             throw new ArgumentException("Amount must be greater than 0", nameof(request));
         }
 
-        // Generate unique reference code
+        // ref code 
         var referenceCode = GenerateReferenceCode(userId);
 
-        // Tạo transaction với status PENDING
         var transaction = new Paymenttransaction
         {
             UserId = userId,
@@ -50,7 +49,7 @@ public class DepositService : IDepositService
 
         await _paymentTransactionServices.AddAsync(transaction);
 
-        // Generate QR code URL
+        // QR code URL
         var qrCodeUrl = _vietQRService.GenerateQRCodeUrl(request.Amount, referenceCode);
 
         return new DepositResponse
@@ -119,7 +118,7 @@ public class DepositService : IDepositService
             throw new InvalidOperationException("Transaction is missing required information");
         }
 
-        // Query SePay API để verify
+        // sePay verify
         var isVerified = await _sePayService.VerifyTransactionAsync(
             transaction.ReferenceCode, 
             transaction.Amount, 
@@ -131,7 +130,7 @@ public class DepositService : IDepositService
             transaction.UpdatedAt = DateTime.Now;
             await _paymentTransactionServices.UpdateAsync(transaction);
 
-            // Cập nhật balance của user
+            // update bal 
             var processResult = await _paymentTransactionServices.ProcessSuccessfulTransactionAsync(transactionId);
 
             return new VerifyDepositResponse
