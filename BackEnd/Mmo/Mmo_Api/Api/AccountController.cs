@@ -590,7 +590,7 @@ public class AccountController : ControllerBase
     /// <param name="request">Thông tin cần cập nhật</param>
     /// <returns>Kết quả cập nhật</returns>
     [HttpPut("profile")]
-    [Authorize] // Yêu cầu authentication
+    [Authorize]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

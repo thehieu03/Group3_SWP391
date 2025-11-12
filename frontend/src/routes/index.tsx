@@ -56,11 +56,6 @@ const publicRoutes: AppRoute[] = [
     layout: DefaultLayout,
   },
   {
-    path: routesConfig.registerShop,
-    element: <RegisterShop />,
-    layout: DefaultLayout,
-  },
-  {
     path: routesConfig.loginValidator,
     element: <LoginValidator />,
     layout: DefaultLayout,
@@ -121,6 +116,12 @@ const sharedRoutes: AppRoute[] = [
   {
     path: routesConfig.orderReceipt + "/:orderId",
     element: <OrderReceiptPage />,
+    layout: DefaultLayout,
+    requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
+  },
+  {
+    path: routesConfig.registerShop,
+    element: <RegisterShop />,
     layout: DefaultLayout,
     requiredRoles: ["CUSTOMER", "SELLER", "ADMIN"],
   },

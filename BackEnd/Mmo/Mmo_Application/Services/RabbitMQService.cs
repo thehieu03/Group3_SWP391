@@ -23,7 +23,7 @@ public class RabbitMQService : IRabbitMQService, IDisposable
     private readonly string _orderQueueName = "order_queue";
     private readonly string _paymentQueueName = "payment_queue";
     private readonly IServiceProvider _serviceProvider;
-    
+
     /// <summary>
     /// Maps QueueType enum to actual queue name
     /// </summary>
@@ -77,17 +77,17 @@ public class RabbitMQService : IRabbitMQService, IDisposable
 
             // Declare queues
             _channel.QueueDeclare(
-                queue: _orderQueueName, 
-                durable: true, 
-                exclusive: false, 
-                autoDelete: false, 
-                arguments: null);
+                _orderQueueName,
+                true,
+                false,
+                false,
+                null);
             _channel.QueueDeclare(
-                queue: _paymentQueueName, 
-                durable: true, 
-                exclusive: false, 
-                autoDelete: false, 
-                arguments: null);
+                _paymentQueueName,
+                true,
+                false,
+                false,
+                null);
 
             _logger.LogInformation("RabbitMQ connection established successfully");
         }
@@ -106,10 +106,11 @@ public class RabbitMQService : IRabbitMQService, IDisposable
     public void PublishToQueue<T>(T message, QueueType queueType)
     {
         var queueName = GetQueueName(queueType);
-        
+
         if (_channel == null || _connection == null || !_connection.IsOpen)
         {
-            _logger.LogWarning("RabbitMQ connection is not available. Cannot publish to queue: {QueueName}.", queueName);
+            _logger.LogWarning("RabbitMQ connection is not available. Cannot publish to queue: {QueueName}.",
+                queueName);
             return;
         }
 
@@ -122,10 +123,10 @@ public class RabbitMQService : IRabbitMQService, IDisposable
             properties.Persistent = true;
 
             _channel.BasicPublish(
-                exchange: "",
-                routingKey: queueName,
-                basicProperties: properties,
-                body: body);
+                string.Empty,
+                queueName,
+                properties,
+                body);
 
             _logger.LogInformation("Message published to queue {QueueName}: {Message}", queueName, json);
         }
@@ -179,54 +180,55 @@ public class RabbitMQService : IRabbitMQService, IDisposable
                 var orderServices = scope.ServiceProvider.GetRequiredService<IOrderServices>();
 
                 var orderMessage = JsonSerializer.Deserialize<OrderQueueMessage>(message);
-                if (orderMessage != null)
-                {
-                    await orderServices.ProcessOrderFromQueueAsync(orderMessage);
-                }
+                if (orderMessage != null) await orderServices.ProcessOrderFromQueueAsync(orderMessage);
 
-                _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
+                _channel.BasicAck(deliveryTag, false);
                 _logger.LogInformation("Order Queue: Message processed successfully");
             }
             catch (DbUpdateException dbEx)
             {
                 var orderMessage = JsonSerializer.Deserialize<OrderQueueMessage>(message);
-                _logger.LogError(dbEx, "Order Queue: Database error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}", 
+                _logger.LogError(dbEx,
+                    "Order Queue: Database error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}",
                     orderMessage?.OrderId ?? 0, message, JsonSerializer.Serialize(orderMessage));
-                
+
                 // Don't requeue - send to Dead Letter Queue
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                _channel.BasicNack(deliveryTag, false, false);
             }
             catch (MySqlException mysqlEx)
             {
                 var orderMessage = JsonSerializer.Deserialize<OrderQueueMessage>(message);
-                _logger.LogError(mysqlEx, "Order Queue: MySQL error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}", 
+                _logger.LogError(mysqlEx,
+                    "Order Queue: MySQL error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}",
                     orderMessage?.OrderId ?? 0, message, JsonSerializer.Serialize(orderMessage));
-                
+
                 // Don't requeue - send to Dead Letter Queue
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                _channel.BasicNack(deliveryTag, false, false);
             }
             catch (BusinessException businessEx)
             {
                 var orderMessage = JsonSerializer.Deserialize<OrderQueueMessage>(message);
-                _logger.LogWarning(businessEx, "Order Queue: Business error (order already marked as Failed) - OrderId: {OrderId}, Message: {Message}", 
+                _logger.LogWarning(businessEx,
+                    "Order Queue: Business error (order already marked as Failed) - OrderId: {OrderId}, Message: {Message}",
                     orderMessage?.OrderId ?? 0, businessEx.Message);
-                
+
                 // Business exceptions: order already handled (marked as Failed), acknowledge message
-                _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
+                _channel.BasicAck(deliveryTag, false);
             }
             catch (Exception ex)
             {
                 var orderMessage = JsonSerializer.Deserialize<OrderQueueMessage>(message);
-                _logger.LogError(ex, "Order Queue: Error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}", 
+                _logger.LogError(ex,
+                    "Order Queue: Error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}",
                     orderMessage?.OrderId ?? 0, message, JsonSerializer.Serialize(orderMessage));
-                
+
                 // For other exceptions, don't requeue to avoid infinite loops
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                _channel.BasicNack(deliveryTag, false, false);
             }
         };
 
-        _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-        _channel.BasicConsume(queue: _orderQueueName, autoAck: false, consumer: consumer);
+        _channel.BasicQos(0, 1, false);
+        _channel.BasicConsume(_orderQueueName, false, consumer);
     }
 
     private void StartPaymentQueueConsumer()
@@ -250,53 +252,55 @@ public class RabbitMQService : IRabbitMQService, IDisposable
 
                 var paymentMessage = JsonSerializer.Deserialize<PaymentQueueMessage>(message);
                 if (paymentMessage != null)
-                {
                     await orderServices.ProcessPaymentFromQueueAsync(paymentMessage, paymentServices);
-                }
 
-                _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
+                _channel.BasicAck(deliveryTag, false);
                 _logger.LogInformation("Payment Queue: Message processed successfully");
             }
             catch (DbUpdateException dbEx)
             {
                 var paymentMessage = JsonSerializer.Deserialize<PaymentQueueMessage>(message);
-                _logger.LogError(dbEx, "Payment Queue: Database error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}", 
+                _logger.LogError(dbEx,
+                    "Payment Queue: Database error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}",
                     paymentMessage?.OrderId ?? 0, message, JsonSerializer.Serialize(paymentMessage));
-                
+
                 // Don't requeue - send to Dead Letter Queue
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                _channel.BasicNack(deliveryTag, false, false);
             }
             catch (MySqlException mysqlEx)
             {
                 var paymentMessage = JsonSerializer.Deserialize<PaymentQueueMessage>(message);
-                _logger.LogError(mysqlEx, "Payment Queue: MySQL error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}", 
+                _logger.LogError(mysqlEx,
+                    "Payment Queue: MySQL error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}",
                     paymentMessage?.OrderId ?? 0, message, JsonSerializer.Serialize(paymentMessage));
-                
+
                 // Don't requeue - send to Dead Letter Queue
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                _channel.BasicNack(deliveryTag, false, false);
             }
             catch (BusinessException businessEx)
             {
                 var paymentMessage = JsonSerializer.Deserialize<PaymentQueueMessage>(message);
-                _logger.LogWarning(businessEx, "Payment Queue: Business error (order already marked as Failed) - OrderId: {OrderId}, Message: {Message}", 
+                _logger.LogWarning(businessEx,
+                    "Payment Queue: Business error (order already marked as Failed) - OrderId: {OrderId}, Message: {Message}",
                     paymentMessage?.OrderId ?? 0, businessEx.Message);
-                
+
                 // Business exceptions: order already handled (marked as Failed), acknowledge message
-                _channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
+                _channel.BasicAck(deliveryTag, false);
             }
             catch (Exception ex)
             {
                 var paymentMessage = JsonSerializer.Deserialize<PaymentQueueMessage>(message);
-                _logger.LogError(ex, "Payment Queue: Error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}", 
+                _logger.LogError(ex,
+                    "Payment Queue: Error processing OrderId: {OrderId}, Message: {Message}, Payload: {Payload}",
                     paymentMessage?.OrderId ?? 0, message, JsonSerializer.Serialize(paymentMessage));
-                
+
                 // For other exceptions, don't requeue to avoid infinite loops
-                _channel.BasicNack(deliveryTag: deliveryTag, multiple: false, requeue: false);
+                _channel.BasicNack(deliveryTag, false, false);
             }
         };
 
-        _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-        _channel.BasicConsume(queue: _paymentQueueName, autoAck: false, consumer: consumer);
+        _channel.BasicQos(0, 1, false);
+        _channel.BasicConsume(_paymentQueueName, false, consumer);
     }
 
     public void StopConsumers()
@@ -330,4 +334,3 @@ public class PaymentQueueMessage
     public int AccountId { get; set; }
     public decimal Amount { get; set; }
 }
-
