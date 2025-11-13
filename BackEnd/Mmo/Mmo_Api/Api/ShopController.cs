@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Mmo_Domain.ModelRequest;
 
 namespace Mmo_Api.Api;
@@ -334,13 +335,18 @@ public class ShopController : ControllerBase
                 string.IsNullOrWhiteSpace(description))
                 return BadRequest(new { message = "Thiếu thông tin bắt buộc" });
 
+            // Validate phone number: must be exactly 10 digits
+            phone = phone.Trim();
+            if (phone.Length != 10 || !Regex.IsMatch(phone, @"^[0-9]{10}$"))
+                return BadRequest(new { message = "Số điện thoại phải có đúng 10 ký tự và chỉ chứa số" });
+
             var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("id")?.Value;
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
                 return Unauthorized(new { message = "Không xác thực được người dùng" });
 
             var allShops = await _shopServices.GetAllAsync();
             if (allShops.Any(s => s.AccountId == userId))
-                return BadRequest(new { message = "Bạn đã có shop, không thể đăng ký thêm" });
+                return BadRequest(new { message = "Tài khoản này đã thực hiện đăng ký shop" });
 
             var account = await _accountServices.GetByIdAsync(userId);
             if (account == null) return BadRequest(new { message = "Tài khoản không tồn tại" });

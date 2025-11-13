@@ -77,25 +77,47 @@ const LoginMenu = () => {
     onSuccess: async (tokenResponse) => {
       try {
         setIsLoading(true);
+        setError("");
 
-        // Fetch user info from Google
-        const googleUserInfo = await fetch(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
+        // Lấy thông tin từ Google API
+        let googleUserInfo;
+        try {
+          const googleResponse = await fetch(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            {
+              headers: {
+                Authorization: `Bearer ${tokenResponse.access_token}`,
+              },
+            }
+          );
+
+          if (!googleResponse.ok) {
+            throw new Error("Failed to fetch Google user info");
           }
-        ).then((res) => res.json());
 
-        // Call backend API with Google user info
-        const response = await authServices.loginOrRegisterWithGoogleAsync({
-          id: googleUserInfo.sub,
-          email: googleUserInfo.email,
-          name: googleUserInfo.name,
-          picture: googleUserInfo.picture,
-        });
+          googleUserInfo = await googleResponse.json();
+        } catch {
+          // TC-GL-004 Scenario 4b: Error when Fetching Information from Google API
+          setError("Không thể lấy thông tin từ Google. Vui lòng thử lại!");
+          return;
+        }
 
+        // Gọi API backend để đăng nhập/đăng ký
+        let response;
+        try {
+          response = await authServices.loginOrRegisterWithGoogleAsync({
+            id: googleUserInfo.sub,
+            email: googleUserInfo.email,
+            name: googleUserInfo.name,
+            picture: googleUserInfo.picture,
+          });
+        } catch {
+          // TC-GL-004 Scenario 4c: Error when Calling Backend API
+          setError("Đăng nhập với Google thất bại");
+          return;
+        }
+
+        // Lưu tokens vào cookies
         Cookies.set("accessToken", response.accessToken, {
           expires: 7,
           secure: true,
@@ -107,23 +129,27 @@ const LoginMenu = () => {
           sameSite: "strict",
         });
 
-        // Fetch user info from backend using token
+        // Lấy thông tin user hiện tại
         const currentUser = await authServices.getCurrentUserAsync();
         login(currentUser);
 
+        // TC-GL-001, TC-GL-002, TC-GL-003: Successful login/registration/linking
+        // Điều hướng theo role
         if (currentUser.roles.includes("ADMIN")) {
           navigate("/admin/dashboard");
         } else {
           navigate(routesConfig.home);
         }
       } catch {
+        // TC-GL-004 Scenario 4d: Network Error/No Connection
         setError("Đăng nhập với Google thất bại");
       } finally {
         setIsLoading(false);
       }
     },
     onError: () => {
-      setError("Đăng nhập với Google thất bại");
+      // TC-GL-004 Scenario 4a: User Cancels Popup
+      setError("Đăng nhập với Google đã bị hủy");
     },
   });
 
