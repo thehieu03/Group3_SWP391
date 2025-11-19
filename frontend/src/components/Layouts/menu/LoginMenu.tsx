@@ -1,12 +1,12 @@
 import { type ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "../../Button/Button.tsx";
-import routesConfig from "../../../config/routesConfig.tsx";
+import Button from "@components/Button/Button.tsx";
+import routesConfig from "@config/routesConfig.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { authServices } from "../../../services/AuthServices";
-import type { LoginRequest } from "../../../models/modelRequest/LoginRequest";
-import { useAuth } from "../../../hooks/useAuth.tsx";
+import { authServices } from "@services/AuthServices";
+import type { LoginRequest } from "@models/modelRequest/LoginRequest";
+import { useAuth } from "@hooks/useAuth.tsx";
 import Cookies from "js-cookie";
 
 const LoginMenu = () => {
@@ -55,20 +55,17 @@ const LoginMenu = () => {
         sameSite: "strict",
       });
       login(response.user);
-      console.log("login success");
-      
-      // Redirect dựa trên role
-      if (response.user.roles.includes('ADMIN')) {
-        navigate('/admin/dashboard');
-      } else if (response.user.roles.includes('SELLER')) {
+
+      if (response.user.roles.includes("ADMIN")) {
+        navigate("/admin/dashboard");
+      } else if (response.user.roles.includes("SELLER")) {
         navigate(routesConfig.home);
-      } else if (response.user.roles.includes('USER')) {
+      } else if (response.user.roles.includes("USER")) {
         navigate(routesConfig.home);
       } else {
         navigate(routesConfig.home);
       }
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch {
       setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     } finally {
       setIsLoading(false);
@@ -76,7 +73,7 @@ const LoginMenu = () => {
   };
 
   const handleGoogleLogin = () => {
-    console.log("google login");
+    // TODO: Implement Google login
   };
 
   return (

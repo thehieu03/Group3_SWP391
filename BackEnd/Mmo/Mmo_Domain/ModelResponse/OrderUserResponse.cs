@@ -1,4 +1,4 @@
-﻿namespace Mmo_Domain.ModelResponse;
+namespace Mmo_Domain.ModelResponse;
 
 public class OrderUserResponse
 {
@@ -11,5 +11,6 @@ public class OrderUserResponse
     public int Quantity { get; set; }
     public decimal TotalPrice { get; set; }
     public string? Status { get; set; }
+    public string? Payload { get; set; }
     public bool hasFeedback { get; set; } = false;
 }

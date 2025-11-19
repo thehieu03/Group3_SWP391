@@ -1,8 +1,9 @@
-﻿namespace Mmo_Application.Services;
+namespace Mmo_Application.Services;
 
-public class SystemsconfigServices: BaseServices<Systemsconfig>, ISystemsconfigServices
+public class SystemsconfigServices : BaseServices<Systemsconfig>, ISystemsconfigServices
 {
     public SystemsconfigServices(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 }

@@ -7,17 +7,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj"/>
+        <ProjectReference Include="..\Mmo_Infrastructure\Mmo_Infrastructure.csproj" />
+        
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="[12.0.1]" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="[12.0.1]" />
+        <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
+        <PackageReference Include="MySqlConnector" Version="2.4.0" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
-		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
-        <Using Include="Mmo_Application.Services.Interface"/>
-        <Using Include="Mmo_Domain.IUnit"/>
-        <Using Include="Mmo_Domain.Models"/>
+        <Using Include="Mmo_Application.Services.Interface" />
+        <Using Include="Mmo_Domain.IUnit" />
+        <Using Include="Mmo_Domain.Models" />
+        <Using Include="Microsoft.EntityFrameworkCore" />
+        <Using Include="Mmo_Domain.ModelResponse" />
+        <Using Include="Mmo_Domain.ModelRequest" />
     </ItemGroup>
 </Project>

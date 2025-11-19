@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.ModelRequest;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace Mmo_Api.Api;
 
@@ -23,6 +16,7 @@ public class AuthController : ControllerBase
         _tokenServices = tokenServices;
         _mapper = mapper;
     }
+
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -31,33 +25,17 @@ public class AuthController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Tìm user theo username hoặc email
-            var account = await _accountServices.GetByUsernameAsync(loginRequest.Username)
-                         ?? await _accountServices.GetByEmailAsync(loginRequest.Username);
+            var account =  await _accountServices.GetByEmailAsync(loginRequest.Username);
 
-            if (account == null)
-            {
-                return Unauthorized("Invalid username or password");
-            }
+            if (account == null) return Unauthorized("Invalid username or password");
 
-            // Kiểm tra tài khoản có active không
-            if (account.IsActive != true)
-            {
-                return Unauthorized("Account is deactivated");
-            }
+            if (account.IsActive != true) return Unauthorized("Account is deactivated");
 
-            // Verify password
             if (!await _accountServices.VerifyPasswordAsync(account, loginRequest.Password))
-            {
                 return Unauthorized("Invalid username or password");
-            }
 
-            // Tạo token
             var authResponse = await _tokenServices.GenerateTokensAsync(account);
 
             return Ok(authResponse);
@@ -67,7 +45,9 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpPost("refresh")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -75,17 +55,11 @@ public class AuthController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var refreshResponse = await _tokenServices.RefreshTokenAsync(refreshRequest.RefreshToken);
 
-            if (refreshResponse == null)
-            {
-                return Unauthorized("Invalid or expired refresh token");
-            }
+            if (refreshResponse == null) return Unauthorized("Invalid or expired refresh token");
 
             return Ok(refreshResponse);
         }
@@ -94,6 +68,7 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -101,17 +76,11 @@ public class AuthController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _tokenServices.RevokeTokenAsync(refreshRequest.RefreshToken);
 
-            if (!result)
-            {
-                return BadRequest("Failed to revoke token");
-            }
+            if (!result) return BadRequest("Failed to revoke token");
 
             return Ok(new { message = "Logged out successfully" });
         }
@@ -120,6 +89,7 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
     [HttpGet("validate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -129,17 +99,11 @@ public class AuthController : ControllerBase
         {
             var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("Token not provided");
-            }
+            if (string.IsNullOrEmpty(token)) return Unauthorized("Token not provided");
 
             var isValid = await _tokenServices.IsTokenValidAsync(token);
 
-            if (!isValid)
-            {
-                return Unauthorized("Invalid or expired token");
-            }
+            if (!isValid) return Unauthorized("Invalid or expired token");
 
             return Ok(new { message = "Token is valid" });
         }
@@ -148,33 +112,52 @@ public class AuthController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        try
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var (ok, error) = await _accountServices.ForgotPasswordAsync(request.Email);
+
+            if (!ok)
+            {
+                if (error == "Email không hợp lệ hoặc không tồn tại")
+                    return BadRequest(new { message = error });
+                
+                return StatusCode(500, new { message = error ?? "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau." });
+            }
+
+            return Ok(new { message = "Mật khẩu mới đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư." });
+        }
+        catch
+        {
+            return StatusCode(500, new { message = "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau." });
+        }
+    }
+
     [HttpGet("me")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Authorize] // Cần authentication
+    [Authorize]
     public async Task<ActionResult<AccountResponse>> GetCurrentUser()
     {
         try
         {
-            // Lấy user ID từ token (ClaimTypes.NameIdentifier)
-            
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid token");
-            }
 
-            // Lấy thông tin user
             var account = await _accountServices.GetByIdAsync(userId);
-            if (account == null)
-            {
-                return Unauthorized("User not found");
-            }
+            if (account == null) return Unauthorized("User not found");
 
-            // Lấy roles của user
             var roles = await _accountServices.GetUserRolesAsync(userId);
 
-            // Map sang response model
             var userResponse = new AccountResponse
             {
                 Id = account.Id,
@@ -182,6 +165,7 @@ public class AuthController : ControllerBase
                 Email = account.Email,
                 Phone = account.Phone,
                 Balance = account.Balance,
+                ImageUrl = account.ImageUrl,
                 IsActive = account.IsActive,
                 CreatedAt = account.CreatedAt,
                 Roles = roles

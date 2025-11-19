@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import HomeSearch from "../../../components/HomeSearch/HomeSearch.tsx";
-import CategoryList from "../../../components/CategoryHomeList/CategoryList";
-import PurchasedProducts from "../../../components/PurchasedProducts/PurchasedProducts.tsx";
-import { categoryServices } from "../../../services/CategoryServices.tsx";
-import type { CategoriesResponse } from "../../../models/modelResponse/CategoriesResponse";
+import HomeSearch from "@/components/HomeSearch/HomeSearch.tsx";
+import CategoryList from "@/components/CategoryHomeList/CategoryList";
+import PurchasedProducts from "@/components/PurchasedProducts/PurchasedProducts.tsx";
+import { categoryServices } from "@services/CategoryServices.ts";
+import type { CategoriesResponse } from "@/models/modelResponse/CategoriesResponse";
 
 const Home = () => {
   const [categories, setCategories] = useState<CategoriesResponse[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   useEffect(() => {
     const fetchCategories = async () => {
       const categories = await categoryServices.getAllCategoryAsync();
@@ -18,37 +18,26 @@ const Home = () => {
   }, []);
   return (
     <div className="max-w-[1150px] mx-auto">
-        {/*Search*/}
             <HomeSearch/>
-        {/*EndSearch*/}
-      {/* List category     */}
       <CategoryList categories={categories} />
-      {/* end list category */}
-      {/* List đơn hàng đã mua */}
       <PurchasedProducts />
-      {/* end list đơn hàng đã mua */}
-      
-      {/* About Info Section */}
+
       <div className="bg-green-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white border border-green-300 rounded-lg shadow-lg p-8">
-            {/* Main Title */}
             <h1 className="text-3xl font-bold text-gray-800 text-center mb-4">
               Tạp hóa MMO - Chuyên mua bán sản phẩm số - Phục vụ cộng đồng MMO (Kiếm tiền online)
             </h1>
-            
-            {/* Subtitle */}
+
             <p className="text-lg text-gray-600 text-center mb-8">
               Một sản phẩm ra đời với mục đích thuận tiện và an toàn hơn trong các giao dịch mua bán sản phẩm số.
             </p>
 
-            {/* Main Content */}
             <div className="space-y-6">
               <p className="text-sm text-gray-700 leading-relaxed">
                 Như các bạn đã biết, tình trạng lừa đảo trên mạng xã hội kéo dài bao nhiêu năm nay, mặc dù đã có rất nhiều giải pháp từ cộng đồng như là trung gian hay bảo hiểm, nhưng vẫn rất nhiều người dùng lựa chọn mua bán nhanh gọn mà bỏ qua các bước kiểm tra, hay trung gian, từ đó tạo cơ hội cho scammer hoạt động. Ở Taphoammo, bạn sẽ có 1 trải nghiệm mua hàng yên tâm hơn rất nhiều, chúng tôi sẽ giữ tiền người bán 3 ngày, kiểm tra toàn bộ sản phẩm bán ra có trùng với người khác hay không, nhắm mục đích tạo ra một nơi giao dịch mà người dùng có thể tin tưởng, một trang mà người bán có thể yên tâm đặt kho hàng, và cạnh tranh sòng phẳng.
               </p>
 
-              {/* Features Section - Only show when expanded */}
               {isExpanded && (
                 <div>
                   <h2 className="text-xl font-bold text-gray-800 text-center mb-4">
@@ -83,7 +72,6 @@ const Home = () => {
                 </div>
               )}
 
-              {/* Products Section - Only show when expanded */}
               {isExpanded && (
                 <div>
                   <h2 className="text-xl font-bold text-gray-800 text-center mb-4">
@@ -125,7 +113,6 @@ const Home = () => {
               )}
             </div>
 
-            {/* Collapse Button */}
             <div className="text-center mt-8">
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -137,7 +124,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {/* end About Info */}
     </div>
   );
 };

@@ -1,13 +1,7 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Mmo_Application.Services;
+﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Mmo_Application.Services.Interface;
-using Mmo_Domain.IUnit;
-using Mmo_Domain.Models;
-using Mmo_Infrastructure.Unit;
 
 namespace Mmo_Api.Boostraping;
 
@@ -19,10 +13,16 @@ public static class RegisterMiddleware
         var connStr = configuration.GetConnectionString("DefaultConnection");
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddControllers().AddOData(options =>
-        {
-            options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
-        });
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.WriteIndented = true;
+            })
+            .AddOData(options =>
+            {
+                options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100);
+            });
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -49,6 +49,21 @@ public static class RegisterMiddleware
                         Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new Exception("Jwt Key not found")))
                 };
             });
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("ADMIN"));
+
+            options.AddPolicy("UserOrAdminSeller", policy =>
+                policy.RequireRole("USER", "ADMIN", "SELLER"));
+            
+            options.AddPolicy("UserOrAdmin", policy =>
+                policy.RequireRole("USER", "ADMIN"));
+
+            options.AddPolicy("AdminOrSeller", policy =>
+                policy.RequireRole("ADMIN", "SELLER"));
+        });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IAccountRoleServices, AccountRoleServices>();
         builder.Services.AddScoped<IAccountServices, AccountServices>();
@@ -70,6 +85,35 @@ public static class RegisterMiddleware
         builder.Services.AddScoped<ISystemsconfigServices, SystemsconfigServices>();
         builder.Services.AddScoped<ITextMessageServices, TextMessageServices>();
         builder.Services.AddScoped<ITokenServices, TokenServices>();
+        builder.Services.AddScoped<IDashboardServices, DashboardServices>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
+        // Removed image service DI; using static HelperImage methods instead
+
+        // Payment services
+        builder.Services.AddScoped<IVietQRService, VietQRService>();
+        builder.Services.AddHttpClient();
+        builder.Services.AddScoped<ISePayService, SePayService>();
+        builder.Services.AddScoped<IDepositService, DepositService>();
+        builder.Services.AddHostedService<PaymentPollingService>();
+
+        builder.Services.AddScoped<IDbConnection>(provider =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            return new MySqlConnection(connectionString);
+        });
+        builder.Services.AddScoped<IDapperService, DapperService>();
+
+        // RabbitMQ Service
+        var rabbitMQEnabled = configuration.GetValue<bool>("RabbitMQ:Enabled", false);
+        if (rabbitMQEnabled)
+        {
+            builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
+        }
+        else
+        {
+            // Register a null implementation if RabbitMQ is disabled
+            builder.Services.AddSingleton<IRabbitMQService>(provider => null!);
+        }
 
         return builder;
     }
@@ -82,10 +126,40 @@ public static class RegisterMiddleware
             app.UseSwaggerUI();
         }
 
-        app.MapControllers();
+        // HTTPS redirection first
         app.UseHttpsRedirection();
+
+        // Serve static files from default wwwroot (if any)
+        app.UseStaticFiles();
+
+        // Explicitly serve the Images folder at /Images
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Images")),
+            RequestPath = "/Images"
+        });
+
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapControllers();
+
+        // Start RabbitMQ consumers if enabled
+        var rabbitMQEnabled = configuration.GetValue<bool>("RabbitMQ:Enabled", false);
+        if (rabbitMQEnabled)
+        {
+            try
+            {
+                var rabbitMQService = app.Services.GetRequiredService<IRabbitMQService>();
+                rabbitMQService.StartConsumers();
+            }
+            catch (Exception ex)
+            {
+                var logger = app.Services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "Failed to start RabbitMQ consumers");
+            }
+        }
+
         app.Run();
         return app;
     }

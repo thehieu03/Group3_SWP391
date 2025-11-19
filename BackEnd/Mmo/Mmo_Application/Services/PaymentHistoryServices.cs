@@ -1,47 +1,84 @@
-using Mmo_Application.Services.Interface;
-using Mmo_Domain.ModelResponse;
-using Mmo_Domain.Models;
-using Mmo_Domain.IUnit;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace Mmo_Application.Services;
 
 public class PaymentHistoryServices : IPaymentHistoryServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public PaymentHistoryServices(IUnitOfWork unitOfWork)
+    public PaymentHistoryServices(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
-    public async Task<PaymentHistorySummary> GetPaymentHistoryByUserIdAsync(int userId)
+    public async Task<PaymentHistorySummary> GetPaymentHistoryByUserIdAsync(int userId, DateTime? startDate = null, DateTime? endDate = null, string? transactionType = null, int page = 1, int pageSize = 5)
     {
         // Get user's current balance
         var account = await _unitOfWork.GenericRepository<Account>().GetByIdAsync(userId);
         var totalBalance = account?.Balance ?? 0;
 
-        // Get payment transactions for the user
-        var transactions = await _unitOfWork.GenericRepository<Paymenttransaction>().GetQuery()
-            .Where(p => p.UserId == userId)
+        // Get payment transactions for the user with filters - chỉ lấy giao dịch đã thành công
+        var transactionsQuery = _unitOfWork.GenericRepository<Paymenttransaction>().GetQuery()
+            .Where(p => p.UserId == userId && p.Status == "SUCCESS");
+
+        // Apply date filters
+        if (startDate.HasValue)
+        {
+            transactionsQuery = transactionsQuery.Where(p => p.CreatedAt >= startDate.Value);
+        }
+        if (endDate.HasValue)
+        {
+            transactionsQuery = transactionsQuery.Where(p => p.CreatedAt <= endDate.Value);
+        }
+
+        // Apply transaction type filter
+        if (!string.IsNullOrEmpty(transactionType))
+        {
+            transactionsQuery = transactionsQuery.Where(p => p.Type == transactionType);
+        }
+
+        // Get total count for pagination
+        var totalCount = await transactionsQuery.CountAsync();
+        
+        // Calculate pagination
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        var validPage = Math.Max(1, Math.Min(page, totalPages));
+        var skip = (validPage - 1) * pageSize;
+
+        var transactions = await transactionsQuery
             .OrderByDescending(p => p.CreatedAt)
+            .Skip(skip)
+            .Take(pageSize)
             .ToListAsync();
 
-        var paymentHistoryResponses = transactions.Select(t => new PaymentHistoryResponse
+        var paymentHistoryResponses = transactions
+            .Select(t => _mapper.Map<PaymentHistoryResponse>(t))
+            .ToList();
+
+        // Use existing PaginationResponse
+        var paginatedTransactions = new PaginationResponse<PaymentHistoryResponse>
         {
-            Id = t.Id,
-            UserId = t.UserId ?? 0,
-            Type = t.Type,
-            Amount = t.Amount,
-            PaymentDescription = t.PaymentDescription,
-            Status = t.Status,
-            CreatedAt = t.CreatedAt ?? DateTime.MinValue
-        }).ToList();
+            Data = paymentHistoryResponses,
+            CurrentPage = validPage,
+            TotalPages = totalPages,
+            TotalItems = totalCount,
+            ItemsPerPage = pageSize,
+            HasNextPage = validPage < totalPages,
+            HasPreviousPage = validPage > 1
+        };
 
         return new PaymentHistorySummary
         {
             TotalBalance = totalBalance,
-            Transactions = paymentHistoryResponses
+            Transactions = paginatedTransactions.Data.ToList(),
+            CurrentPage = paginatedTransactions.CurrentPage,
+            TotalPages = paginatedTransactions.TotalPages,
+            TotalItems = paginatedTransactions.TotalItems,
+            ItemsPerPage = paginatedTransactions.ItemsPerPage,
+            HasNextPage = paginatedTransactions.HasNextPage,
+            HasPreviousPage = paginatedTransactions.HasPreviousPage
         };
     }
 }

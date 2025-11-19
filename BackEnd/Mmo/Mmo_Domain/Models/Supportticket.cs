@@ -19,5 +19,7 @@ public partial class Supportticket
 
     public DateTime? CreatedAt { get; set; }
 
+    public string Status { get; set; } = null!;
+
     public virtual Account? Account { get; set; }
 }

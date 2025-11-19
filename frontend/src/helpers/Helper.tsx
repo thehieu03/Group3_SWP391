@@ -1,9 +1,9 @@
 /**
  * Helper functions for common formatting and utility operations
  */
-import React from "react";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 /**
  * Format price to Vietnamese currency format
  * @param price - The price number to format
@@ -17,11 +17,35 @@ export const formatPrice = (price: number): string => {
 };
 
 /**
- * Format date to Vietnamese locale format
+ * Format currency (alias for formatPrice)
+ * @param amount - The amount to format
+ * @returns Formatted currency string in VND
+ */
+export const formatCurrency = (amount: number): string => {
+  return formatPrice(amount);
+};
+
+/**
+ * Format date to Vietnamese locale format with full details
  * @param dateString - The date string to format
  * @returns Formatted date string in Vietnamese locale
  */
 export const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+/**
+ * Format date to Vietnamese locale format (shorter version)
+ * @param dateString - The date string to format
+ * @returns Formatted date string in Vietnamese locale
+ */
+export const formatDateShort = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("vi-VN", {
     year: "numeric",
     month: "short",
@@ -37,16 +61,18 @@ export const formatDate = (dateString: string): string => {
  * @returns Tailwind CSS classes for status color
  */
 export const getStatusColor = (status: string): string => {
-  switch (status.toLowerCase()) {
-    case "completed":
-      return "bg-green-100 text-green-800";
-    case "pending":
+  switch (status.toUpperCase()) {
+    case "PENDING":
       return "bg-yellow-100 text-yellow-800";
-    case "cancelled":
-      return "bg-red-100 text-red-800";
-    case "active":
+    case "PROCESSING":
+      return "bg-blue-100 text-blue-800";
+    case "COMPLETED":
       return "bg-green-100 text-green-800";
-    case "inactive":
+    case "CONFIRMED": // Legacy support - map to COMPLETED
+      return "bg-green-100 text-green-800";
+    case "FAILED":
+      return "bg-red-100 text-red-800";
+    case "CANCELLED":
       return "bg-red-100 text-red-800";
     default:
       return "bg-gray-100 text-gray-800";
@@ -59,19 +85,66 @@ export const getStatusColor = (status: string): string => {
  * @returns Vietnamese status text
  */
 export const getStatusText = (status: string): string => {
-  switch (status.toLowerCase()) {
-    case "completed":
-      return "Hoàn thành";
-    case "pending":
+  switch (status.toUpperCase()) {
+    case "PENDING":
+      return "Chờ xử lý";
+    case "PROCESSING":
       return "Đang xử lý";
-    case "cancelled":
+    case "COMPLETED":
+      return "Hoàn thành";
+    case "CONFIRMED": // Legacy support - map to COMPLETED
+      return "Hoàn thành";
+    case "FAILED":
+      return "Thất bại";
+    case "CANCELLED":
       return "Đã hủy";
-    case "active":
+    case "ACTIVE":
       return "Hoạt động";
-    case "inactive":
+    case "INACTIVE":
       return "Không hoạt động";
     default:
       return status;
+  }
+};
+
+/**
+ * Get role badge color classes
+ * @param role - The role string (ADMIN, SELLER, CUSTOMER, USER)
+ * @param withBorder - Whether to include border classes (default: false)
+ * @returns Tailwind CSS classes for role badge color
+ */
+export const getRoleBadgeColor = (role: string, withBorder = false): string => {
+  const borderClass = withBorder ? " border" : "";
+  switch (role.toUpperCase()) {
+    case "ADMIN":
+      return `bg-red-100 text-red-800${borderClass}-red-200`;
+    case "SELLER":
+      return `bg-blue-100 text-blue-800${borderClass}-blue-200`;
+    case "CUSTOMER":
+    case "USER":
+      return `bg-green-100 text-green-800${borderClass}-green-200`;
+    default:
+      return `bg-gray-100 text-gray-800${borderClass}-gray-200`;
+  }
+};
+
+/**
+ * Get role display name in Vietnamese
+ * @param role - The role string
+ * @returns Vietnamese role display name
+ */
+export const getRoleDisplayName = (role: string): string => {
+  switch (role.toUpperCase()) {
+    case "ADMIN":
+      return "Quản trị viên";
+    case "SELLER":
+      return "Người bán";
+    case "CUSTOMER":
+      return "Khách hàng";
+    case "USER":
+      return "Người dùng";
+    default:
+      return role;
   }
 };
 
@@ -103,11 +176,11 @@ export const formatNumber = (number: number): string => {
 };
 
 /**
- * Format date to short format (only date, no time)
+ * Format date to date-only format (no time)
  * @param dateString - The date string to format
- * @returns Short formatted date string
+ * @returns Formatted date string (date only)
  */
-export const formatDateShort = (dateString: string): string => {
+export const formatDateOnly = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("vi-VN", {
     year: "numeric",
     month: "short",

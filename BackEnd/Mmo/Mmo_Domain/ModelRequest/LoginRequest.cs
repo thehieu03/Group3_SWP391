@@ -1,5 +1,3 @@
-﻿using System.ComponentModel.DataAnnotations;
-
 namespace Mmo_Domain.ModelRequest;
 
 public class LoginRequest

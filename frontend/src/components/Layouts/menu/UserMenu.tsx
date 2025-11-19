@@ -1,7 +1,7 @@
-import Button from "../../Button/Button.tsx";
-import Image from "../../Image";
-import { useAuth } from "../../../hooks/useAuth.tsx";
-import routesConfig from "../../../config/routesConfig.tsx";
+import Button from "@components/Button/Button.tsx";
+import Image from "@components/Image";
+import { useAuth } from "@hooks/useAuth.tsx";
+import routesConfig from "@config/routesConfig.ts";
 const UserMenu = () => {
   const { user, logout } = useAuth();
   const handleLogout = () => {
@@ -26,15 +26,15 @@ const UserMenu = () => {
           <Button to={routesConfig.infoAccount}>Thông tin tài khoản</Button>
         </li>
         <li>
-          <Button to={routesConfig.orders}>Đơn hàng đã mua</Button>
+          <Button to={routesConfig.userOrder}>Đơn hàng đã mua</Button>
         </li>
         <li>
           <Button to={routesConfig.paymentHistory}>Lịch sử thanh toán</Button>
         </li>
         {/* Hiển thị "Quản lý shop" chỉ cho SELLER */}
-        {user?.roles.includes('SELLER') && (
+        {user?.roles.includes("SELLER") && (
           <li>
-            <Button to="/seller/dashboard">Quản lý shop</Button>
+            <Button to={routesConfig.sellerDashboard}>Quản lý shop</Button>
           </li>
         )}
         <li>

@@ -5,12 +5,16 @@
 
 export {
   formatPrice,
+  formatCurrency,
   formatDate,
   formatDateShort,
+  formatDateOnly,
   formatTime,
   formatNumber,
   getStatusColor,
   getStatusText,
+  getRoleBadgeColor,
+  getRoleDisplayName,
   getActiveStatusColor,
   getActiveStatusText,
   getActiveStatusTextColor,

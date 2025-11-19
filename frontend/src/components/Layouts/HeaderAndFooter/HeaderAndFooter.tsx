@@ -1,6 +1,6 @@
 import type {FC, ReactNode} from "react";
-import Header from "../components/Header/Header.tsx";
-import Footer from "../components/Footer/Footer.tsx";
+import Header from "@components/Layouts/components/Header/Header.tsx";
+import Footer from "@components/Layouts/components/Footer/Footer.tsx";
 type LoginLayoutProps = {
     children?:ReactNode;
 }

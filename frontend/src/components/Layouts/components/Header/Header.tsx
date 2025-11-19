@@ -1,9 +1,9 @@
 import { FaFacebookSquare } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
 import { CiClock1 } from "react-icons/ci";
-import Button from "../../../Button/Button.tsx";
-import { ImageLogo as Logo } from "../../../../assets/ImageLogo.tsx";
-import CategoryMenuHeader from "../../menu/CategoryMenuHeader.tsx";
+import Button from "@components/Button/Button.tsx";
+import { ImageLogo as Logo } from "@assets/ImageLogo.tsx";
+import CategoryMenuHeader from "@/components/Layouts/components/Header/menu/CategoryMenuHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -12,11 +12,11 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import TippyHeadless from "@tippyjs/react/headless";
-import UserMenu from "../../menu/UserMenu.tsx";
-import LoginMenu from "../../menu/LoginMenu.tsx";
+import UserMenu from "@/components/Layouts/components/Header/menu/UserMenu";
+import LoginMenu from "@/components/Layouts/components/Header/menu/LoginMenu";
 import { useEffect, useState } from "react";
-import routesConfig from "../../../../config/routesConfig.tsx";
-import { useAuth } from "../../../../hooks/useAuth.tsx";
+import routesConfig from "@config/routesConfig.ts";
+import { useAuth } from "@/hooks/useAuth.tsx";
 
 const headerStyle = {
   notification:
@@ -29,7 +29,6 @@ const Header = () => {
     typeof window !== "undefined" ? window.innerWidth : 0
   );
 
-  // Track viewport width and react to changes
   useEffect(() => {
     const handleResize = () => setViewportWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -54,25 +53,21 @@ const Header = () => {
           <p>Thứ 2 - Chủ nhật: 8h - 21h</p>
         </div>
         <div className="text-red-400 cursor-pointer">
-          <Button to="/registerShop">Đăng kí bán hàng</Button>
+          <Button to={routesConfig.registerShop}>Đăng kí bán hàng</Button>
         </div>
       </div>
-      {/*header*/}
       <div className="h-[54px] w-full bg-[var(--green-color)]">
         <div className="flex h-full pl-[20px] pr-[15px] justify-between items-center ">
-          {/*header menu*/}
           <div className="flex w-full h-full items-center">
             <div className="h-full flex items-center">
               <Button to="/">
                 <Logo />
               </Button>
             </div>
-            {/* desktop navigation */}
             <div className="max-[991px]:hidden">
               <CategoryMenuHeader isLogin={isLoggedIn} />
             </div>
           </div>
-          {/*header login*/}
           <div className="flex items-center gap-3 font-medium whitespace-nowrap text-white h-full">
             {isLoggedIn && (
               <>
@@ -101,7 +96,6 @@ const Header = () => {
                 <span className={headerStyle.notification}>0</span>
               </div>
             </TippyHeadless>
-            {/* mobile hamburger */}
             <button
               className="hidden max-[991px]:flex items-center justify-center text-white ml-2"
               aria-label="Open menu"
@@ -113,7 +107,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile side drawer */}
       {isMobileMenuOpen && (
         <>
           <div
