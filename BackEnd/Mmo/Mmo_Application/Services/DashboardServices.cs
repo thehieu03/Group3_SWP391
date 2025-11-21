@@ -178,7 +178,7 @@ public class DashboardServices : IDashboardServices
     
          // total revenue (excluding pending orders)
          var totalRevenue = await shopOrdersQuery
-             .Where(o => o.Status != OrderStatus.Pending)
+             .Where(o => o.Status != OrderStatus.Pending || o.Status != OrderStatus.Failed)
              .SumAsync(o => (decimal)o.TotalPrice);
     
          // pending orders (by status)

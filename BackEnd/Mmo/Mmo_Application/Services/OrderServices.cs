@@ -14,12 +14,14 @@ public class OrderServices : BaseServices<Order>, IOrderServices
 {
     private readonly IRabbitMQService? _rabbitMQService;
     private readonly ILogger<OrderServices>? _logger;
+    private readonly ISystemsconfigServices? _systemsconfigServices;
 
-    public OrderServices(IUnitOfWork unitOfWork, IRabbitMQService? rabbitMQService = null, ILogger<OrderServices>? logger = null) : base(unitOfWork)
+    public OrderServices(IUnitOfWork unitOfWork, IRabbitMQService? rabbitMQService = null, ILogger<OrderServices>? logger = null, ISystemsconfigServices? systemsconfigServices = null) : base(unitOfWork)
     {
         _unitOfWork = unitOfWork;
         _rabbitMQService = rabbitMQService;
         _logger = logger;
+        _systemsconfigServices = systemsconfigServices;
     }
 
     public async Task<IEnumerable<Order>> GetUserOrdersAsync(int accountId)
@@ -379,7 +381,18 @@ public class OrderServices : BaseServices<Order>, IOrderServices
             }
 
             // Calculate fee (Fee is percentage, e.g., 0.05 = 5%)
-            var feePercentage = product.Fee ?? 0;
+            // Get fee from system config (latest) instead of product.Fee (old value)
+            decimal feePercentage = 0;
+            if (_systemsconfigServices != null)
+            {
+                var systemConfig = await _systemsconfigServices.GetSystemConfigAsync();
+                feePercentage = systemConfig?.Fee ?? product.Fee ?? 0;
+            }
+            else
+            {
+                // Fallback to product.Fee if systemsconfigServices is not available
+                feePercentage = product.Fee ?? 0;
+            }
             var feeAmount = message.Amount * feePercentage;
             var sellerAmount = message.Amount - feeAmount;
 

@@ -75,10 +75,9 @@ public class OrderController : ControllerBase
         }
     }
 
-    /// <summary>
+
     /// Lấy danh sách đơn hàng của shop (dành cho seller)
-    /// </summary>
-    /// <returns>Danh sách đơn hàng của shop hiện tại</returns>
+    /// Danh sách đơn hàng của shop hiện tại
     [HttpGet("shop-orders")]
     [Authorize(Policy = "AdminOrSeller")]
     [ProducesResponseType(StatusCodes.Status200OK)]

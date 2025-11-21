@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { SystemsConfigResponse } from "@models/modelResponse/SystemsConfigResponse";
 import Button from "@components/Button/Button.tsx";
+import { systemConfigServices } from "@services/SystemConfigServices.ts";
 
 const SystemSettings = () => {
   const [config, setConfig] = useState<SystemsConfigResponse>({
@@ -16,14 +17,25 @@ const SystemSettings = () => {
   } | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setConfig({
-        email: "admin@taphoammo.com",
-        fee: 5.0,
-        googleAppPassword: "********",
-      });
-      setLoading(false);
-    }, 1000);
+    const loadConfig = async () => {
+      try {
+        const data = await systemConfigServices.getSystemConfigAsync();
+        // Convert fee from decimal (0.05) to percentage (5) for display
+        setConfig({
+          ...data,
+          fee: data.fee ? data.fee * 100 : 0,
+        });
+      } catch (error) {
+        setMessage({
+          type: "error",
+          text: "Không thể tải cấu hình hệ thống. Vui lòng thử lại.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadConfig();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,16 +51,38 @@ const SystemSettings = () => {
     setMessage(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // If password is masked, send "********" to indicate no change
+      // Backend will preserve the current password
+      const passwordToSend =
+        config.googleAppPassword === "********" || !config.googleAppPassword
+          ? "********"
+          : config.googleAppPassword;
+
+      // Convert fee from percentage (5) to decimal (0.05) for backend
+      await systemConfigServices.updateSystemConfigAsync({
+        email: config.email,
+        fee: config.fee ? config.fee / 100 : 0,
+        googleAppPassword: passwordToSend,
+      });
 
       setMessage({
         type: "success",
         text: "Cập nhật cài đặt hệ thống thành công!",
       });
-    } catch {
+
+      // Reload config to get updated data
+      const updatedConfig = await systemConfigServices.getSystemConfigAsync();
+      // Convert fee from decimal (0.05) to percentage (5) for display
+      setConfig({
+        ...updatedConfig,
+        fee: updatedConfig.fee ? updatedConfig.fee * 100 : 0,
+      });
+    } catch (error: any) {
       setMessage({
         type: "error",
-        text: "Có lỗi xảy ra khi cập nhật cài đặt. Vui lòng thử lại.",
+        text:
+          error?.response?.data?.message ||
+          "Có lỗi xảy ra khi cập nhật cài đặt. Vui lòng thử lại.",
       });
     } finally {
       setSaving(false);

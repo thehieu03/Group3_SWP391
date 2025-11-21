@@ -26,7 +26,7 @@ public class VietQRService : IVietQRService
         var bankBin = _configuration["VietQR:BankBin"] ?? "970415";
         var accountNo = _configuration["VietQR:AccountNo"] ?? "0868430273";
         var accountName = _configuration["VietQR:AccountName"] ?? "GORNER ROBIN";
-        var templateId = _configuration["VietQR:TemplateId"] ?? "U4NCcYH";
+        var templateId = "print";
 
         // VietQR yêu cầu amount là số nguyên (không có decimal)
         var amountFormatted = ((long)Math.Round(amount, 0)).ToString();
