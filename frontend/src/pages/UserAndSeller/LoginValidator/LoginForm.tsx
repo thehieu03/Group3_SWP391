@@ -91,22 +91,45 @@ const LoginForm = () => {
           setIsLoginLoading(true);
           setLoginError("");
 
-          const googleUserInfo = await fetch(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            {
-              headers: {
-                Authorization: `Bearer ${tokenResponse.access_token}`,
-              },
+          // Lấy thông tin từ Google API
+          let googleUserInfo;
+          try {
+            const googleResponse = await fetch(
+              "https://www.googleapis.com/oauth2/v3/userinfo",
+              {
+                headers: {
+                  Authorization: `Bearer ${tokenResponse.access_token}`,
+                },
+              }
+            );
+
+            if (!googleResponse.ok) {
+              throw new Error("Failed to fetch Google user info");
             }
-          ).then((res) => res.json());
 
-          const response = await authServices.loginOrRegisterWithGoogleAsync({
-            id: googleUserInfo.sub,
-            email: googleUserInfo.email,
-            name: googleUserInfo.name,
-            picture: googleUserInfo.picture,
-          });
+            googleUserInfo = await googleResponse.json();
+          } catch{
+            // TC-GL-004 Scenario 4b: Error when Fetching Information from Google API
+            setLoginError("Không thể lấy thông tin từ Google. Vui lòng thử lại!");
+            return;
+          }
 
+          // Gọi API backend để đăng nhập/đăng ký
+          let response;
+          try {
+            response = await authServices.loginOrRegisterWithGoogleAsync({
+              id: googleUserInfo.sub,
+              email: googleUserInfo.email,
+              name: googleUserInfo.name,
+              picture: googleUserInfo.picture,
+            });
+          } catch  {
+            // TC-GL-004 Scenario 4c: Error when Calling Backend API
+            setLoginError("Đăng nhập với Google thất bại");
+            return;
+          }
+
+          // Lưu tokens vào cookies
           Cookies.set("accessToken", response.accessToken, {
             expires: 7,
             secure: true,
@@ -118,15 +141,19 @@ const LoginForm = () => {
             sameSite: "strict",
           });
 
+          // Lấy thông tin user hiện tại
           const currentUser = await authServices.getCurrentUserAsync();
           login(currentUser);
 
+          // TC-GL-001, TC-GL-002, TC-GL-003: Successful login/registration/linking
+          // Điều hướng theo role
           if (currentUser.roles.includes("ADMIN")) {
             navigate("/admin/dashboard");
           } else {
             navigate(routesConfig.home);
           }
-        } catch {
+        } catch  {
+          // TC-GL-004 Scenario 4d: Network Error/No Connection
           setLoginError("Đăng nhập với Google thất bại");
         } finally {
           setIsLoginLoading(false);
@@ -135,7 +162,8 @@ const LoginForm = () => {
       [login, navigate]
     ),
     onError: useCallback(() => {
-      setLoginError("Đăng nhập với Google thất bại");
+      // TC-GL-004 Scenario 4a: User Cancels Popup
+      setLoginError("Đăng nhập với Google đã bị hủy");
     }, []),
   });
 

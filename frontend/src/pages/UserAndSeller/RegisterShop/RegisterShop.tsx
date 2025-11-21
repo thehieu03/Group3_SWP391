@@ -47,6 +47,12 @@ export default function RegisterShop() {
       setMessage("Vui lòng nhập đầy đủ tên shop, số điện thoại và miêu tả");
       return;
     }
+    // Validate phone number: must be exactly 10 digits
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone.trim())) {
+      setMessage("Số điện thoại phải có đúng 10 ký tự và chỉ chứa số");
+      return;
+    }
     if (!frontFile || !backFile) {
       setMessage("Vui lòng tải lên đủ 2 ảnh CMND/CCCD (mặt trước và mặt sau)");
       return;
@@ -70,8 +76,22 @@ export default function RegisterShop() {
       setBackFile(null);
       setFrontPreview("");
       setBackPreview("");
-    } catch {
-      setMessage("Gửi đăng ký thất bại, vui lòng thử lại");
+    } catch (error: unknown) {
+      // Extract error message from backend response
+      let errorMessage = "Gửi đăng ký thất bại, vui lòng thử lại";
+
+      if (error && typeof error === "object") {
+        const axiosError = error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        errorMessage =
+          axiosError?.response?.data?.message ||
+          axiosError?.message ||
+          errorMessage;
+      }
+
+      setMessage(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -98,7 +118,13 @@ export default function RegisterShop() {
       <h1 className="text-2xl font-semibold mb-4">Đăng ký bán hàng</h1>
       <div className="rounded-md bg-white shadow p-4 space-y-4">
         {message && (
-          <div className="text-sm p-2 rounded border border-gray-200 text-gray-700">
+          <div
+            className={`text-sm p-3 rounded border ${
+              message.includes("thành công")
+                ? "bg-green-50 border-green-200 text-green-800"
+                : "bg-red-50 border-red-200 text-red-800"
+            }`}
+          >
             {message}
           </div>
         )}
@@ -118,11 +144,26 @@ export default function RegisterShop() {
             Số điện thoại
           </label>
           <input
+            type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              // Only allow numbers
+              const value = e.target.value.replace(/[^0-9]/g, "");
+              // Limit to 10 digits
+              if (value.length <= 10) {
+                setPhone(value);
+              }
+            }}
             className="w-full px-3 py-2 border rounded"
-            placeholder="Nhập số điện thoại"
+            placeholder="Nhập số điện thoại (10 số)"
+            maxLength={10}
+            pattern="[0-9]{10}"
           />
+          {phone && phone.length !== 10 && (
+            <p className="text-sm text-amber-600 mt-1">
+              Số điện thoại phải có đúng 10 ký tự
+            </p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
